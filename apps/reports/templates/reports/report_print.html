@@ -1,0 +1,255 @@
+{% extends 'core/pdf_base.html' %}
+{% load static %}
+{% load humanize %}
+{% load qr_code %}
+{% load core %}
+
+
+{% block pdf_style %}
+<style>
+    .is-a4paper {
+        width: 794px !important;
+        height: 1123px !important;
+        padding-top: 30px !important;
+        margin-top: 0px !important;
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+
+    @page {
+        margin-top: 0.5in;
+        margin-right: 0.5in;
+
+        @top-right {
+            font-weight: 300;
+            font-size: 1em;
+            content: "Page "counter(page)"/"counter(pages);
+        }
+    }
+</style>
+{% endblock pdf_style %}
+
+{% block title %}
+Organizations facturation report
+{% endblock title %}
+
+{% block content %}
+
+<section class="section">
+    <p class="title is-size-1 has-text-centered">Rapport cumulé des entreprises</p>
+    <p
+        class="is-flex is-flex-direction-row is-flex-wrap-wrap is-align-items-center is is-justify-content-center has-text-centered">
+        {% for organization in organizations %}
+        <span class="tag has-text-weight-medium is-info is-size-6 m-1">{{ organization.name }}</span>
+        {% endfor %}
+    </p>
+</section>
+
+<div class="is-flex is-align-items-center is-justify-content-space-evenly">
+    <p class="is-size-4 has-text-left has-text-weight-semibold px-4">Imprimé le
+        {% now "SHORT_DATETIME_FORMAT" %}</p>
+
+    {% for field in facturation_filter.form %}
+    {% if field.value == "" %}
+    <p class="has-text-centered">
+        <span class="has-text-weight-bold is-size-5">
+            {{ field.label|capfirst }} :
+        </span>
+        <span class="tag has-text-weight-medium is-light is-size-5">
+            {{ "--------"}}
+        </span>
+    </p>
+    {% else %}
+    <p class="has-text-centered">
+        <span class="has-text-weight-bold is-size-5">
+            {{ field.label|capfirst }} :
+        </span>
+        <span class="tag has-text-weight-medium is-success is-size-5">
+            {{ field.value|capfirst }}
+        </span>
+    </p>
+    {% endif %}
+    {% endfor %}
+
+</div>
+
+<hr />
+<p class="title is-size-2 has-text-centered">Rapport de toutes les ventes</p>
+
+<hr />
+
+<table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth is-size-6">
+    <thead class="is-selected">
+        <tr class="is-selected">
+            {% comment %} <th>#</th> {% endcomment %}
+            <th style="text-align: center;">Type</th>
+            <th style="text-align: center;">Total vente</th>
+            <th style="text-align: center;">Montant total</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for report in reports.facturations.reports %}
+        <tr>
+            {% comment %} <td style="text-align: center;">{{ forloop.counter0 }}</td> {% endcomment %}
+            <td style="text-align: center;">{{ report.type}}</td>
+            <td style="text-align: center;">{{ report.total}}</td>
+            <td style="text-align: center;">{{ report.total_price.normalize|intcomma}} F</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr>
+            <th style="text-align: center;" colspan="1">TOTAL</th>
+            <th style="text-align: center;" colspan="1">{{ reports.facturations.total }}</th>
+            <th style="text-align: center;" colspan="1">{{ reports.facturations.total_price.normalize|intcomma }} F
+            </th>
+        </tr>
+    </tfoot>
+</table>
+
+<p class="title is-size-2 has-text-centered">Rapport des flux d'argent</p>
+<hr />
+<table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth is-size-6">
+    <thead class="is-selected">
+        <tr class="is-selected">
+            {% comment %} <th>#</th> {% endcomment %}
+            <th style="text-align: center;">Catégories</th>
+            <th style="text-align: center;">Total </th>
+            <th style="text-align: center;">Solde total</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for cashflow_report in reports.cashflow.report %}
+        <tr>
+            {% comment %} <td style="text-align: center;">{{ forloop.counter0 }}</td> {% endcomment %}
+            <td style="text-align: center;">{{ cashflow_report.name}}</td>
+            <td style="text-align: center;">{{ cashflow_report.total}}</td>
+            <td style="text-align: center;">{{ cashflow_report.total_amount.normalize|intcomma}} F</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr>
+            <th style="text-align: center;" colspan="1">Net en caisse</th>
+            <th style="text-align: center;" colspan="1"></th>
+            <th style="text-align: center;" colspan="1">{{ reports.cashflow.balance.normalize|intcomma }} F
+            </th>
+        </tr>
+    </tfoot>
+</table>
+
+
+<p class="title is-size-2 has-text-centered">Rapport des commerciaux</p>
+<hr />
+{% for organization in organizations %}
+<p class="subtitle has-text-weight-bold is-size-4 has-text-centered">Rapport des commerciaux | {{ organization.name }}
+</p>
+<table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth is-size-6">
+    <thead>
+        <tr class="is-selected is-size-6">
+            <th class="has-text-centered is-vcentered">Commercial</th>
+            <th class="has-text-centered is-vcentered">Vente en espèces</th>
+            {% comment %} <th class="has-text-centered is-vcentered">Vente à termes</th> {% endcomment %}
+            <th class="has-text-centered is-vcentered">Vente de services</th>
+            <th class="has-text-centered is-vcentered">Total ventes</th>
+            <th class="has-text-centered is-vcentered">Montant total</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for commercial_report in reports.commercial_reports %}
+
+        {% if organization.id == commercial_report.organization_id %}
+
+        <tr>
+            {% comment %} <td style="text-align: center;">{{ forloop.counter0 }}</td> {% endcomment %}
+            <td class="has-text-weight-semibold" style="text-align: center;">{{ commercial_report.commercial}}
+            </td>
+            <td style="text-align: center;">
+                <article class="message is-dark has-text-centered p-0 m-0">
+                    <div class="message-body p-1">
+                        <p class="has-text-left is-size-6"><span class="has-text-weight-bold mr-1">Total:</span><span
+                                class="has-text-weight-light">{{ commercial_report.facturation_data.total_facturations}}</span>
+                        </p>
+                        <p class="has-text-left is-size-6"><span class="has-text-weight-bold mr-1">Montant:</span><span
+                                class="has-text-weight-light">{{ commercial_report.facturation_data.total_facturation_price.normalize|intcomma}}
+                                F</span>
+                        </p>
+                    </div>
+                </article>
+            </td>
+            {% comment %} <td style="text-align: center;">
+                <article class="message is-dark has-text-centered p-0 m-0">
+                    <div class="message-body p-1">
+                        <p class="has-text-left is-size-6"><span class="has-text-weight-bold mr-1">Total:</span><span
+                                class="has-text-weight-light">{{ commercial_report.voucher_facturation_data.total_facturations}}</span>
+                        </p>
+                        <p class="has-text-left is-size-6"><span class="has-text-weight-bold mr-1">Montant:</span><span
+                                class="has-text-weight-light">{{ commercial_report.voucher_facturation_data.total_facturation_price.normalize|intcomma}}
+                                F</span>
+                        </p>
+                    </div>
+                </article>
+            </td> {% endcomment %}
+            <td style="text-align: center;">
+                <article class="message is-dark has-text-centered p-0 m-0">
+                    <div class="message-body p-1">
+                        <p class="has-text-left is-size-6"><span class="has-text-weight-bold mr-1">Total:</span><span
+                                class="has-text-weight-light">{{ commercial_report.service_facturation_data.total_facturations}}</span>
+                        </p>
+                        <p class="has-text-left is-size-6"><span class="has-text-weight-bold mr-1">Montant:</span><span
+                                class="has-text-weight-light">{{ commercial_report.service_facturation_data.total_facturation_price.normalize|intcomma}}
+                                F</span>
+                        </p>
+                    </div>
+                </article>
+            </td>
+            <td class="has-text-weight-semibold" style="text-align: center;">{{ commercial_report.total_facturations}}
+            </td>
+            <td class="has-text-weight-semibold" style="text-align: center;">
+                {{ commercial_report.total_facturation_price.normalize|intcomma}} F</td>
+        </tr>
+        {% endif %}
+        {% endfor %}
+    </tbody>
+</table>
+{% endfor %}
+
+<p class="title is-size-2 has-text-centered">Inventaire temps réel des stocks de produits</p>
+<hr />
+{% for organization in organizations %}
+<p class="subtitle has-text-weight-bold is-size-4 has-text-centered"> Inventaire temps réel des stocks |
+    {{ organization.name }}</p>
+<table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth is-size-6">
+    <thead class="is-selected">
+        <tr class="is-selected">
+            {% comment %} <th>#</th> {% endcomment %}
+            <th style="text-align: center;">Produit</th>
+            <th style="text-align: center;">Quantité</th>
+            <th style="text-align: center;">Estimation d'achat</th>
+            <th style="text-align: center;">Estimation de vente</th>
+            <th style="text-align: center;">Estimation de profit</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for product in reports.product_reports %}
+
+        {% if organization.id == product.organization_id %}
+        <tr>
+            {% comment %} <td style="text-align: center;">{{ forloop.counter0 }}</td> {% endcomment %}
+            <td style="text-align: center;">{{ product.name}}</td>
+            <td style="text-align: center;">{{ product.quantity|intcomma}}</td>
+            <td style="text-align: center;">{{ product.total_purchase_price.normalize|intcomma}} F</td>
+            <td style="text-align: center;">{{ product.total_facturation_price.normalize|intcomma}} F</td>
+            <td class="has-text-weight-semibold" style="text-align: center;">
+                {{ product.total_profit.normalize|intcomma}}
+                F
+            </td>
+        </tr>
+        {% endif %}
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endfor %}
+
+{% endblock content %}

@@ -1,0 +1,30 @@
+https://djangocentral.com/using-postgresql-with-django/
+
+Linux User:
+    sudo apt-get install postgresql postgresql-contrib
+
+Dependencies for PostgreSQL to work with Python:
+    sudo apt-get install libpq-dev python3-dev
+
+Install psycopg2:
+    pip install psycopg2
+
+Create A PostgreSQL User and Database:
+    sudo -u postgres psql
+
+Creating Database:
+    CREATE DATABASE mydb;
+
+Creating User:
+    CREATE USER leidji WITH ENCRYPTED PASSWORD 'password';
+
+Modifying User Connection Parameters:
+    ALTER ROLE liedji SET client_encoding TO 'utf8';
+    ALTER ROLE liedji SET default_transaction_isolation TO 'read committed';
+    ALTER ROLE liedji SET timezone TO 'UTC';
+
+Granting Permission To The User:
+    GRANT postgres TO liedji;
+    GRANT ALL PRIVILEGES ON DATABASE mydb TO myuser;
+    
+

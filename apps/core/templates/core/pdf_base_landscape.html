@@ -1,0 +1,135 @@
+{% load static %}
+{% load qr_code %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="{% static 'core/css/bulma.min.css' %}">
+
+
+    <style type="text/css" media="all">
+        @page {
+            size: A4 landscape;
+            /*size: A4 portrait;*/
+            /* can use also 'landscape' for orientation */
+            margin: 0.0in;
+        }
+
+
+        .is-student-card {
+            width: 390px !important;
+            height: 278px !important;
+            margin: 0px !important;
+            padding: 0px !important;
+            padding-top: 5px !important;
+            border-radius: 10px;
+            background-repeat: no-repeat;
+            background-position: 0 50%;
+            background-size: contain;
+            background-image: linear-gradient(rgba(204, 211, 208, 0.24), rgba(166, 184, 238, 0.103));
+        }
+
+
+        .is-rector {
+            position: absolute;
+            bottom: 55px;
+            right: 10px
+        }
+
+        .is-size-8 {
+            font-size: 0.6rem !important;
+        }
+
+        .is-size-9 {
+            font-size: 0.5rem !important;
+        }
+
+        .is-size-10 {
+            font-size: 0.4rem !important;
+        }
+
+        hr {
+            display: block;
+            height: 2px;
+            border: 0;
+            border-top: 1px solid #ccc;
+            margin: 1em 0;
+            padding: 0;
+        }
+
+
+        /* 
+        
+            A4 Dimensions in Pixels
+            A4 dimensions vary in pixels, depending on the PPI/DPI applied.
+
+            Size #	72 dpi/ppi
+            (screen resolution)	96 dpi/ppi
+            (screen resolution)	300 dpi/ppi
+
+            (print resolution)
+            A4	595x842px 794x1123px(best pdf size in computers screen) 2481x3507px 
+        
+        */
+
+
+        .watermarked {
+            color: #02020223;
+            position: absolute;
+            text-transform: uppercase;
+            font-weight: bold;
+            font-size: 128px;
+            top: 100px;
+            padding: 4px 12px 0px;
+            opacity: 0.28;
+            transform: rotate(-75deg);
+            margin-right: 40px;
+            z-index: 1
+        }
+
+        .has-frame {
+            border: 3px solid hsl(0, 0%, 21%);
+            padding: 0px;
+            margin: 0px;
+        }
+
+        @media print,
+        screen {
+
+            /* Using for the screen as well */
+            body {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+    </style>
+
+    {% block pdf_style %}
+    <style>
+        .is-a4paper {
+            height: 794px !important;
+            width: 1123px !important;
+            padding-top: 15px !important;
+            margin-top: 15px !important;
+            padding-left: 25px !important;
+            padding-right: 25px !important;
+        }
+    </style>
+    {% endblock pdf_style %}
+
+
+    <title>{% block title %}{% endblock title %}</title>
+</head>
+
+<body class="block m-0 p-0">
+    <div class="box m-0 is-a4paper">
+        {% block content %}
+        {% endblock content %}
+    </div>
+</body>
+
+</html>

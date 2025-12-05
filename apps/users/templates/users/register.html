@@ -1,0 +1,31 @@
+{% extends "core/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Create an account{% endblock %}
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="columns">
+            <div class="column is-half is-offset-one-quarter">
+                <div class="box">
+                    <h1 class="title is-size-3">Create an account</h1>
+                    <form action="" method="POST" class="mb-4">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        {{ form.media }}
+                        <div class="field is-grouped is-grouped-centered">
+                            <div class="control">
+                                <button class="button is-primary is-medium" type="submit">Create my account</button>
+                            </div>
+                            {% comment %} <div class="control">
+                                <a class="button is-light"
+                                    href="{% url 'organization_features:org_cameis:path_list' request.organization.slug %}">Cancel</a>
+                            </div> {% endcomment %}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}

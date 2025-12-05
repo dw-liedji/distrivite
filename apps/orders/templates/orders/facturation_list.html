@@ -1,0 +1,195 @@
+{% extends 'core/quanta.html' %}
+{% load crispy_forms_tags %}
+{% load mathfilters %}
+{% load l10n %}
+{% load partials %}
+{% load core %}
+
+{% block title %}
+Organizations facturation
+{% endblock title %}
+
+{% block quanta_content %}
+
+{% partialdef list inline=True %}
+{% include "core/partials/messages.html" %}
+
+<div class="block px-2 mx-2 px-5-desktop mx-5-desktop fade-in">
+
+    <section class="section mx-0 px-0 fade-in">
+        <form id="my_form" method="GET" class="is-flex is-flex-wrap-wrap is-align-items-center is-justify-content-start"
+            style="gap: 10px;">
+
+            {% csrf_token %}
+
+            <!-- Filters Container -->
+            <div class="is-flex is-flex-wrap-wrap is-justify-content-start" style="gap: 10px;">
+                {% for field in filter.form %}
+                <div class="field" style="width: 150px; min-width: 120px;">
+                    {{ field|as_crispy_field }}
+                </div>
+                {% endfor %}
+                {{ filter.form.media }}
+            </div>
+
+            <!-- Filter Button -->
+            <div class="is-flex is-flex-wrap-wrap is-align-items-center is-justify-content-start">
+                <button type="submit"
+                    hx-get="{% url 'organization_features:orders:facturation_list' request.organization.slug %}"
+                    hx-target="#quanta_content" hx-swap="innerHTML" hx-push-url="true"
+                    hx-indicator="#custom-htmx-indicator" hx-include="#my_form"
+                    class="button mx-1 is-primary is-rounded is-fullwidth-mobile">
+                    <span class="icon">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <span>Filter Items</span>
+                </button>
+
+                <button type="submit"
+                    hx-get="{% url 'organization_features:order_docs:facturation_list_export' request.organization.slug 'pdf' %}"
+                    target="_blank" hx-swap="none" hx-push-url="true" hx-include="#my_form"
+                    class="button mx-1 is-primary is-rounded is-fullwidth-mobile">
+                    <span class="icon">
+                        <i class="fa-regular fa-file-pdf"></i>
+                    </span>
+                    <span>Per customer PDF</span>
+                </button>
+
+                <button type="submit"
+                    hx-get="{% url 'organization_features:order_docs:facturation_list_export' request.organization.slug 'user' %}"
+                    target="_blank" hx-swap="none" hx-push-url="true" hx-include="#my_form"
+                    class="button mx-1 is-primary is-rounded is-fullwidth-mobile">
+                    <span class="icon">
+                        <i class="fa-regular fa-file-pdf"></i>
+                    </span>
+                    <span>Per User PDF</span>
+                </button>
+            </div>
+        </form>
+    </section>
+
+    <div class="has-text-right my-3">
+        {% if request.organization_user.is_admin or 'orders.add_facturation' in organization_user_perms %}
+        <a class="button is-primary"
+            hx-get="{% url 'organization_features:orders:facturation_add' request.organization.slug %}?{% url_replace %}"
+            hx-target="#quanta_content" hx-indicator="#custom-htmx-indicator" hx-swap="innerHTML">Add
+            facturation</a>
+        {% endif %}
+    </div>
+
+    <div class="table-container">
+        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+            <thead class="is-selected">
+                <tr class="is-selected">
+                    <th>#</th>
+                    <th style="text-align: center;">Customer</th>
+                    <th style="text-align: center;">Placed at</th>
+                    <th style="text-align: center;">Total price</th>
+                    <th style="text-align: center;" colspan="9">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for facturation in facturations %}
+                <tr>
+                    <td style="text-align: center;">{{ forloop.counter0 }}</td>
+
+                    <td style="text-align: center;">{{ facturation.customer }}</td>
+                    <td style="text-align: center;">{{ facturation.created}}</td>
+
+                    <td style="text-align: center;">{{ facturation.total_price.normalize}}F</td>
+                    <td style="text-align: center;"><a
+                            hx-get="{% url 'organization_features:orders:facturation_batch_list' request.organization.slug facturation.pk %}"
+                            hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
+                            hx-replace-url="true" class="button is-primary">Items</a>
+                    </td>
+
+                    {% if request.organization_user.is_admin or request.organization_user.is_owner or 'orders.view_facturation' in organization_user_perms %}
+                    <td style="text-align: center;"><a
+                            hx-get="{% url 'organization_features:orders:facturation_payment_list' request.organization.slug facturation.pk %}"
+                            hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
+                            hx-replace-url="true" class="button is-primary">Payments</a>
+                    </td>
+                    {% endif %}
+
+                    {% if request.organization_user.is_admin or request.organization_user.is_owner or 'orders.view_facturationRefund' in organization_user_perms %}
+                    <td style="text-align: center;"><a
+                            hx-get="{% url 'organization_features:orders:facturation_Refund_list' request.organization.slug facturation.pk %}"
+                            hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
+                            hx-replace-url="true" class="button is-primary">Refunds</a>
+                    </td>
+                    {% endif %}
+
+                    {% if facturation.is_proforma %}
+                    <td style="text-align: center;"><a class="button is-link"
+                            href="{% url 'organization_features:orders:facturation_proforma' request.organization.slug facturation.pk %}">Proforma</a>
+                    </td>
+                    {% else %}
+                    <td style="text-align: center;"><a class="button is-link"
+                            href="{% url 'organization_features:orders:facturation_mini_receipt' request.organization.slug facturation.pk %}">Mini
+                            Réçu</a>
+                    </td>
+                    <td style="text-align: center;"><a class="button is-link"
+                            href="{% url 'organization_features:orders:facturation_receipt' request.organization.slug facturation.pk %}">Réçu
+                        </a>
+                    </td>
+
+                    <td style="text-align: center;"><a class="button is-link"
+                            href="{% url 'organization_features:orders:facturation_receipt_matrix' request.organization.slug facturation.pk %}">MX
+                            Réçu</a>
+                    </td>
+                    {% endif %}
+
+                    {% if request.organization_user.is_admin or 'orders.deliver_facturation' in organization_user_perms %}
+                    {% if facturation.is_delivered %}
+                    <td style="text-align: center;">
+                        <i class="fa-solid fa-check fa-2x has-text-success"></i>
+                    </td>
+                    {% else %}
+                    <td style="text-align: center;"><button
+                            hx-get="{% url 'organization_features:orders:facturation_deliver' request.organization.slug facturation.pk %}"
+                            hx-target="#quanta_content" hx-confirm="Are you sure you want to deliver?" class="button">
+                            <i class="fa-solid fa-truck fa-1x has-text-warning"></i>
+                        </button>
+                    </td>
+                    {% endif %}
+                    {% endif %}
+
+                    {% if request.organization_user.is_admin or 'orders.change_facturation' in organization_user_perms %}
+                    <td style="text-align: center;"><button
+                            hx-get="{% url 'organization_features:orders:facturation_change' request.organization.slug facturation.pk %}?{% url_replace %}"
+                            hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
+                            class="button">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                    </td>
+                    {% endif %}
+
+                    {% if request.organization_user.is_admin or 'orders.view_facturation' in organization_user_perms %}
+                    <td style="text-align: center;">
+                        <button
+                            hx-get="{% url 'organization_features:orders:facturation_detail' request.organization.slug facturation.pk %}?{% url_replace %}"
+                            hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
+                            class="button">
+                            <i class="fa-solid fa-eye"></i></button>
+                    </td>
+                    {% endif %}
+
+                    {% if request.organization_user.is_admin or 'orders.delete_facturation' in organization_user_perms %}
+                    <td style="text-align: center;"><button
+                            hx-get="{% url 'organization_features:orders:facturation_delete' request.organization.slug facturation.pk %}?{% url_replace %}"
+                            hx-target="#quanta_content" hx-confirm="Are you sure you want to delete?" class="button">
+                            <i class="fa-solid fa-trash-can fa-1x has-text-danger"></i></button>
+                    </td>
+                    {% endif %}
+
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% include "core/partials/pagination.html" %}
+    </div>
+</div>
+
+{% endpartialdef %}
+
+{% endblock quanta_content %}

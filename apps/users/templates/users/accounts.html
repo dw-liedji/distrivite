@@ -1,0 +1,39 @@
+{% extends "core/base.html" %}
+
+{% block title %}Accounts{% endblock title %}
+
+{% block content %}
+
+<section class="section mt-6">
+    <div class="columns is-multiline is-centered">
+        {% if request.user.is_superuser %}
+        <a class="card column is-one-third m-1" href="/admin/">Admin zone</a>
+        {% endif %}
+
+        <a class="card column is-one-third m-1" href="{% url 'users:organizations' %}">My working
+            organizations</a>
+
+        {% if request.user.students.exists %}
+        <a class="card column is-one-third m-1" href="{% url 'users:study_organizations' %}">My study
+            organizations</a>
+        {% endif %}
+
+        {% comment %} {% if request.user.is_patient %}
+        <a hx-get="{% url 'orders:user_consultation_list' %}" hx-target="#content" hx-swap="innerHTML"
+            hx-indicator="#custom-htmx-indicator" hx-replace-url="true" class="card column is-one-third m-1">My
+            Consultations</a>
+        {% endif %} {% endcomment %}
+
+
+        {% comment %} {% if request.user.instructors.exists %}
+        <a class="card column is-one-third m-1" href="{% url 'users:study_organizations' %}">My study
+            organizations</a>
+        {% endif %} {% endcomment %}
+
+        <a class="card column is-one-third m-1" href="{% url 'users:settings' %}">Manage my accounts</a>
+
+    </div>
+</section>
+
+
+{% endblock content %}

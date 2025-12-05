@@ -1,0 +1,242 @@
+{% extends 'core/quanta.html' %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+{% load qr_code %}
+{% load static %}
+{% load core %}
+{% load crispy_forms_tags %}
+{% load partials %}
+
+{% block title %}
+Organizations facturation report
+{% endblock title %}
+
+{% block quanta_content %}
+
+<div class="has-text-left">
+    <div class="is-flex is-justify-content-center is-align-items-center">
+        <figure class="image box p-0 my-0 ml-0 mr-3">
+            {% if request.organization.logo %}
+            <img class="image" src="{{ request.organization.logo.url }}" style="width: 150px; height: 110px;">
+            {% else %}
+            <img class="image" src="{% static 'core/img/quanta_logo.jpg' %}" style="width: 150px; height: 110px;">
+            {% endif %}
+        </figure>
+        <div class="box has-text-centered p-0 m-0">
+            <p class="title is-size-1 mb-1 pb-0">{{ request.organization.name|upper }}</p>
+            <p class="title is-size-3 mb-1 pb-0">{{ request.organization.sub_name|upper }}</p>
+            <p class="subtitle is-size-6 has-text-centered m-0 p-0">{{ request.organization.street_address }}</p>
+            <p class="subtitle is-size-6 has-text-centered m-0 p-0">BP 8735-YANSOKI-DOUALA,
+                tel:{{ request.organization.contact_number }}</p>
+            <p class="subtitle is-size-6 has-text-centered m-0 p-0">Email:{{ request.organization.contact_email }}</p>
+        </div>
+    </div>
+</div>
+<hr class="mb-1" />
+<p class="title is-size-3 p-0 m-0 has-text-centered has-background-primary has-text-weight-bold has-text-light">
+    Rapports</p>
+
+{% partialdef report_content inline=True %}
+
+<section class="section fade-in">
+    <form id="my_form" class="is-flex is-justify-content-space-between is-align-items-center">
+        {% csrf_token %}
+        <!-- Main container -->
+        <nav class="level">
+            <!-- Left side -->
+            <div class="level-left">
+                <div class="level-item">
+                    <div class="columns">
+                        {% for field in filter.form %}
+                        <div class="column is-one-two">
+                            {{ field|as_crispy_field }}
+                        </div>
+                        {% endfor %}
+                        {{ filter.form.media }}
+                    </div>
+                </div>
+            </div>
+        </nav>
+        {% comment %} <span>
+            <button type="submit" class="button is-primary-light is-rounded p-5">
+                <span class="icon">
+                    <i class="fa-solid fa-magnifying-glass fa-2x"></i>
+                </span>
+                <span>Filter Consultations</span>
+            </button>
+        </span> {% endcomment %}
+        {% include 'core/partials/filter_actions.html' %}
+
+    </form>
+</section>
+
+
+
+{% if organization_subscription.is_active %}
+You have an active {{organization_subscription.plan.name}} subscription
+{% else %}
+You have an expired {{organization_subscription.plan.name}} subscription
+{% endif %}
+
+{% if "dashboard" in organization_features %}
+<p class="subtitle"> {{ organization_features }} </p>
+{% else %}
+<p class="subtitle tag">Dashboard feature is not availaible in your current subscription, please upgrade to have
+    more features
+</p>
+{% endif %}
+
+</p>
+
+<div class="block px-0 mx-0 py-0 my-0">
+    <div class="table-container">
+        <p class="title is-size-2">Rapport de toutes les ventes</p>
+        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth is-size-5">
+            <thead class="is-selected">
+                <tr class="is-selected">
+                    {% comment %} <th>#</th> {% endcomment %}
+                    <th style="text-align: center;">Type</th>
+                    <th style="text-align: center;">Total vente</th>
+                    <th style="text-align: center;">Total HT</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for facturation_report in cashflow_reports.facturations.facturation_reports %}
+                <tr>
+                    {% comment %} <td style="text-align: center;">{{ forloop.counter0 }}</td> {% endcomment %}
+                    <td style="text-align: center;">{{ facturation_report.type}}</td>
+                    <td style="text-align: center;">{{ facturation_report.total}}</td>
+                    <td style="text-align: center;">{{ facturation_report.total_price.normalize|intcomma}} XFA</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th style="text-align: center;" colspan="1">TOTAL</th>
+                    <th style="text-align: center;" colspan="1">{{ cashflow_reports.facturations.total }}</th>
+                    <th style="text-align: center;" colspan="1">
+                        {{ cashflow_reports.facturations.total_price.normalize|intcomma }} XFA
+                    </th>
+                </tr>
+            </tfoot>
+        </table>
+
+        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth is-size-5">
+            <p class="title is-size-2">Rapport de la caisse</p>
+            <thead class="is-selected">
+                <tr class="is-selected">
+                    {% comment %} <th>#</th> {% endcomment %}
+                    <th style="text-align: center;">Catégories</th>
+                    <th style="text-align: center;">Total </th>
+                    <th style="text-align: center;">Solde total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cashflow_report in cashflow_reports.transactions %}
+                <tr>
+                    {% comment %} <td style="text-align: center;">{{ forloop.counter0 }}</td> {% endcomment %}
+                    <td style="text-align: center;">{{ cashflow_report.name}}</td>
+                    <td style="text-align: center;">{{ cashflow_report.total}}</td>
+                    <td style="text-align: center;">{{ cashflow_report.total_amount.normalize|intcomma}} XFA</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th style="text-align: center;" colspan="1">Net en caisse</th>
+                    <th style="text-align: center;" colspan="1"></th>
+                    <th style="text-align: center;" colspan="1">{{ cashflow_reports.global_balance.normalize|intcomma }}
+                        XFA
+                    </th>
+                </tr>
+            </tfoot>
+        </table>
+
+
+        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+            <thead class="is-selected">
+                <tr class="is-selected">
+                    <th>#</th>
+                    <th style="text-align: center;">Customer</th>
+                    <th style="text-align: center;">Commercial</th>
+                    <th style="text-align: center;">Placed at</th>
+                    <th style="text-align: center;">Total price</th>
+                    <th style="text-align: center;">Livraision</th>
+                    <th style="text-align: center;">Progression</th>
+                    <th style="text-align: center;" colspan="11">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for facturation in facturations %}
+                <tr>
+                    <td style="text-align: center;">{{ forloop.counter0 }}</td>
+
+                    <td style="text-align: center;">{{ facturation.patient.username}}</td>
+                    <td style="text-align: center;">{{ facturation.commercial }}</td>
+                    <td style="text-align: center;">{{ facturation.created}}</td>
+
+                    <td style="text-align: center;">{{ facturation.total_price.normalize}}F</td>
+
+                    <td colspan="2" style="text-align: center;">
+                        {% if facturation.is_pay %}
+                        <i class="fa-solid fa-check fa-2x has-text-success"></i>
+                        {% else %}
+                        <div>
+                            <span>
+                                {% if facturation.total_price %}
+                                {{ facturation.current_payment|div:facturation.total_price|mul:100|floatformat:2 }}
+                                %
+                                {% else %}
+                                00,00 %
+                                {% endif %}
+                            </span>
+                            <progress class="progress is-primary" value="{{ facturation.current_payment|unlocalize }}"
+                                max="{{ facturation.total_price|unlocalize }}">
+                            </progress>
+                        </div>
+                        {% endif %}
+                    </td>
+
+                    <td style="text-align: center;">
+                        {% if facturation.is_approved %}
+                        <i class="fa-solid fa-check fa-2x has-text-success"></i>
+                        {% else %}
+                        <a class="button is-warning"
+                            hx-get="{% url 'organization_features:orders:facturation_approved' request.organization.slug facturation.pk %}"
+                            hx-target="#quanta_content" hx-confirm="Are you sure you want to approve ?">
+                            <i class="fa-solid fa-thumbs-up"></i>
+                        </a>
+                        {% endif %}
+                    </td>
+
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+
+
+<script>
+    $(document).ready(function () {
+        $('#search').click(function () {
+            $('#my_form').attr('action',
+                "{% url 'organization_features:org_reports:report' request.organization.slug %}"
+            );
+            $('#my_form').submit();
+        });
+        $('#download').click(function () {
+            $('#my_form').attr('action',
+                "{% url 'organization_features:org_reports:report_print' request.organization.slug %}"
+            );
+            $('#my_form').submit();
+        });
+    });
+</script>
+
+{% endpartialdef %}
+
+
+{% endblock quanta_content %}

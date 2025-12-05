@@ -1,0 +1,50 @@
+{% extends "core/base.html" %}
+{% block title %}Welcome{% endblock %}
+{% block content %}
+
+<section class="section container">
+    <div class="columns">
+        <div class="column">
+            <p class="title is-size-4">Welcome {{ request.user.username }}!</p>
+            <p class="subtitle is-size-3">The following code is your quanta number</p>
+            <div class="field is-grouped">
+                <div class="control">
+                    <input class="input" type="text" style="width: 15rem;" id="copyTarget" value={{request.user.quanta}}
+                        readonly>
+                </div>
+                <div class="control">
+                    <button class="button is-info" id="copyButton">Copy to clipboard</button>
+                </div>
+            </div>
+        </div>
+        <div class="column">
+            <a class="button is-primary has-text-weight-semibold is-pulled-right is-large"
+                href="{% url 'users:accounts' %}">GO
+                TO MY
+                ACCOUNTS</a>
+        </div>
+    </div>
+</section>
+
+
+
+<script>
+    // Attach an event listener to the copy button
+    $('#copyButton').on('click', function () {
+
+        // Select the text in the input field
+        var copyText = document.getElementById('copyTarget');
+        copyText.select();
+        copyText.setSelectionRange(0, 99999); /* For mobile devices */
+
+        // Copy the text to the clipboard
+        document.execCommand('copy');
+
+        // Replace the input field with a hidden field
+        //$(copyText).addClass('hidden');
+        $(copyText).after(
+            '<input class="input hidden" type="text" value="Copied!" disabled>');
+
+    });
+</script>
+{% endblock %}

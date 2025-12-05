@@ -1,0 +1,52 @@
+{% extends 'core/quanta.html' %}
+{% load crispy_forms_tags %}
+{% load partials %}
+{% load core %}
+
+{% block title %}
+Create coverage_delivery_receipt
+{% endblock title %}
+
+{% block quanta_content %}
+{% partialdef add inline=True %}
+{% include "core/partials/messages.html" %}
+
+<section class="section fade-in">
+    <div class="container">
+        <div class="columns">
+            <div class="column is-half is-offset-one-quarter">
+                <div class="box">
+                    <h1 class="title is-4 has-text-centered">Create coverage_delivery_receipt</h1>
+                    <form action="" method="POST" class="mb-4">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        {{ form.media }}
+                        <div class="columns is-multiline is-mobile">
+                            <div
+                                class="column is-full-mobile is-flex is-justify-content-center is-align-coverage_delivery_receipts-center">
+                                <button type="button"
+                                    hx-get="{% url 'organization_features:orders:coverage_delivery_receipt_list' request.organization.slug %}?{% url_replace %}"
+                                    hx-target="#quanta_content" hx-indicator="#custom-htmx-indicator"
+                                    hx-swap="innerHTML"
+                                    class="button is-light is-rounded is-medium mx-2 has-text-grey-dark dark:has-text-grey-light">
+                                    Cancel
+                                </button>
+
+                                <button type="submit"
+                                    hx-post="{% url 'organization_features:orders:coverage_delivery_receipt_add' request.organization.slug %}?{% url_replace %}"
+                                    hx-target="#quanta_content" hx-indicator="#custom-htmx-indicator"
+                                    hx-swap="innerHTML" class="button is-primary is-rounded is-medium mx-2">
+                                    Save Now
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% include "core/partials/dal_fix.html" %}
+{% endpartialdef  %}
+
+{% endblock quanta_content %}

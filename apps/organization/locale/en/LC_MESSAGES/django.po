@@ -1,0 +1,83 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-05-05 06:47+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: apps/organization/models.py:66
+msgid "groups"
+msgstr ""
+
+#: apps/organization/models.py:69
+msgid ""
+"The organization groups this user belongs to. A user will get all "
+"permissions granted to each of their groups."
+msgstr ""
+
+#: apps/organization/models.py:75
+msgid "organization user permissions"
+msgstr ""
+
+#: apps/organization/models.py:77
+msgid "Specific permissions for this organization user."
+msgstr ""
+
+#: apps/organization/models.py:82
+msgid "superuser status"
+msgstr ""
+
+#: apps/organization/models.py:85
+msgid ""
+"Designates that this user has all permissions without explicitly assigning "
+"them."
+msgstr ""
+
+#: apps/organization/templates/organization/settings/permissions.html:7
+msgid "application"
+msgstr ""
+
+#: apps/organization/templates/organization/settings/permissions.html:8
+msgid "model"
+msgstr ""
+
+#: apps/organization/templates/organization/settings/permissions.html:11
+msgid "View"
+msgstr ""
+
+#: apps/organization/templates/organization/settings/permissions.html:14
+#: apps/organization/templates/organization/settings/permissions.html:22
+#: apps/organization/templates/organization/settings/permissions.html:29
+#: apps/organization/templates/organization/settings/permissions.html:36
+#: apps/organization/templates/organization/settings/permissions.html:64
+msgid "All"
+msgstr ""
+
+#: apps/organization/templates/organization/settings/permissions.html:19
+msgid "Add"
+msgstr ""
+
+#: apps/organization/templates/organization/settings/permissions.html:26
+msgid "Change"
+msgstr ""
+
+#: apps/organization/templates/organization/settings/permissions.html:33
+msgid "Delete"
+msgstr ""
+
+#: apps/organization/templates/organization/settings/permissions.html:41
+msgid "other permissions"
+msgstr ""

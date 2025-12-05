@@ -1,0 +1,45 @@
+{% extends 'core/quanta.html' %}
+{% load crispy_forms_tags %}
+{% load partials %}
+{% load core %}
+
+{% block title %}
+Create user
+{% endblock title %}
+
+{% block quanta_content %}
+
+{% partialdef change inline=True %}
+{% include "core/partials/messages.html" %}
+
+<section class="section fade-in">
+    <form method="post" enctype="multipart/form-data"
+        hx-post="{% url 'organization_features:org_things:org_user_change' request.organization.slug object.pk %}?{% url_replace %}"
+        hx-target="#quanta_content" hx-indicator="#custom-htmx-indicator" hx-swap="innerHTML" class="mb-4">
+        {{ user_form.media }}
+        {{ user_form|crispy }}
+        {{ org_user_form|crispy }}
+        {{ org_user_form.media }}
+        {% csrf_token %}
+        <div class="columns is-multiline is-mobile">
+            <div class="column is-full-mobile is-flex is-justify-content-center is-align-items-center">
+                <button type="button"
+                    hx-get="{% url 'organization_features:org_things:org_user_list' request.organization.slug %}"
+                    hx-target="#quanta_content" hx-indicator="#custom-htmx-indicator" hx-swap="innerHTML"
+                    class="button is-light is-rounded is-medium mx-2 has-text-grey-dark dark:has-text-grey-light">
+                    Cancel
+                </button>
+
+                <button id="submit_permissions_button" type="button"
+                    class="button is-primary is-rounded is-medium mx-2">
+                    Save Now
+                </button>
+            </div>
+        </div>
+    </form>
+</section>
+
+{% include "core/partials/dal_fix.html" %}
+{% endpartialdef  %}
+
+{% endblock quanta_content %}

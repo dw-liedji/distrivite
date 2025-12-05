@@ -1,0 +1,300 @@
+{% load static %}
+{% load humanize %}
+{% load qr_code %}
+{% load core %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="{% static 'core/css/quanta.min.css' %}" />
+
+    {% comment %}
+    <link rel="stylesheet" href="../../static/core/css/printer.css"> {% endcomment %}
+    <style>
+        @page {
+            size: 80mm 200mm;
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            width: 100%;
+            font-weight: bold !important;
+            color: #000000 !important;
+            /* Very dark (pure black) */
+            font-family: 'Courier New', monospace;
+            /* Essential for dot matrix */
+            font-size: 12pt;
+            /* Standard dot matrix size */
+            line-height: 1;
+            /* Tighter line spacing */
+            margin: 0;
+            padding: 0;
+            background: none !important;
+        }
+
+        /* Reset all elements for dot matrix printing */
+        * {
+            float: none !important;
+            position: static !important;
+            box-shadow: none !important;
+            text-shadow: none !important;
+            background: transparent !important;
+        }
+
+        .logo {
+            width: 30%;
+            height: auto;
+        }
+
+        /* Simplify tables for dot matrix */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        table,
+        th,
+        tr,
+        td {
+            border: 1px solid #000;
+            /* Simpler borders */
+            padding: 2px;
+            font-weight: bold !important;
+            color: #000000 !important;
+        }
+
+        /* Remove complex styling */
+        hr {
+            border-top: 1px dashed #000;
+            margin: 5px 0;
+        }
+
+        .watermarked {
+            display: none;
+            /* Watermarks often don't print well on dot matrix */
+        }
+
+        /* Force page breaks where needed */
+        .page-break {
+            page-break-after: always;
+        }
+
+        /* Optimize for continuous paper */
+        body {
+            padding-bottom: 0;
+        }
+
+        /* Remove unnecessary elements */
+        .no-print {
+            display: none !important;
+        }
+
+
+        .ticket {
+            width: 215px;
+            max-width: 215px;
+        }
+
+        @media print {
+
+            .hidden-print,
+            .hidden-print * {
+                display: none !important;
+            }
+
+            html,
+            body {
+                width: 100%;
+                font-weight: bold !important;
+                color: #000000 !important;
+                /* Very dark (pure black) */
+                font-family: 'Courier New', monospace;
+                /* Essential for dot matrix */
+                font-size: 12pt;
+                /* Standard dot matrix size */
+                line-height: 1;
+                /* Tighter line spacing */
+                margin: 0;
+                padding: 0;
+                color: #000 !important;
+                background: none !important;
+            }
+
+            /* Reset all elements for dot matrix printing */
+            * {
+                float: none !important;
+                position: static !important;
+                box-shadow: none !important;
+                text-shadow: none !important;
+                background: transparent !important;
+            }
+
+            .logo {
+                width: 30%;
+                height: auto;
+            }
+
+            /* Simplify tables for dot matrix */
+            table {
+                border-collapse: collapse;
+                width: 100%;
+            }
+
+            table,
+            th,
+            tr,
+            td {
+                border: 1px solid #000;
+                /* Simpler borders */
+                padding: 2px;
+                font-weight: bold !important;
+                color: #000000 !important;
+            }
+
+            /* Remove complex styling */
+            hr {
+                border-top: 1px dashed #000;
+                margin: 5px 0;
+            }
+
+            .watermarked {
+                display: none;
+                /* Watermarks often don't print well on dot matrix */
+            }
+
+            /* Force page breaks where needed */
+            .page-break {
+                page-break-after: always;
+            }
+
+            /* Optimize for continuous paper */
+            body {
+                padding-bottom: 0;
+            }
+
+            /* Remove unnecessary elements */
+            .no-print {
+                display: none !important;
+            }
+
+
+        }
+    </style>
+    <title>Receipt</title>
+</head>
+
+
+<body class="block m-0 p-0">
+    <div class="ticket m-0 p-0">
+
+        <div class="is-flex is-justify-content-space-between is-align-items-center m-0 p-0">
+
+            <div class="p-0 mr-1 ml-0">
+                {% if request.organization.logo %}
+                <img class="img" style="width: 64px; height: 64px;" src="{{ request.organization.logo.url }}">
+                {% else %}
+                <img class="img" style="width: 64px; height: 64px;" src="{% static 'core/img/quanta_logo.jpg' %}">
+                {% endif %}
+            </div>
+            <div class="is-flex is-flex-direction-column is-justify-content-center is-align-items-flex-end p-0 m-0">
+                <p class="has-text-right">
+                    {{ request.organization.name|upper }}</p>
+                {% comment %} <p class="has-text-right"> {{ request.organization.street_address }}
+                </p> {% endcomment %}
+            </div>
+            {% comment %} <br>{{ request.organization.contact_email }} {% endcomment %}
+            {% comment %} <br> Tel:{{ request.organization.contact_number }}</p> {% endcomment %}
+        </div>
+
+        <div class="is-flex is-justify-content-space-between is-align-items-center p-0 mx-0 my-1">
+            <div class="m-0 p-1">
+                <p> <span style="padding-left: 0px;"><b>Réçu No:</b></span>
+                    {{ facturation.bill_number|default_if_none:"N/A" }}
+                    </span></p>
+
+            </div>
+            <!-- <img class="is-student-profile-code" src="../../static/accounts/img/profile.jpg" alt=""> -->
+            <img class="image p-0 m-0 is-64x64"
+                src="{% qr_url_from_text facturation.pk size=8 version=4 image_format='png' %}" alt="liedjify">
+        </div>
+
+        <p class="has-text-centered is-size-7" style="font-size: 10px;">
+            <td style="text-align: center;">
+                {% if facturation.custom_customer %}
+                {{facturation.custom_customer}}
+                {% else %}
+                {{ facturation.customer }}
+                {% endif %}
+            </td>
+        </p>
+
+        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth my-0 py-0 is-size-7">
+            <thead>
+                <tr>
+                    <th class="mx-0 px-0" style="text-align: center;">Product</th>
+                    <th class="mx-0 px-0" style="text-align: center;">Qty</th>
+                    <th class="mx-0 px-0" style="text-align: center;">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                {% for facturation_batch in facturation.facturation_batchs.all %}
+                <tr>
+                    <td class="mx-0 px-0" style="text-align: center;">
+                        {{ facturation_batch.batch.item.name }}</td>
+                    <td class="mx-0 px-0" style="text-align: center;">
+                        {{ facturation_batch.quantity }}</td>
+                    <td cla ss="mx-0 px-0" style="text-align: center;">{{ facturation_batch.total_price.normalize }}
+                    </td>
+                </tr>
+                {% endfor %}
+
+
+                <tr>
+                    <td class="mx-0 px-0" style="text-align: center;">TOTAL</td>
+                    <td class="mx-0 px-0" style="text-align: center;">
+                        {{ facturation.quantity|intcomma }}
+                    </td>
+                    <td class="mx-0 px-0" style="text-align: center;">
+                        {{ facturation.total_price.normalize|intcomma }}F</td>
+                </tr>
+                <tr>
+                    <td colspan="3" style="font-size: 10px; text-align: center;">
+                        {{ facturation.total_price.normalize|to_words|capfirst }} FCFA
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div>
+            <p class="has-text-centered">
+                {{ request.organization.city }}, {{ facturation.created|default_if_none:"N/A" }}
+            </p>
+            {% comment %} <p class="has-text-centered my-0 py-0">Merci pour votre confiance!</p>
+            {% endcomment %}
+            <p class="has-text-centered is-size-6 my-0 py-0">
+                www.datavite.com</p>
+        </div>
+
+        <div class="is-flex is-flex-direction-column is-justify-content-center my-2">
+            <button id="btnPrint" class="has-text-weight-bold button hidden-print my-2">Imprimer
+                Maintenant</button>
+            {% comment %} <a id="btnDownload" class="button is-link bulma-button hidden-print my-2"
+                href="{% url 'organization_features:pos:facturation_bill' request.organization.slug facturation.pk %}">Télécharger
+                PDF</a> {% endcomment %}
+        </div>
+        {% comment %} <script src="../../static/core/js/printer.js"></script> {% endcomment %}
+        <script src="{% static 'core/js/printer.js' %}"></script>
+
+    </div>
+
+
+</body>
+
+</html>

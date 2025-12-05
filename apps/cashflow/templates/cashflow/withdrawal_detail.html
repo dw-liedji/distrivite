@@ -1,0 +1,15 @@
+{% extends 'core/quanta.html' %}
+{% load partials %}
+
+{% block quanta_content %}
+{% include "core/partials/messages.html" %}
+
+{% partialdef detail inline=True %}
+<div class="section container fade-in">
+    <div class="notification is-info">
+        <h1 class="title is-4">{{ object }}</h1>
+    </div>
+</div>
+{% endpartialdef %}
+
+{% endblock quanta_content %}

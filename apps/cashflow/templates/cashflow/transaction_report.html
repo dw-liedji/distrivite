@@ -1,0 +1,130 @@
+{% extends 'core/pdf_base.html' %}
+{% load static %}
+{% load humanize %}
+{% load l10n %}
+{% load qr_code %}
+{% load core %}
+
+{% block content %}
+
+
+<div class="is-flex is-justify-content-space-between is-align-content-center m-2 p-2">
+    <div class="block has-text-centered p-0 m-0">
+        <p class="title is-size-6 m-1 p-0">RÉPUBLIQUE DU CAMEROUN</p>
+        <p class="title is-size-8 m-1 p-0">MINISTERE DES ENSEIGNEMENTS SUPERIEUR</p>
+        <p class="title is-size-7 m-1 p-0">{{ request.organization.name|upper }}</p>
+        <p class="title is-size-7 m-1 p-0">Address: {{ request.organization.street_address }}</p>
+        <p class="title is-size-8 m-1 p-0">Tel:{{ request.organization.contact_number }}</p>
+        <p class="title is-size-8 m-1 p-0">Email:{{ request.organization.contact_email }}</p>
+    </div>
+
+    <figure class="image has-text-centered is-64x64 mb-1 p-0 m-0">
+        <!-- <img class="is-rounded" src="../../../../apps/core/static/core/img/logo_jp2_bafang2.png" alt="Image"> -->
+        {% if request.organization.logo %}
+        <img class="image p-0 m-0" src="{{ request.organization.logo.url }}">
+        {% else %}
+        <img class="is-rounded" src="{% static 'core/img/profiles/logo-datavite-cropped.png' %}" alt="Image">
+        {% endif %}
+    </figure>
+
+    <div class="block has-text-centered p-0 m-0">
+        <p class="title is-size-6 m-1 p-0">REPUBLIC OF CAMEROON</p>
+        <p class="title is-size-8 m-1 p-0">MINISTRY OF HIGHER EDUCATION</p>
+        <p class="title is-size-7 m-1 p-0">{{ request.organization.name|upper }}</p>
+        <p class="title is-size-7 m-1 p-0">Address: {{ request.organization.street_address }}</p>
+        <p class="title is-size-8 m-1 p-0">Tel:{{ request.organization.contact_number }}</p>
+        <p class="title is-size-8 m-1 p-0">Email:{{ request.organization.contact_email }} </p>
+
+    </div>
+</div>
+
+<hr class="mb-1" />
+
+<p class="title is-size-4 has-text-centered">Rapport des mouvements de la caisse </p>
+<p class="subtitle is-size-6 has-text-centered">Imprimé le {% now "SHORT_DATETIME_FORMAT" %}</p>
+
+<table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth is-size-7">
+    <thead>
+        <tr class="is-selected">
+            {% for field in filter_form_data %}
+            <th style="text-align: center;">{{ field.label }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            {% for field in filter_form_data %}
+            <td style="text-align: center;">
+                {% if field.value == "None" %}
+                {% else %}
+                {{ field.value }}
+                {% endif %}
+            </td>
+            {% endfor %}
+        </tr>
+    </tbody>
+</table>
+
+<hr class="mb-1" />
+
+<table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth is-size-8">
+    <thead class="is-selected">
+        <tr class="is-selected">
+            <th>#</th>
+            <th style="text-align: center;">Employé</th>
+            <th style="text-align: center;">Participant</th>
+            <th style="text-align: center;">Created</th>
+            <th style="text-align: center;">Modified</th>
+            <th style="text-align: center;">Raison</th>
+            <th style="text-align: center;">Somme</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for transaction in filtered_transactions %}
+        <tr>
+            <td style="text-align: center;">{{ forloop.counter }}</td>
+            <td style="text-align: center;">{{ transaction.organization_user.user }}</td>
+            <td style="text-align: center;">{{ transaction.display_participant}}</td>
+            <td style="text-align: center;">{{ transaction.created}}</td>
+            <td style="text-align: center;">{{ transaction.modified}}</td>
+            <td class="has-text-left" style="text-align: center;">{{ transaction.reason}}</td>
+            <td style="text-align: center;">
+                {{ transaction.display_amount}}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot class="has-text-centered">
+        <tr>
+            <th colspan="2" class="has-text-weight-bold" style="text-align: center;">Total </th>
+            <th colspan="2" class="has-text-weight-bold" style="text-align: center;">Total Encaissement</th>
+            <th colspan="2" class="has-text-weight-bold" style="text-align: center;">Total Decaissement</th>
+            <th colspan="1" class="has-text-weight-bold" style="text-align: center;">Net en caisse</th>
+
+        </tr>
+        <tr>
+            <td colspan="2" class="has-text-weight-bold" style="text-align: center;">Selectioner</td>
+            <td colspan="2" class="has-text-weight-bold" style="text-align: center;">
+                {{report_encaissement.total_amount.normalize|intcomma}}</td>
+            <td colspan="2" class="has-text-weight-bold" style="text-align: center;">
+                {{report_decaissement.total_amount.normalize|intcomma }}</td>
+            <td colspan="1" class="has-text-weight-bold" style="text-align: center;">{{ balance.normalize|intcomma }}
+            </td>
+        </tr>
+
+        <tr>
+            <td colspan="2" class="has-text-weight-bold" style="text-align: center;">Global</td>
+            <td colspan="2" class="has-text-weight-bold" style="text-align: center;">
+                {{report_encaissement.global_total_amount.normalize|intcomma}}</td>
+            <td colspan="2" class="has-text-weight-bold" style="text-align: center;">
+                {{report_decaissement.global_total_amount.normalize|intcomma }}</td>
+            <td colspan="1" class="has-text-weight-bold" style="text-align: center;">
+                {{ global_balance.normalize|intcomma }}
+            </td>
+        </tr>
+
+
+    </tfoot>
+</table>
+
+{% endblock content %}

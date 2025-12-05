@@ -1,0 +1,114 @@
+{% extends 'core/quanta.html' %}
+{% load partials %}
+{% load core %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+
+{% block title %}
+Organizations Prepaid Account
+{% endblock title %}
+
+{% block quanta_content %}
+
+{% partialdef list inline=True %}
+{% include "core/partials/messages.html" %}
+
+<div class="block px-2 mx-2 px-5-desktop mx-5-desktop fade-in">
+
+    <section class="section mx-0 px-0 fade-in">
+        <form id="my_form" method="GET"
+            hx-get="{% url 'organization_features:orders:prepaid_account_list' request.organization.slug %}"
+            hx-target="#quanta_content" hx-swap="innerHTML" hx-push-url="true" hx-indicator="#custom-htmx-indicator"
+            class="is-flex is-flex-wrap-wrap is-align-items-center is-justify-content-start" style="gap: 10px;">
+
+            {% csrf_token %}
+
+            <!-- Filters Container -->
+            <div class="is-flex is-flex-wrap-wrap is-justify-content-start" style="gap: 10px;">
+                {% for field in filter.form %}
+                <div class="field" style="width: 150px; min-width: 120px;">
+                    {{ field|as_crispy_field }}
+                </div>
+                {% endfor %}
+                {{ filter.form.media }}
+            </div>
+
+            <!-- Filter Button -->
+            <div class="is-flex">
+                <button type="submit" class="button is-primary is-rounded is-fullwidth-mobile">
+                    <span class="icon">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <span>Filter Items</span>
+                </button>
+            </div>
+        </form>
+    </section>
+
+
+    <div class="has-text-right my-3">
+        {% if request.organization_user.is_admin or 'cashflow.add_prepaid_account' in organization_user_perms %}
+        <a class="button is-primary"
+            hx-get="{% url 'organization_features:orders:prepaid_account_add' request.organization.slug %}?{% url_replace %}"
+            hx-target="#quanta_content" hx-indicator="#custom-htmx-indicator" hx-swap="innerHTML">Add
+            Prepaid Account</a>
+        {% endif %}
+    </div>
+
+    <div class="table-container">
+        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+            <thead class="is-selected">
+                <tr class="is-selected">
+                    <th>#</th>
+
+                    <th style="text-align: center;">Name</th>
+                    <th style="text-align: center;">Amount</th>
+                    <th style="text-align: center;" colspan="3">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for prepaid_account in prepaid_accounts %}
+                <tr>
+                    <td style="text-align: center;">{{ forloop.counter0 }}</td>
+                    <td style="text-align: center;">{{ prepaid_account.customer}}</td>
+                    <td style="text-align: center;">{{ prepaid_account.amount.normalize|intcomma}}</td>
+
+                    {% if request.organization_user.is_admin or 'cashflow.change_prepaid_account' in organization_user_perms %}
+                    <td style="text-align: center;"><button
+                            hx-get="{% url 'organization_features:orders:prepaid_account_change' request.organization.slug prepaid_account.pk %}?{% url_replace %}"
+                            hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
+                            class="button">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                    </td>
+                    {% endif %}
+
+                    {% if request.organization_user.is_admin or 'cashflow.view_prepaid_account' in organization_user_perms %}
+                    <td style="text-align: center;">
+                        <button
+                            hx-get="{% url 'organization_features:orders:prepaid_account_detail' request.organization.slug prepaid_account.pk %}?{% url_replace %}"
+                            hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
+                            class="button">
+                            <i class="fa-solid fa-eye"></i></button>
+                    </td>
+                    {% endif %}
+
+                    {% if request.organization_user.is_admin or 'cashflow.delete_prepaid_account' in organization_user_perms %}
+                    <td style="text-align: center;"><button
+                            hx-get="{% url 'organization_features:orders:prepaid_account_delete' request.organization.slug prepaid_account.pk %}?{% url_replace %}"
+                            hx-target="#quanta_content" hx-confirm="Are you sure you want to delete?" class="button">
+                            <i class="fa-solid fa-trash-can fa-1x has-text-danger"></i></button>
+                    </td>
+                    {% endif %}
+
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% include "core/partials/pagination.html" %}
+    </div>
+</div>
+
+{% endpartialdef %}
+
+{% endblock quanta_content %}

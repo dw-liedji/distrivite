@@ -1,0 +1,73 @@
+{% extends "core/base.html" %}
+
+{% load extra_filters %}
+
+{% block title %}
+{% if request.organization %}
+{{ request.organization.name }} - Notifications
+{% else %}
+Notifications
+{% endif %}
+{% endblock title %}
+
+{% block content %}
+
+<h1 class="ph3 db cf">
+    Notifications
+    <a class="button is-primary"
+        href="{% url 'users:notifications_action' %}?action=mark_all_as_read{% if request.organization %}&organization={{ request.organization.slug }}{% endif%}">
+        Mark all as read
+    </a>
+</h1>
+
+<div class="mh3 overflow-auto">
+    <table class="table" cellspacing="0">
+        <tbody class="">
+            {% if notifications %}
+            {% for notification in notifications %}
+            <tr>
+                <!-- If we are not dealing with a organization page, we render a org column -->
+                {% if not request.organization %}
+                <td class="">
+                    {% if notification.organization %}
+                    <a href="{% url 'organization_dashboard' notification.organization.slug %}">
+                        {{ notification.organization }}
+                    </a>
+                    {% endif %}
+                </td>
+                {% endif %}
+
+                <td class="">
+                    <span class="f6 fw5">{{ notification.title }}</span class="f6">
+                    {% if notification.description %}
+                    <span class="fw3 lh-copy db">{{ notification.description|safe }}</span>
+                    {% endif %}
+                </td>
+                <td class="">
+
+                </td>
+                <td class="">
+                    <span class="fr">{{ notification.timesince }} ago</span>
+                </td>
+
+                <!-- Mark as read -->
+                <td class="">
+                    {% if notification.unread %}
+                    <a href="{% url 'users:notification_action' notification.id %}?action=mark_as_read{% if request.organization %}&organization={{ request.organization.slug }}{% endif%}"
+                        class="button is-secondary">Mark as read</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            {% else %}
+            <tr>
+                <td class="pl3 tc ">
+                    No new notifications (<a href="{{ request.get_full_path }}?status=all">view all notifications</a>)
+                </td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

@@ -1,0 +1,294 @@
+{% extends 'core/base.html' %}
+
+{% load static %}
+{% load i18n %}
+{% block content %}
+<div id="dashboard" class="has-aside-left">
+    <aside id="aside" class="aside box is-placed-left p-5 mb-5 is-light">
+        {% block quanta_menu %}
+        <div class="menu px-4 has-background-light"
+            style="height: 90vh; overflow-y: auto; border-radius: 25px; padding: 15px;">
+
+
+            {% if request.organization_user.is_active %}
+
+            <p class="menu-label">
+                {% trans 'General' %}
+            </p>
+
+            <ul class="menu-list">
+
+                {% if request.organization_user.is_admin or request.organization_user.is_owner or 'organization.view_organizationdashboard' in organization_user_perms %}
+                <li>
+                    <a class="menu-item"
+                        hx-get="{% url 'organization_features:org_reports:report' request.organization.slug %}"
+                        hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
+                        hx-replace-url="true" data-item="dashboard">
+                        Dashboard</a>
+                </li>
+                {% endif %}
+
+                {% if request.organization_user.is_admin or request.organization_user.is_owner or 'orders.view_supplier' in organization_user_perms %}
+                <li>
+                    <a hx-get="{% url 'organization_features:orders:supplier_list' request.organization.slug %}"
+                        hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
+                        hx-replace-url="true" class="menu-item" data-item="supplier">
+                        Suppliers</a>
+                </li>
+                {% endif %}
+
+                {% if request.organization_user.is_admin or request.organization_user.is_owner or 'orders.view_coveragepayment' in organization_user_perms %}
+                <li>
+                    <a hx-get="{% url 'organization_features:orders:supplier_payment_list' request.organization.slug %}"
+                        hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
+                        hx-replace-url="true" class="menu-item" data-item="supplier_payment">
+                        Reglements</a>
+                </li>
+                {% endif %}
+
+                {% if request.organization_user.is_admin or request.organization_user.is_owner or 'orders.view_commercial' in organization_user_perms %}
+                <li>
+                    <a hx-get="{% url 'organization_features:orders:commercial_list' request.organization.slug %}"
+                        hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
+                        hx-replace-url="true" class="menu-item" data-item="commercial">
+                        Commercials</a>
+                </li>
+                {% endif %}
+
+                {% if request.organization_user.is_admin or request.organization_user.is_owner or 'orders.view_patient' in organization_user_perms %}
+                <li>
+                    <a hx-get="{% url 'organization_features:orders:patient_list' request.organization.slug %}"
+                        hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
+                        hx-replace-url="true" class="menu-item" data-item="patient">
+                        Customers</a>
+                </li>
+                {% endif %}
+
+                {% if request.organization_user.is_admin or request.organization_user.is_owner or 'orders.view_item' in organization_user_perms %}
+                <li>
+                    <a hx-get="{% url 'organization_features:orders:item_list' request.organization.slug %}"
+                        hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
+                        hx-replace-url="true" class="menu-item" data-item="item">
+                        Items</a>
+                </li>
+                {% endif %}
+
+                {% if request.organization_user.is_admin or request.organization_user.is_owner or 'orders.view_prepaidaccount' in organization_user_perms %}
+                <li>
+                    <a hx-get="{% url 'organization_features:orders:prepaid_account_list' request.organization.slug %}"
+                        hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
+                        hx-replace-url="true" class="menu-item" data-item="prepaid_account">
+                        Prepaid Accounts</a>
+                </li>
+                {% endif %}
+
+                {% if request.organization_user.is_admin or request.organization_user.is_owner or 'orders.view_batch' in organization_user_perms %}
+                <li>
+                    <a hx-get="{% url 'organization_features:orders:batch_list' request.organization.slug %}"
+                        hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
+                        hx-replace-url="true" class="menu-item" data-item="batch">
+                        Batches</a>
+                </li>
+                {% endif %}
+
+                {% if request.organization_user.is_admin or request.organization_user.is_owner or 'orders.view_category' in organization_user_perms %}
+                <li>
+                    <a hx-get="{% url 'organization_features:orders:category_list' request.organization.slug %}"
+                        hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
+                        hx-replace-url="true" class="menu-item" data-item="category">
+                        Categories</a>
+                </li>
+                {% endif %}
+
+                {% if request.organization_user.is_admin or request.organization_user.is_owner or 'orders.view_batch' in organization_user_perms %}
+                <li>
+                    <a hx-get="{% url 'organization_features:orders:facturation_list' request.organization.slug %}"
+                        hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
+                        hx-replace-url="true" class="menu-item" data-item="facturation">
+                        Facturations</a>
+                </li>
+                {% endif %}
+
+                {% if request.organization_user.is_admin or request.organization_user.is_owner or 'orders.view_transaction' in organization_user_perms %}
+                <li>
+                    <a hx-get="{% url 'organization_features:orders:transaction_list' request.organization.slug %}"
+                        hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
+                        hx-replace-url="true" class="menu-item" data-item="transaction">
+                        Transactions</a>
+                </li>
+                {% endif %}
+
+            </ul>
+            {% endif %}
+
+            {% if request.organization_user.is_active %}
+
+            <p class="menu-label">
+                Cashflows
+            </p>
+
+            <ul class="menu-list">
+                {% if request.organization_user.is_admin or 'cashflow.view_cashregister' in organization_user_perms %}
+                <li>
+                    <a hx-get="{% url 'organization_features:cashflow:cash_register_list' request.organization.slug %}"
+                        hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
+                        hx-replace-url="true" class="menu-item" data-item="cash_register">
+                        {% trans 'Caisses' %}</a>
+                </li>
+                {% endif %}
+
+                {% if request.organization_user.is_admin or 'cashflow.view_transaction' in organization_user_perms %}
+                <li>
+                    <a hx-get="{% url 'organization_features:cashflow:transaction_list' request.organization.slug %}"
+                        hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
+                        hx-replace-url="true" class="menu-item" data-item="transaction">
+                        {% trans 'Transactions' %}</a>
+                </li>
+                {% endif %}
+
+                {% if request.organization_user.is_admin or 'cashflow.view_deposit' in organization_user_perms %}
+                <li><a hx-get="{% url 'organization_features:cashflow:deposit_list' request.organization.slug %}"
+                        hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
+                        hx-replace-url="true" class="menu-item" data-item="deposit">
+                        {% trans 'Encaissements' %}</a>
+                </li>
+                {% endif %}
+
+                {% if request.organization_user.is_admin or 'cashflow.view_withdrawal' in organization_user_perms %}
+                <li>
+                    <a hx-get="{% url 'organization_features:cashflow:withdrawal_list' request.organization.slug %}"
+                        hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
+                        hx-replace-url="true" class="menu-item" data-item="withdrawal">
+                        {% trans 'Decaissements' %}</a>
+                </li>
+                {% endif %}
+
+
+                {% if request.organization_user.is_admin or 'cashflow.view_category' in organization_user_perms %}
+                <li>
+                    <a hx-get="{% url 'organization_features:cashflow:category_list' request.organization.slug %}"
+                        hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
+                        hx-replace-url="true" class="menu-item" data-item="category">
+                        {% trans 'Categories' %}</a>
+                </li>
+                {% endif %}
+            </ul>
+            <p class="menu-label">
+                {% trans 'Administration' %}
+            </p>
+
+            <ul class="menu-list">
+
+                {% if request.user.is_superuser or request.organization_user.is_admin or request.organization_user.is_owner %}
+                <li>
+                    <a class="menu-item" data-item="org_user"
+                        hx-get="{% url 'organization_features:org_things:org_user_list' request.organization.slug %}"
+                        hx-target="#quanta_content" hx-indicator="#custom-htmx-indicator" hx-swap="innerHTML"
+                        hx-replace-url="true">{% trans 'Users' %}</a>
+                </li>
+                {% endif %}
+
+                {% if request.user.is_superuser or request.organization_user.is_admin or request.organization_user.is_owner %}
+                <li>
+                    <a class="menu-item" data-item="org_group"
+                        hx-get="{% url 'organization_features:org_things:org_group_list' request.organization.slug %}"
+                        hx-target="#quanta_content" hx-indicator="#custom-htmx-indicator" hx-swap="innerHTML"
+                        hx-replace-url="true">{% trans 'Teams' %}</a>
+                </li>
+                {% endif %}
+
+                {% if request.user.is_superuser or request.organization_user.is_admin or request.organization_user.is_owner %}
+                <li>
+                    <a class="menu-item" data-item="org_invitation"
+                        hx-get="{% url 'organization_features:org_things:org_invitation_list' request.organization.slug %}"
+                        hx-target="#quanta_content" hx-indicator="#custom-htmx-indicator" hx-swap="innerHTML"
+                        hx-replace-url="true">{% trans 'Invitations' %}</a>
+                </li>
+                {% endif %}
+
+                {% if request.user.is_superuser or request.organization_user.is_admin or request.organization_user.is_owner %}
+                <li><a class="menu-item" data-item="organization"
+                        hx-get="{% url 'organization_features:org_things:org_change' request.organization.slug %}"
+                        hx-target="#quanta_content" hx-indicator="#custom-htmx-indicator"
+                        hx-swap="innerHTML">{% trans 'Settings' %}</a>
+                </li>
+                {% endif %}
+            </ul>
+            {% endif %}
+
+        </div>
+        {% endblock quanta_menu %}
+    </aside>
+    <div class="main content-wrapper">
+
+        <!-- HTMX custom indicator -->
+        <!-- HTMX custom indicator -->
+        <div id="custom-htmx-indicator" class="my-indicator" aria-live="polite" aria-busy="true" role="alert">
+            <div class="is-flex is-justify-content-center is-align-items-center is-flex-direction-column">
+                <img class="image p-0 m-0" width="350" height="50"
+                    src="{% static 'core/img/logos/color_transparent.png' %}" alt="Image">
+                <span class="loader is-large" aria-hidden="true">
+                </span>
+            </div>
+        </div>
+
+        <section id="quanta_content" class="section pb-0 mb-0 mt-0 pt-1 mt-0 content-main mx-2 px-2">
+            {% block quanta_content %}
+            <h1 class="title">Quanta content here</h1>
+            {% endblock quanta_content %}
+        </section>
+
+        <section class="section footer py-2 my-2">
+            {% block quanta_footer %}
+            {% include 'core/footer.html' %}
+            {% endblock quanta_footer %}
+        </section>
+
+        <div class="modal is-active has-fade-out" id="preloader">
+            <div class="modal-background"></div>
+            <div class="modal-content">
+                <div class="box has-text-centered has-background-black" style="opacity: 1;">
+                    {% comment %} <p class="title has-text-weight-bold is-size-1">DATAVITE</p> {% endcomment %}
+                    <div class="is-flex is-justify-content-center is-align-items-center is-flex-direction-column">
+                        <img class="image p-0 m-0" width="700" height="100"
+                            src="{% static 'core/img/logos/color_transparent.png' %}" alt="Image">
+                        <div class="loader p-0 m-0"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% block footer %}
+        {% endblock footer %}
+
+    </div>
+</div>
+</div>
+
+<script>
+    let isDownloadLinkClicked = false;
+
+    // Detect clicks on download buttons or links
+    document.addEventListener("click", function (event) {
+        let target = event.target.closest("button, a");
+        if (target && target.hasAttribute("hx-get")) {
+            isDownloadLinkClicked = true;
+
+            // Reset flag after a short delay (allows beforeunload to run once)
+            setTimeout(() => {
+                isDownloadLinkClicked = false;
+            }, 2000);
+        }
+    });
+
+    window.addEventListener("beforeunload", function (event) {
+        if (!isDownloadLinkClicked) {
+            event.preventDefault();
+            event.returnValue = "Are you sure you want to leave? Your changes may not be saved.";
+        }
+    });
+</script>
+
+
+
+{% endblock content %}

@@ -1,0 +1,9 @@
+<ul class="autocomplete-results">
+    {% for Customer in results %}
+    <li hx-on="click: selectCustomer('{{ patient.username }}')" class="autocomplete-item">
+        {{ patient.username }}
+    </li>
+    {% empty %}
+    <li class="autocomplete-item">No results found</li>
+    {% endfor %}
+</ul>

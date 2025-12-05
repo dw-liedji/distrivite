@@ -1,0 +1,30 @@
+<script>
+    // Check if DOM is already ready
+    if (document.readyState !== 'loading') {
+        htmx.on("htmx:afterSettle", (e) => {
+            //alert("DOM is already ready");
+            setTimeout(() => {
+                //alert("DOM is already ready");
+                // Reinitialize DAL and Select2 every time after the content settles
+                if (typeof dal_init === 'undefined') {
+                    window.dispatchEvent(new Event('load'));
+                    $('.js-services-multiselect').select2();
+                    dal_init = true;
+                }
+            }, 200);
+        });
+    } else {
+        //alert("DOM is not already ready");
+        // This is the fix for initializing dal with htmx
+        htmx.on("htmx:afterSettle", (e) => {
+            setTimeout(() => {
+                // Reinitialize DAL and Select2 every time after the content settles
+                if (typeof dal_init === 'undefined') {
+                    window.dispatchEvent(new Event('load'));
+                    $('.js-services-multiselect').select2();
+                    dal_init = true;
+                }
+            }, 200);
+        });
+    }
+</script>

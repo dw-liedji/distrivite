@@ -1,0 +1,394 @@
+{% extends 'core/pdf_base.html' %}
+{% load static %}
+{% load qr_code %}
+{% load core %}
+
+{% block pdf_style %}
+<style>
+    .is-a4paper {
+        width: 794px !important;
+        height: 1123px !important;
+        margin-top: 0px !important;
+        padding-top: 10px !important;
+        margin-top: 0px !important;
+        padding-left: 60px !important;
+        padding-right: 60px !important;
+    }
+</style>
+{% endblock pdf_style %}
+
+
+{% block content %}
+<div class="has-text-left">
+    <div class="is-flex is-justify-content-center is-align-items-center">
+        <figure class="image box p-0 my-0 ml-0 mr-3">
+            <img class="image" src="{% static 'core/img/datavite.png' %}" width="150" height="60">
+        </figure>
+        <div class="box has-text-centered p-0 m-0">
+            <p class="title is-size-3 mb-1 pb-0">{{ "DATAVITE SARL"|upper }}</p>
+            <p class="subtitle is-size-6 has-text-centered m-0 p-0">BP 580 Douala, Bependa,
+                Tel:672120240 / 693124594</p>
+            <p class="subtitle is-size-6 has-text-centered m-0 p-0">Email:datavite@gmail.com</p>
+            <p class="subtitle is-size-6 has-text-centered has-text-info m-0 p-0">Platform:www.distrivite.com</p>
+        </div>
+    </div>
+</div>
+<hr class="mb-1" />
+<p class="title is-size-4 p-0 m-0 has-text-centered has-background-primary has-text-weight-bold has-text-light">
+    RÉÇU - distrivite</p>
+
+<div class="block mt-1 mb-1 mt-0 pb-0 is-flex is-align-items-center is-justify-content-space-between">
+    <div class="block p-0 m-0 is-flex is-flex-direction-column is-justify-content-center is-align-content-center">
+        <p class="title is-size-5 has-text-centered mb-1 p-0">Réçu</p>
+        <p class="subtitle is-size-6 has-text-centered m-0 p-0">
+            No:Q1697456205
+        </p>
+    </div>
+
+    <figure class="p-0 m-0">
+        <!-- <img class="is-student-profile-code" src="../../static/accounts/img/profile.jpg" alt=""> -->
+        <img class="p-0 m-0 image is-48x48" src="{% qr_url_from_text Q1697456205 size=2 version=5 image_format='png' %}"
+            alt="Hello World!">
+    </figure>
+</div>
+
+<p class="has-text-centered is-size-6 my-0"> <span class="has-text-weight-bold">CLIENT:</span>
+    INSTITUT SUPERIEUR DOUALA MANGA BELL</p>
+
+<hr class="my-1" />
+
+<article class="message is-dark py-0 my-1">
+    <div class="message-header">
+        <p class="is-size-6">
+            {{"Transformation digitale de l'éducation avec distrivite"|upper}} <br>
+            <span class="is-size-7">Transformez l'Éducation avec distrivite - Votre Portail Vers l'Excellence
+                Éducative</span>
+        </p>
+    </div>
+    <div class="message-body m-0 p-0 is-size-7 has-text-justified">
+        Découvrez distrivite, bien plus qu'un simple système de gestion éducative. C'est une révolution dans la manière
+        dont les institutions éducatives fonctionnent. Avec une gestion et un suivi des cours d'une précision inégalée,
+        une planification automatisée des emplois du temps et des rapports en temps réel, distrivite libère le potentiel
+        de votre institution. Grâce à notre système basé sur le Cloud, bénéficiez d'une accessibilité mondiale, d'une
+        évolutivité instantanée et d'une sécurité renforcée. Les avantages sont infinis - éliminez les tâches
+        administratives fastidieuses, prenez des décisions éclairées avec nos KPI en temps réel, et offrez à votre
+        communauté éducative une expérience transparente et collaborative. Investissez dans distrivite aujourd'hui pour
+        façonner un avenir éducatif plus intelligent, plus connecté et plus prospère. Votre succès commence ici.
+    </div>
+</article>
+
+<hr class="my-1" />
+
+<article class="message is-dark my-1 py-0">
+    <div class="message-header">
+        <p class="is-size-6"> {{"Quelques fonctionnalités clés"|upper}} </p>
+    </div>
+    <div class="message-body m-0 p-0">
+
+        <table class="table m-0 p-0 is-bordered is-striped is-narrow is-hoverable is-fullwidth is-size-7">
+
+            <thead>
+                <tr class="is-selected">
+                    <th class="has-text-centered">#</th>
+                    <th class="has-text-centered"> {{ "Fonctionnalités"|upper }} </th>
+                    <th class="has-text-centered"> {{ "Avantages"|upper }} </th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td style="text-align: center; vertical-align: middle;">1</td>
+                    <td style="text-align: center; vertical-align: middle;">
+                        <p class="is-size-7 has-text-justified">
+                            Gestion et Tracking de la progression des enseignements
+                        </p>
+                    </td>
+                    <td style="text-align: center; vertical-align: middle;">
+                        <p class="is-size-7 has-text-justified">
+                            Maximisation de l'efficacité éducative, suivi précis des enseignements.
+                        </p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="text-align: center; vertical-align: middle;">2</td>
+                    <td style="text-align: center; vertical-align: middle;">
+                        <p class="is-size-7 has-text-justified">
+                            Calcul Automatique des KPI et des Heures de Cours:
+                        </p>
+                    </td>
+                    <td style="text-align: center; vertical-align: middle;">
+                        <p class="is-size-7 has-text-justified">
+                            Optimisation des ressources, prise de décision basée sur des données précises.
+                        </p>
+                    </td>
+                </tr>
+
+
+                <tr>
+                    <td style="text-align: center; vertical-align: middle;">3</td>
+                    <td style="text-align: center; vertical-align: middle;">
+                        <p class="is-size-7 has-text-justified">
+                            Simplifiez la gestion de la paie des enseignants avec notre solution intuitive. Automatisez
+                            le processus, éliminez les erreurs potentielles et assurez un paiement précis et ponctuel.
+                        </p>
+                    </td>
+                    <td style="text-align: center; vertical-align: middle;">
+                        <p class="is-size-7 has-text-justified">
+                            Une gestion de paie efficace, rapide et sans tracas, parce que chaque enseignant mérite une
+                            reconnaissance à la hauteur de son dévouement. Optez pour la facilité avec notre solution de
+                            gestion de paie des enseignants. </p>
+                    </td>
+                </tr>
+
+
+                <tr>
+                    <td style="text-align: center; vertical-align: middle;">4</td>
+                    <td style="text-align: center; vertical-align: middle;">
+                        <p class="is-size-7 has-text-justified">
+                            Emplois du Temps Automatiques:
+                        </p>
+                    </td>
+                    <td style="text-align: center; vertical-align: middle;">
+                        <p class="is-size-7 has-text-justified">
+                            Économie de temps, réduction des erreurs humaines.
+                        </p>
+                    </td>
+
+                </tr>
+
+                <tr>
+                    <td style="text-align: center; vertical-align: middle;">5</td>
+                    <td style="text-align: center; vertical-align: middle;">
+                        <p class="is-size-7 has-text-justified">
+                            Gestion Automatique des Présences:
+                        </p>
+                    </td>
+                    <td style="text-align: center; vertical-align: middle;">
+                        <p class="is-size-7 has-text-justified">
+                            Suivi précis de la participation, identification rapide des tendances. </p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="text-align: center; vertical-align: middle;">6</td>
+                    <td style="text-align: center; vertical-align: middle;">
+                        <p class="is-size-7 has-text-justified">
+                            Rapports en Temps Réel (par heures, jours, semaine, mois, semestre, années)
+                        </p>
+                    </td>
+                    <td style="text-align: center; vertical-align: middle;">
+                        <p class="is-size-7 has-text-justified">
+                            Prise de décision proactive, adaptation aux besoins changeants. </p>
+                    </td>
+                </tr>
+
+
+                <tr>
+                    <td style="text-align: center; vertical-align: middle;">7</td>
+                    <td style="text-align: center; vertical-align: middle;">
+                        <p class="is-size-7 has-text-justified">
+                            Système Cloud Computing
+                        </p>
+                    </td>
+                    <td style="text-align: center; vertical-align: middle;">
+                        <p class="is-size-7 has-text-justified">
+                            Accessibilité mondiale par téléphones mobiles, ordinateurs et tablettes, 7J/7, 24H/24,
+                            échelle
+                            flexible,
+                            sécurité renforcée, sauvegardes
+                            automatiques.
+                        </p>
+                    </td>
+                </tr>
+
+
+                <tr>
+                    <td style="text-align: center; vertical-align: middle;">8</td>
+                    <td style="text-align: center; vertical-align: middle;">
+                        <p class="is-size-7 has-text-justified">
+                            Avantages Cloud Computing pour distrivite
+                        </p>
+                    </td>
+                    <td style="text-align: center; vertical-align: middle;">
+                        <p class="is-size-7 has-text-justified">
+                            Évolutivité instantanée, mises à jour automatiques, accès sécurisé depuis n'importe où dans
+                            le monde.
+                        </p>
+                    </td>
+                </tr>
+
+
+            </tbody>
+
+            {% comment %} <tfoot>
+                <tr>
+                    <th class="has-text-weight-medium has-text-centered" colspan="1">UNIVERSITAIRE
+                    </th>
+                    <th class="has-text-weight-medium has-text-centered" colspan="1">01
+                    </th>
+                    <th class="has-text-weight-medium has-text-centered" colspan="1">300 000 FCFA
+                    </th>
+                    <th class="has-text-weight-medium has-text-centered" colspan="1">300 000 FCFA
+                    </th>
+                    <td colspan="1" class="has-text-weight-medium has-text-centered">
+                        {{ 300000|to_words|capfirst }} francs CFA
+                    </td>
+                </tr>
+            </tfoot> {% endcomment %}
+        </table>
+        <p class="has-text-centered is-size-7 has-text-weight-bold py-0 my-1">Ces avantages ne
+            représentent qu'une
+            partie des
+            fonctionnalités complètes offertes
+            par distrivite. </p>
+    </div>
+</article>
+
+<hr class="my-1 py-0">
+
+<article class="message is-dark my-1 py-0">
+    <div class="message-header">
+        <p class="is-size-6">LICENCE ET FORFAITS</p>
+    </div>
+    <div class="message-body m-0 p-0">
+        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth is-size-7">
+
+            <thead>
+                <tr class="is-selected">
+                    <th class="has-text-centered">TYPE DE LICENCE</th>
+                    <th class="has-text-centered">QUANTITÉ</th>
+                    <th class="has-text-centered">PRIX UNITAIRE</th>
+                    <th class="has-text-centered">PRIX TOTAL</th>
+                    <th class="has-text-centered">PRIX TOTAL EN LETTRE</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td style="text-align: center; vertical-align: middle;">{{ deposit.cash_register.name }}
+                    <td style="text-align: center; vertical-align: middle;">{{ deposit.reason }}</td>
+                    </td>
+                </tr>
+            </tbody>
+
+            <tfoot>
+                <tr>
+                    <th class="has-text-weight-medium has-text-centered" colspan="1">UNIVERSITAIRE
+                    </th>
+                    <th class="has-text-weight-medium has-text-centered" colspan="1">01
+                    </th>
+                    <th class="has-text-weight-medium has-text-centered" colspan="1">700 000 FCFA
+                    </th>
+                    <th class="has-text-weight-medium has-text-centered" colspan="1">700 000 FCFA
+                    </th>
+                    <td colspan="1" class="has-text-weight-medium has-text-centered">
+                        {{ 700000|to_words|capfirst }} francs CFA
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</article>
+
+<hr class="my-5" />
+
+<hr class="my-5" />
+
+<article class="message is-dark my-5 py-0">
+    <p class="title is-size-3 pt-5 mt-5">Plan de déploiement rapide</p>
+    <p class="has-text-justified py-5 my-5">
+        Notre plan de déploiement rapide assure une intégration sans heurts de notre
+        solution, offrant une expérience personnalisée et opérationnelle en un temps record. Faites évoluer votre
+        institution éducative avec facilité grâce à notre plan de déploiement efficace en trois jours.</p>
+    <div class="message-header">
+        <p class="is-size-6"> {{"Plan de Déploiement en seulement Trois Jours:"|upper}} </p>
+    </div>
+    <div class="message-body m-0 p-0">
+
+        <table class="table m-0 p-0 is-bordered is-striped is-narrow is-hoverable is-fullwidth is-size-7">
+
+            <thead>
+                <tr class="is-selected">
+                    <th class="has-text-centered">#</th>
+                    <th class="has-text-centered"> {{ "Jour"|upper }} </th>
+                    <th class="has-text-centered"> {{ "Activité"|upper }} </th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td style="text-align: center; vertical-align: middle;">1</td>
+                    <td style="text-align: center; vertical-align: middle;">
+                        <p class="is-size-7 has-text-justified">
+                            Jour 1 - Personnalisation du Système pour Vous:
+                        </p>
+                    </td>
+                    <td style="text-align: center; vertical-align: middle;">
+                        <p class="is-size-7 has-text-justified">
+                            Discussion approfondie de vos besoins spécifiques.
+                            Configuration personnalisée du système.
+                        </p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="text-align: center; vertical-align: middle;">2</td>
+                    <td style="text-align: center; vertical-align: middle;">
+                        <p class="is-size-7 has-text-justified">
+                            Jour 2 - Formation du Personnel:
+                        </p>
+                    </td>
+                    <td style="text-align: center; vertical-align: middle;">
+                        <p class="is-size-7 has-text-justified">
+                            Sessions de formation interactives pour assurer une adoption rapide.
+                            Support continu pour garantir une utilisation optimale.
+                        </p>
+                    </td>
+                </tr>
+
+
+                <tr>
+                    <td style="text-align: center; vertical-align: middle;">3</td>
+                    <td style="text-align: center; vertical-align: middle;">
+                        <p class="is-size-7 has-text-justified">
+                            Jour 3 - Mise en Service et Suivi:
+                        </p>
+                    </td>
+                    <td style="text-align: center; vertical-align: middle;">
+                        <p class="is-size-7 has-text-justified">
+                            Déploiement complet du système.
+                            Suivi post-implémentation pour résoudre tout problème éventuel. </p>
+                    </td>
+
+                </tr>
+            </tbody>
+        </table>
+        <p class="has-text-centered is-size-6 has-text-weight-bold py-0 my-1">Explorez le document exclusif associé à
+            cette facture pour dévoiler des informations stratégiques supplémentaires. Obtenez des insights cruciaux qui
+            renforceront votre compréhension et maximiseront la valeur de cette transaction. Ne manquez pas
+            l'opportunité d'accéder à des détails essentiels en consultant le document lié à cette facture. </p>
+    </div>
+</article>
+
+<div class="watermarked">DATAVITE</div>
+
+<p class="my-2 has-text-right">Fait à {{ "DOUALA" }} le 24/10/2023 </p>
+<div class="block is-flex is-justify-content-space-between is-align-items-center mt-0">
+    <div class="block is-flex is-flex-direction-column is-align-items-start mb-2">
+        {% comment %} <p class="title is-size-4">Signature du patient</p>
+        <p class="subtitle is-size-6 mb-1"></p>
+        <p class="subtitle is-size-7 has-text-centered">{{ deposit.patient.user.username }}</p> {% endcomment %}
+    </div>
+
+    <div class="block is-flex is-flex-direction-column is-align-items-start mb-4">
+        <p class="title is-size-5">La direction</p>
+    </div>
+</div>
+<div class="has-text-centered" style="margin-top: 0px;">
+    <hr class="my-1" />
+    {% comment %} <p class="is-size-7">Cloud computing solutions for every business</p> {% endcomment %}
+    <p>DATAVITE SARL • +237 693124594 / +237 672120240 • DATAVITE SARL </p>
+    {% comment %} <p>RCM:RC/DLA/2023/B/ - NIU:M022317969368W</p> {% endcomment %}
+</div>
+{% endblock content %}

@@ -1,0 +1,35 @@
+{% extends "core/base.html" %}
+
+{% block title %}Quanta - Help{% endblock title %}
+
+{% block content %}
+
+<article class="ph3 lh-copy w-50">
+
+    <h1 class="db">
+        💁🏽 Help!
+    </h1>
+
+    <h3>Guide</h3>
+
+    <p class="">More help is underway! A guide on how to use Quanta will be available shortly!</p>
+
+    <p>By the way, did you know you can turn on the tour again if you disabled that in the <a
+            href=" {% url 'users:settings' %}">user settings</a>?</p>
+
+    <h3>Contact</h3>
+
+    <p class="lh-copy">
+        Feel free to contact me at <a href="mailto:liedjiwenkack@gmail.com">liedjiwenkack@gmail.com</a> with any
+        suggestions/ideas or otherwise!
+        If you do have a feature request or found a bug, consider creating it on Github, this speeds up the process
+        considerably! If you
+        don't want to create a Github account, than feel free to email me anyway!
+    </p>
+
+    <h3>Feature requests & bugs</h3>
+</article>
+
+
+
+{% endblock %}

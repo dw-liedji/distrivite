@@ -1,0 +1,32 @@
+<h1 class="title is-size-3">{{ request.organization.name }} 🛠️ Settings</h1>
+
+
+<nav class="level">
+    <div class="level-item has-text-centered">
+
+        <a class="navbar-item" href="{% url 'organization_features:settings' request.organization.slug %}">
+            Settings
+        </a>
+
+    </div>
+    <div class="level-item has-text-centered">
+
+        <a class="navbar-item" href="{% url 'organization_features:users' request.organization.slug %}">
+            Users
+        </a>
+
+
+    </div>
+    <div class="level-item has-text-centered">
+        <a class="navbar-item" href="{% url 'organization_features:org_things:groups' request.organization.slug %}">
+            Teams
+        </a>
+
+    </div>
+    <div class="level-item has-text-centered">
+        <a class="navbar-item"
+            href="{% url 'organization_features:org_things:org_invitation_list' request.organization.slug %}">
+            Invitations
+        </a>
+    </div>
+</nav>

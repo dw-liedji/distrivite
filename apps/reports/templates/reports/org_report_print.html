@@ -1,0 +1,142 @@
+{% extends 'core/pdf_base.html' %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+{% load qr_code %}
+{% load static %}
+{% load mathfilters %}
+{% load l10n %}
+{% load core %}
+{% load partials %}
+
+
+{% block title %}
+Organizations facturation report pdf
+{% endblock title %}
+
+{% block content %}
+
+
+<div class="has-text-left">
+    <div class="is-flex is-justify-content-center is-align-items-center">
+        <figure class="image box p-0 my-0 ml-0 mr-3">
+            {% if request.organization.logo %}
+            <img class="image" src="{{ request.organization.logo.url }}" style="width: 150px; height: 110px;">
+            {% else %}
+            <img class="image" src="{% static 'core/img/quanta_logo.jpg' %}" style="width: 150px; height: 110px;">
+            {% endif %}
+        </figure>
+        <div class="box has-text-centered p-0 m-0">
+            <p class="title is-size-1 mb-3 pb-0">{{ request.organization.name|upper }}</p>
+            <p class="title is-size-3 mb-5 pb-0">{{ request.organization.sub_name|upper }}</p>
+            <p class="subtitle is-size-6 has-text-centered m-0 p-0">{{ request.organization.street_address }}</p>
+            <p class="subtitle is-size-6 has-text-centered m-0 p-0">BP 8735-LADOUCHE-DOUALA,
+                tel:{{ request.organization.contact_number }}</p>
+            <p class="subtitle is-size-6 has-text-centered m-0 p-0">Email:{{ request.organization.contact_email }}</p>
+        </div>
+    </div>
+</div>
+<hr class="mb-1" />
+<p class="title is-size-3 p-0 m-0 has-text-centered has-background-primary has-text-weight-bold has-text-light">
+    Rapports</p>
+
+<div class="block px-0 mx-0 py-0 my-0">
+    <div class="table-container">
+
+        <p class="title is-size-2">Rapport résumé de toutes les ventes</p>
+        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth is-size-5">
+            <thead class="is-selected">
+                <tr class="is-selected">
+                    {% comment %} <th>#</th> {% endcomment %}
+                    <th style="text-align: center;">Type</th>
+                    <th style="text-align: center;">Total vente</th>
+                    <th style="text-align: center;">Total HT</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for facturation_report in cashflow_reports.facturations.facturation_reports %}
+                <tr>
+                    {% comment %} <td style="text-align: center;">{{ forloop.counter0 }}</td> {% endcomment %}
+                    <td style="text-align: center;">{{ facturation_report.type}}</td>
+                    <td style="text-align: center;">{{ facturation_report.total}}</td>
+                    <td style="text-align: center;">{{ facturation_report.total_price.normalize|intcomma}} XFA</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th style="text-align: center;" colspan="1">TOTAL</th>
+                    <th style="text-align: center;" colspan="1">{{ cashflow_reports.facturations.total }}</th>
+                    <th style="text-align: center;" colspan="1">
+                        {{ cashflow_reports.facturations.total_price.normalize|intcomma }} XFA
+                    </th>
+                </tr>
+            </tfoot>
+        </table>
+
+        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth is-size-5">
+            <p class="title is-size-2">Rapport de la caisse</p>
+            <thead class="is-selected">
+                <tr class="is-selected">
+                    {% comment %} <th>#</th> {% endcomment %}
+                    <th style="text-align: center;">Catégories</th>
+                    <th style="text-align: center;">Total </th>
+                    <th style="text-align: center;">Solde total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cashflow_report in cashflow_reports.transactions %}
+                <tr>
+                    {% comment %} <td style="text-align: center;">{{ forloop.counter0 }}</td> {% endcomment %}
+                    <td style="text-align: center;">{{ cashflow_report.name}}</td>
+                    <td style="text-align: center;">{{ cashflow_report.total}}</td>
+                    <td style="text-align: center;">{{ cashflow_report.total_amount.normalize|intcomma}} XFA</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th style="text-align: center;" colspan="1">Net en caisse</th>
+                    <th style="text-align: center;" colspan="1"></th>
+                    <th style="text-align: center;" colspan="1">{{ cashflow_reports.global_balance.normalize|intcomma }}
+                        XFA
+                    </th>
+                </tr>
+            </tfoot>
+        </table>
+
+        <p class="title is-size-2">Rapport d'inventaire et vente des produits/services</p>
+
+        <div class="table-container">
+            {{ sale_inventory_bar_plot|safe }}
+            {{ sale_inventory_bar_script|safe }}
+        </div>
+
+        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+            <thead class="is-selected">
+                <tr class="is-selected">
+                    <th>#</th>
+                    <th style="text-align: center;">Product/Service</th>
+                    <th style="text-align: center;">Total vendu en espéces</th>
+                    <th style="text-align: center;">Toal vendu à terme</th>
+                    <th style="text-align: center;">Total Vendu</th>
+                    <th style="text-align: center;">Reste en stock</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for inventory in inventories %}
+                <tr>
+                    <td style="text-align: center;">{{ forloop.counter0 }}</td>
+
+                    <td style="text-align: center;">{{ inventory.batch__item__name}}</td>
+                    <td style="text-align: center;">{{ inventory.total_facturation }}</td>
+                    <td style="text-align: center;">{{ inventory.total_coverage_facturation }}</td>
+                    <td style="text-align: center;">{{ inventory.total }}</td>
+                    <td style="text-align: center;">{{ inventory.batch__quantity }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock content %}

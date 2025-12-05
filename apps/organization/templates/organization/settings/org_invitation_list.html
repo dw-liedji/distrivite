@@ -1,0 +1,109 @@
+{% extends 'core/quanta.html' %}
+{% load partials %}
+{% load core %}
+{% load extra_filters %}
+{% load static %}
+
+{% block title %}
+Organizations users
+{% endblock title %}
+
+{% block quanta_content %}
+
+{% partialdef list inline=True %}
+{% include "core/partials/messages.html" %}
+
+<div class="block px-2 mx-2 px-5-desktop mx-5-desktop fade-in">
+
+    <div class="has-text-right my-3">
+        {% if request.organization_user.is_admin or 'organization.add_organizationinvitation' in organization_user_perms %}
+        <a class="button is-primary"
+            hx-get="{% url 'organization_features:org_things:org_invitation_add' request.organization.slug %}"
+            hx-target="#quanta_content" hx-indicator="#custom-htmx-indicator" hx-swap="innerHTML">Invite a user</a>
+        {% endif %}
+    </div>
+
+    <div class="table-container">
+        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth" cellspacing="0">
+            <thead>
+                <tr class="is-selected">
+                    <th class="">
+                        Invitee identifier
+                    </th>
+                    <th class="">
+                        Invited by
+                    </th>
+                    <th class="">
+                        Created
+                    </th>
+                    <th class="">
+                        Modified
+                    </th>
+                    <th class="">
+                        Status
+                    </th>
+                    <th colspan="3" class="">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="block">
+                {% for org_invitation in org_invitations %}
+                <tr>
+                    <td class="">
+                        {{ org_invitation.invitee_identifier }}
+                    </td>
+                    <td class="">
+                        {{ org_invitation.invited_by.email }}
+                    </td>
+                    <td class="">
+                        {{ org_invitation.created }}
+                    </td>
+                    <td class="">
+                        {{ org_invitation.modified}}
+                    </td>
+                    <td class="">
+                        <span class="green">
+                            {{ org_invitation.status }}
+                        </span>
+
+                    </td>
+                    <td style="text-align: center;" class="">
+                        {% if request.organization_user.is_admin or request.user.is_superuser %}
+                        <button
+                            hx-get="{% url 'organization_features:org_things:org_invitation_change' request.organization.slug org_invitation.pk %}?{% url_replace %}"
+                            hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
+                            class="button">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                        {% endif %}
+                    </td>
+
+                    <td style="text-align: center;">
+                        {% if request.organization_user.is_admin or 'orders.view_doctor' in organization_user_perms %}
+                        <button
+                            hx-get="{% url 'organization_features:org_things:org_invitation_detail' request.organization.slug org_invitation.pk %}"
+                            hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
+                            class="button">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                        {% endif %}
+                    </td>
+
+                    <td style="text-align: center;">
+                        {% if request.organization_user.is_admin or 'orders.delete_doctor' in organization_user_perms %}
+                        <button
+                            hx-get="{% url 'organization_features:org_things:org_invitation_delete' request.organization.slug org_invitation.pk %}?{% url_replace %}"
+                            hx-target="#quanta_content" hx-confirm="Are you sure you want to delete?" class="button">
+                            <i class="fa-solid fa-trash-can fa-1x has-text-danger"></i></button>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% include "core/partials/pagination.html" %}
+    </div>
+</div>
+
+{% endpartialdef %}
+
+{% endblock quanta_content %}

@@ -1,0 +1,168 @@
+{% load i18n %}
+
+<table id="tabular_permissions" class="table table-condensed table-striped table-hover" cellspacing="0" width="100%"
+    data-input-name="{{ input_name }}">
+    <thead>
+        <tr>
+            <th> {% trans 'application'|capfirst %}</th>
+            <th>{% trans 'model'|capfirst %}</th>
+            {% if django_supports_view_permissions %}
+            <th>
+                {% trans 'View' %}
+                <div>
+                    <input type="checkbox" class="checkbox select-all view" id="perm_view_select_all">
+                    {% trans 'All' %}
+                </div>
+            </th>
+            {% endif %}
+            <th>
+                {% trans 'Add' %}
+                <div>
+                    <input type="checkbox" class="checkbox select-all add" id="perm_add_select_all">
+                    {% trans 'All' %}
+                </div>
+            </th>
+            <th>
+                {% trans 'Change' %}
+                <div>
+                    <input type="checkbox" class="checkbox select-all change" id="perm_change_select_all">
+                    {% trans 'All' %}
+                </div>
+            </th>
+            <th>
+                {% trans 'Delete' %}
+                <div>
+                    <input type="checkbox" class="checkbox select-all add" id="perm_delete_select_all">
+                    {% trans 'All' %}
+                </div>
+            </th>
+            {% if custom_permissions_available %}
+            <th>
+                {% trans 'other permissions'|capfirst %}
+            </th>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for app in apps_available.values %}
+
+        {% for model in app.models.values %}
+
+        <tr class="{% cycle 'row1' 'row2' %}">
+
+            {% if forloop.counter0 == 0 %}
+            <td rowspan="{{ app.models|length }}" class="app-name" data-app-name="{{ app.label }}">
+                {{ app.verbose_name|capfirst }}
+            </td>
+            {% endif %}
+            <td>
+                {{ model.verbose_name|capfirst }}
+                <div class="input">
+                    {#                        <label>#}
+                    <input type="checkbox" class="checkbox select-all select-row"
+                        data-model-name="{{ model.model_name }}">
+                    {% trans 'All' %}
+                    {#                        </label>#}
+                </div>
+            </td>
+            {% if django_supports_view_permissions %}
+            <td class="view">
+                {% if model.view_perm_id %}
+                <div class="input">
+                    <label>
+                        <input type="checkbox" class="checkbox view model-{{ model.model_name }}"
+                            id="id_{{ model.label }}_{{ model.view_perm_name }}" data-perm-id="{{ model.view_perm_id }}"
+                            {% if model.view_perm_id in permissions %} checked="checked" {% endif %}>
+                    </label>
+                </div>
+                {% endif %}
+            </td>
+            {% endif %}
+            <td class="add">
+                {% if model.add_perm_id %}
+                <div class="input">
+                    <label>
+                        <input type="checkbox" class="checkbox add model-{{ model.model_name }}"
+                            id="id_{{ model.label }}_{{ model.add_perm_name }}" data-perm-id="{{ model.add_perm_id }}"
+                            {% if model.add_perm_id in permissions %} checked="checked" {% endif %}>
+                    </label>
+                </div>
+                {% endif %}
+            </td>
+            <td class="change">
+                {% if model.change_perm_id %}
+                <div class="input ">
+                    <label>
+                        <input type="checkbox" class="checkbox change model-{{ model.model_name }}"
+                            id="id_{{ model.label }}_{{ model.change_perm_name }}"
+                            data-perm-id="{{ model.change_perm_id }}" {% if model.change_perm_id in permissions %}
+                            checked="checked" {% endif %}>
+                    </label>
+                </div>
+                {% endif %}
+            </td>
+            <td class="add">
+                {% if model.delete_perm_id %}
+                <div class="input ">
+                    <label>
+                        <input type="checkbox" class="checkbox add model-{{ model.model_name }}"
+                            id="id_{{ model.label }}_{{ model.delete_perm_name }}"
+                            data-perm-id="{{ model.delete_perm_id }}" {% if model.delete_perm_id in permissions %}
+                            checked="checked" {% endif %}>
+                    </label>
+                </div>
+                {% endif %}
+            </td>
+            {% if custom_permissions_available %}
+            <td>
+                {% for custom_permission in model.custom_permissions %}
+                <div class="input ">
+                    <label>
+                        <input type="checkbox" class="checkbox custom model-{{ model.model_name }}"
+                            id="id_{{ model.label }}_{{ custom_permission.0 }}" data-perm-id="{{ custom_permission.2 }}"
+                            {% if custom_permission.2 in permissions %} checked="checked" {% endif %}>
+                        {{ custom_permission.1 }}
+                    </label>
+                </div>
+                {% endfor %}
+
+            </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+        {% if app.models %}
+        <tr>
+            <td colspan="{{ colspan }}" class="user-permissions-app-separator"></td>
+        </tr>
+        {% endif %}
+
+
+        {% endfor %}
+    </tbody>
+</table>
+<hr />
+{% block style %}
+{#    Seems a waste to request those couple of sad lines from the server as separate css file #}
+<style>
+    .user-permissions-app-separator {
+        border-bottom: 1px solid black;
+    }
+
+    .app-name {
+        border-right: 1px black solid;
+    }
+
+    [dir=rtl] .app-name {
+        border-left: 1px black solid;
+        border-right: initial;
+    }
+
+    th {
+        text-decoration: underline;
+    }
+
+    .select-all {
+        font-style: italic;
+    }
+</style>
+{% endblock %}

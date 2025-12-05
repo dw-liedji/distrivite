@@ -1,0 +1,161 @@
+{% extends 'core/pdf_base.html' %}
+{% load static %}
+{% load qr_code %}
+{% load core %}
+
+{% block content %}
+
+<div class="is-flex is-justify-content-space-around is-align-items-center p-0 my-0">
+    <figure class="image p-0 my-0 ml-0 mr-3">
+        {% if request.organization.logo %}
+        <img class="image p-0 m-0" src="{{ request.organization.logo.url }}" style="width: 150px; height: 60px;">
+        {% else %}
+        <img class="image p-0 m-0" src="{% static 'core/img/quanta_logo.jpg' %}" style="width: 150px; height: 60px;">
+        {% endif %}
+    </figure>
+    <div class="box has-text-centered p-0 m-0">
+        <p class="title is-size-6 mb-0 pb-0">{{ request.organization.name|upper }}</p>
+        <p class="title is-size-6 mb-0 pb-0">{{ request.organization.sub_name|upper }}</p>
+        <p class="subtitle is-size-7 has-text-centered m-0 p-0">{{ request.organization.street_address }}</p>
+        <p class="subtitle is-size-7 has-text-centered m-0 p-0">BP 8735-YANSOKI-DOUALA,
+            tel:{{ request.organization.contact_number }}</p>
+        <p class="subtitle is-size-7 has-text-centered m-0 p-0">Email:{{ request.organization.contact_email }}</p>
+    </div>
+</div>
+
+<hr class="mb-0" />
+
+<div class="block py-0 my-0 is-flex is-align-items-center is-justify-content-space-between">
+    <div class="block is-flex is-flex-direction-column is-justify-content-center is-align-items-center">
+        <p class="title is-size-5 has-text-centered my-0 p-0">Réçu</p>
+        <p class="subtitle is-size-7 has-text-centered m-0 p-0">No:
+            {{ medical_visit.bill_number|default_if_none:"N/A" }}
+        </p>
+    </div>
+
+    <figure>
+        <!-- <img class="is-student-profile-code" src="../../static/accounts/img/profile.jpg" alt=""> -->
+        <img class="p-0 m-0 image is-64x64"
+            src="{% qr_url_from_text medical_visit.pk size=8 version=10 image_format='png' %}" alt="Hello World!">
+    </figure>
+</div>
+
+<hr class="my-0 py-0" />
+
+<table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth is-size-7 py-0 my-0">
+    <tbody>
+        <tr>
+            <td class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
+                Noms et prenoms </td>
+            <td class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
+                Profession </td>
+            <td class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
+                Age </td>
+            <td class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
+                Téléphone </td>
+        </tr>
+        <tr>
+            <td style="text-align: center; vertical-align: middle;">
+                {{ medical_visit.medical_visit.patient.username }} </td>
+            <td style="text-align: center; vertical-align: middle;">
+                {{ medical_visit.medical_visit.patient.profession}} </td>
+            <td style="text-align: center; vertical-align: middle;">
+                {{ medical_visit.medical_visit.patient.formated_age }} </td>
+            <td style="text-align: center; vertical-align: middle;">
+                {{ medical_visit.medical_visit.patient.phone_number}} </td>
+        </tr>
+    </tbody>
+</table>
+
+<hr class="my-0 mb-1 py-0" />
+
+<table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth is-size-7 py-0 my-0">
+
+    <thead>
+        <tr class="is-selected">
+            <th class="has-text-centered">Product</th>
+            <th class="has-text-left">Description</th>
+            <th class="has-text-centered">Qté</th>
+            <th class="has-text-centered">Prix unitaire</th>
+            <th class="has-text-centered">Total</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for medical_visit_item in medical_visit.medical_visit_items.all %}
+        <tr>
+            <td class="has-text-weight-medium has-text-centered is-vcentered">
+                {{ medical_visit_item.batch.item.name }} </td>
+
+            <td class="has-text-centered is-vcentered">
+                {{ medical_visit_item.description|safe }}
+            </td>
+            <td style="text-align: center; vertical-align: middle;">{{ medical_visit_item.quantity }}</td>
+            <td style="text-align: center; vertical-align: middle;">{{ medical_visit_item.unit_price.normalize }}
+            </td>
+            <td style="text-align: center; vertical-align: middle;">{{ medical_visit_item.total_price.normalize }}
+            </td>
+        </tr>
+        {% endfor %}
+
+    </tbody>
+</table>
+
+<hr class="my-0 mb-1 py-0" />
+
+<table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth is-size-7 py-0 my-0">
+
+    <thead>
+        <tr class=" is-selected">
+            <th class="has-text-centered">TOTAL HT</th>
+            <th class="has-text-centered" colspan="3">TOTAL HT EN LETTRE</th>
+            <th class="has-text-centered">AVANCE</th>
+            <th class="has-text-left">RESTE</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <tr>
+            <td class="has-text-weight-semibold has-text-centered">{{ medical_visit.total_price.normalize }} FCFA
+            </td>
+
+            <td colspan="3" class="has-text-weight-semibold has-text-centered">
+                {{ medical_visit.total_price.normalize|to_words|capfirst }}
+                CFA
+            </td>
+            <td class="has-text-centered">{{ medical_visit.current_payment.normalize }} FCFA
+            </td>
+            <td class="has-text-centered">{{ medical_visit.remaining.normalize }} FCFA</td>
+        </tr>
+    </tbody>
+
+</table>
+
+
+<hr class="my-0 py-0" />
+
+<div class="watermarked">SAINT JOHN</div>
+
+<p class="my-1 has-text-right is-size-7">Fait à {{ request.organization.city }} le {{ medical_visit.created }} </p>
+<div class="block is-flex is-justify-content-space-between is-align-items-center mt-0">
+    <div class="block is-flex is-flex-direction-column is-align-items-start mb-1">
+        <p class="title is-size-7">Signature du patient</p>
+        <p class="subtitle is-size-7 has-text-centered">{{ medical_visit.medical_visit.patient.username }}</p>
+    </div>
+
+    <div class="block is-flex is-flex-direction-column is-align-items-start mb-1">
+        <p class="title is-size-7">La direction</p>
+        <p class="subtitle is-size-7 mb-1"></p>
+        <p class="subtitle is-size-7 has-text-centered">{{ request.organization_user.user.username }}</p>
+    </div>
+</div>
+<hr class="py-0 my-0" />
+
+<div class="has-text-centered" style="margin-top: 5px;">
+    <p class="is-size-7">Centre Medical Saint John de Yassa Sarl</p>
+    <p class="is-size-7">{{ request.organization.name }} • {{ request.organization.contact_number }} •
+        {{ request.organization.name }}
+    </p>
+    <p class="is-size-7">RCM:RC/DLA/2023/B/ - NIU:M022317969368W</p>
+</div>
+{% endblock content %}

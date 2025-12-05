@@ -1,0 +1,23 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Quanta - Forbidden (403){% endblock title %}
+
+{% block content %}
+<section class="section has-text-centered my-0 py-0 mx-0 px-0">
+
+    <div class="column box mb-0">
+        <h1 class="title is-3 has-text-danger">Uh oh, forbidden (403)</h1>
+        <p class="subtitle mb-1">You are not authorized to view this page.</p>
+        <p>If you're sure you should have access, you might have encountered a bug. You can <a
+                href="tel:+237672120240">call us</a> for quick support.</p>
+
+    </div>
+    <figure class="image is-2by1">
+        <img src="{% static 'core/img/403.jpeg' %}" alt="403 Forbidden">
+    </figure>
+</section>
+{% endblock %}
+
+{% block footer %}
+{% endblock footer %}

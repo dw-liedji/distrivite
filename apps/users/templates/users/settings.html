@@ -1,0 +1,15 @@
+{% extends "core/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="section">
+    <div class="container">
+        <div class="columns is-multiline is-centered">
+            <a class="box column is-one-third m-3" href="{% url 'users:edit' %}">Edit your
+                profile</a>
+            <a class="box column is-one-third m-3" href="{% url 'account_change_password' %}">
+                Change your password</a>
+        </div>
+    </div>
+</div>
+{% endblock content %}

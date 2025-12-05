@@ -1,0 +1,50 @@
+{
+    "editor.formatOnSave": true,
+    "python.formatting.name": "none",
+    "python.analysis.gotoDefinitionInStringLiteral":true,
+    "python.formatting.blackArgs": ["--line-length", "80"],
+    "[python]": {
+        "gitlens.codeLens.symbolScopes": [
+            "!Module"
+        ],
+        "editor.wordBasedSuggestions": "matchingDocuments",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit"
+        },
+        "editor.defaultFormatter": "ms-python.black-formatter",
+    },
+    "isort.args":["--profile", "black"],
+
+    // django extensions
+    "files.associations": {
+        "**/*.html": "html",
+        "**/templates/**/*.html": "django-html",
+        "**/templates/**/*": "django-txt",
+        "**/requirements{/**,*}.{txt,in}": "pip-requirements",
+      },
+    "emmet.includeLanguages": {
+        "django-html": "html"
+    },
+    "cSpell.words": [
+        "distrivite",
+        "cameis",
+        "Cursus",
+        "Cursuses",
+        "Décaissements",
+        "Encaissements",
+        "MINSANTE",
+        "paystubs",
+        "weighteds"
+    ]
+    ,
+    "beautify.language": {
+        "html": [
+            "htm",
+            "html",
+            "django-html"
+        ]
+     },
+
+}
+

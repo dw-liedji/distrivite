@@ -1,0 +1,212 @@
+{% extends 'core/pdf_base.html' %}
+{% load static %}
+{% load qr_code %}
+{% load core %}
+{% load humanize %}
+
+{% block pdf_style %}
+<style>
+    .is-a4paper {
+        width: 794px !important;
+        height: 1123px !important;
+        margin-top: 0px !important;
+        padding-top: 50px !important;
+        margin-bottom: 0px !important;
+        padding-bottom: 50px !important;
+        padding-left: 70px !important;
+        padding-right: 70px !important;
+    }
+
+    .custom-center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+</style>
+{% endblock pdf_style %}
+
+
+{% block content %}
+
+<div class="block mt-3 mb-0 pb-0 is-flex is-align-items-center is-justify-content-space-between">
+
+    <figure class="image box p-0 my-0 ml-0 mr-3">
+        {% if request.organization.logo %}
+        <img class="image" src="{{ request.organization.logo.url }}" style="width: 150px; height: 110px;">
+        {% else %}
+        <img class="image" src="{% static 'core/img/quanta_logo.jpg' %}" style="width: 150px; height: 110px;">
+        {% endif %}
+    </figure>
+    <p class="title is-size-3 p-0 m-0 has-text-centered">
+        {{request.organization.name|capfirst}} </p>
+
+    <figure class="image box p-0 my-0 ml-0 mr-3">
+        <!-- <img class="is-student-profile-code" src="../../static/accounts/img/profile.jpg" alt=""> -->
+        <img class="p-0 m-0 image is-96x96"
+            src="{% qr_url_from_text facturation.pk size=8 version=10 image_format='png' %}" alt="Hello World!">
+    </figure>
+</div>
+
+<hr class="mb-1" />
+
+<div class="is-flex is-size-7 is-justify-content-space-between is-align-items-center mt-0">
+
+    <div class="box has-text-left p-0 m-0">
+        <p class="mb-1 pb-0"><span class="has-text-weight-bold">Entreprise</span>:{{ request.organization.name|upper }}
+        </p>
+        <p class="mb-1 pb-0"><span class="has-text-weight-bold">Agence de</span>
+            {{ request.organization.city|upper }}</p>
+        <p class="has-text-left m-0 p-0"><span class="has-text-weight-bold">Adresse:</span>
+            {{ request.organization.street_address }}</p>
+        <p class="has-text-left m-0 p-0"><span class="has-text-weight-bold">Téléphone:
+            </span>{{ request.organization.contact_number }}</p>
+        <p class="has-text-left m-0 p-0"><span class="has-text-weight-bold">BP: </span>5880 Dla
+        </p>
+        <p class="has-text-left m-0 p-0"><span
+                class="has-text-weight-bold">Email:</span>{{ request.organization.contact_email }}</p>
+        {% if request.organization.contribuable %}
+        <p class="has-text-left m-0 p-0"> <span class="has-text-weight-bold">N°
+                contribuable: </span>{{ request.organization.contribuable|default_if_none:'____________' }}</p>
+        {% endif %}
+    </div>
+
+    <div class"block" style="border-style: dashed; padding:10px">
+        <p class="has-text-left py-0 my-0"> <span class="has-text-weight-bold">DOIT:</span>
+            {% if coverage_delivery_receipt.coverage.payer %}
+            {{ coverage_delivery_receipt.coverage.payer }}
+            {% else %}
+            {{ coverage_delivery_receipt.coverage.name }}
+            {% endif %}
+        </p>
+        <p class="has-text-left"> <span class="has-text-weight-bold">Couverture:</span>
+            {% if coverage_delivery_receipt.coverage.location %}
+            {{ coverage_delivery_receipt.coverage.name }} - {{ coverage_delivery_receipt.coverage.location }}
+            {% else %}
+            {{ coverage_delivery_receipt.coverage.name }}
+            {% endif %}
+        </p>
+        <p class="has-text-left"> <span class="has-text-weight-bold">BP:</span>
+            {{ coverage_delivery_receipt.coverage.postal_address }}</p>
+        <p class="has-text-left"> <span class="has-text-weight-bold">N° Contribuable:</span>
+            {{ coverage_delivery_receipt.coverage.contribuable }}</p>
+        <p class="has-text-left"> <span class="has-text-weight-bold">R.C:</span>
+            {{ coverage_delivery_receipt.coverage.commercial_register }}</p>
+
+    </div>
+</div>
+
+<hr />
+
+
+<div class="block">
+    <p class="title is-size-6 has-text-centered m-0 p-0">Facture N°:
+        {{ coverage_delivery_receipt.bill_number }}/{{ request.organization.name }}/
+        {{ coverage_delivery_receipt.coverage.short_name }}/{{ ""|current_month }}/{{ ""|current_year }} </p>
+    </p>
+</div>
+
+<hr />
+
+<table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth is-size-7 p-0 m-0 is-size-7">
+
+    <thead>
+        <tr class="is-selected">
+            <th class="has-text-centered">#</th>
+            <th class="has-text-centered">Noms et prenoms</th>
+            <th class="has-text-centered">Ref/Fact</th>
+            <th class="has-text-centered">Mat. Assurée</th>
+            <th class="has-text-centered">Mat. Patiant</th>
+            <th class="has-text-centered">Socièté</th>
+            <th class="has-tooltip-multiline has-text-left" data-tooltip="Numéro de Suivi">N° de Suivi</th>
+            {% comment %} <th class="has-text-centered">Livraison</th> {% endcomment %}
+            {% comment %} <th class="has-text-centered">Description</th> {% endcomment %}
+            <th class="has-text-centered">Montant Produit</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for coverage_facturation in coverage_delivery_receipt.coverage_facturations.all %}
+        <tr>
+            <td class="has-text-weight-medium has-text-centered is-vcentered">
+                {{ forloop.counter }} </td>
+            <td class="has-text-weight-medium has-text-centered is-vcentered">
+                {{ coverage_facturation.medical_visit.patient.username }} </td>
+
+            <td class="is-size-7 has-text-weight-medium has-text-centered is-vcentered">
+                {{ coverage_facturation.bill_number }} </td>
+            <td class="has-text-weight-medium has-text-centered is-vcentered">
+                {{coverage_facturation.cover_number|default_if_none:"N/A" }} </td>
+            <td class="has-text-weight-medium has-text-centered is-vcentered">
+                {{ coverage_facturation.medical_visit.patient_number|default_if_none:"N/A" }} </td>
+
+            <td class="has-text-weight-medium has-text-centered is-vcentered">
+                {{ coverage_facturation.company }} </td>
+
+            <td class="has-text-weight-medium has-text-centered is-vcentered">
+                {{ coverage_facturation.medical_visit.patient.quanta }} </td>
+            <td style="text-align: center; vertical-align: middle;">
+                <p class="has-text-weight-medium">Total:{{ coverage_facturation.total_price.normalize|intcomma }}</p>
+
+                {% for coverage_facturation_batch in coverage_facturation.coverage_facturation_batchs.all  %}
+                <p><span>
+                        {% if coverage_facturation_batch.custom_batch_name %}
+                        {{coverage_facturation_batch.custom_batch_name}}
+                        {% else %}
+                        {{ coverage_facturation_batch.batch.item.name }}
+                        {% endif %}
+                    </span>: <span>
+                        {{ coverage_facturation_batch.total_price.normalize|intcomma }} </span></p>
+                {% endfor %}
+
+            </td>
+        </tr>
+        {% endfor %}
+
+    </tbody>
+
+    <tfoot>
+        <tr>
+            <td class="has-text-weight-semibold has-text-centered" colspan="2">Total HT</td>
+            <th class="has-text-weight-semibold has-text-centered" colspan="6">
+                {{ coverage_delivery_receipt.total_price.normalize|intcomma }} FCFA
+            </th>
+        </tr>
+        <tr>
+            <td class="has-text-weight-semibold has-text-centered" colspan="2">Total HT EN LETTRE</td>
+            <td colspan="6" class="has-text-weight-semibold has-text-centered">
+                {{ coverage_delivery_receipt.total_price.normalize|to_words|capfirst }}
+                FCFA
+            </td>
+        </tr>
+    </tfoot>
+</table>
+
+<hr class="mb-4" />
+
+<div class="watermarked">SAINT JOHN</div>
+
+<p class="my-2 has-text-right">Fait à {{ request.organization.city }} le {{ coverage_delivery_receipt.modified }} </p>
+<div class="block is-flex is-justify-content-space-between is-align-items-center mt-0">
+    <div class="block is-flex is-flex-direction-column is-align-items-start mb-2">
+        <p class="title is-size-5">La comptabilité</p>
+        <p class="subtitle is-size-6 mb-1"></p>
+        <p class="subtitle is-size-7 has-text-centered">{{ coverage_facturation.medical_visit.patient.username }}</p>
+    </div>
+
+    <div class="block is-flex is-flex-direction-column is-align-items-start mb-2">
+        <p class="title is-size-5">La direction</p>
+        <p class="subtitle is-size-6 mb-1"></p>
+        <p class="subtitle is-size-7 has-text-centered">{{ request.organization_user.user.username }}</p>
+    </div>
+</div>
+
+<div class="has-text-centered" style="margin-top: 30px;">
+    <p>Merci pour votre confiance !</p>
+    <hr />
+    <p class="is-size-5">Centre Medical Saint John de Yassa Sarl</p>
+    <p>{{ request.organization.name }} • {{ request.organization.contact_number }} •
+        {{ request.organization.name }}
+    </p>
+    <p>RCM:RC/DLA/2011/B/565-NIU:M03150035929T</p>
+</div>
+{% endblock content %}

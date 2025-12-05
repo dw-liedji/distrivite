@@ -1,0 +1,260 @@
+{% extends 'core/quanta.html' %}
+
+{% block title %}
+Dashboard
+{% endblock title %}
+
+{% block quanta_content_header %}
+
+{% endblock quanta_content_header %}
+
+{% block quanta_content %}
+
+{% comment %}
+{% if request.organization_user.is_owner %}
+<p>You are the owner</p>
+{% endif %}
+{% if 'inventories.change_inventory' in organization_user_perms %}
+<p>The organization user {{ organization_user.user.email }} can do everything in {{ request.organization.name }}
+</p>
+{% else %}
+<p>The organization user {{ organization_user.user.email }} cannot change inventories in {{ request.organization.name }}
+</p>
+{% endif %} {% endcomment %}
+
+<div class="section px-5">
+
+    <div class="m-2">
+        {% comment %} <p class="title is-size-3">Products in stocks reports</p> {% endcomment %}
+        <div class="columns">
+            <div class="column">
+                <div class="card has-background-primary-light">
+                    <div class="card-content">
+                        <div class="content p-1 has-text-centered">
+                            <p class="title is-size-4">Total cost price</p>
+                            <p class="subtitle is-size-5">{{ products.total_cost_price }} XFA</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="column">
+                <div class="card has-background-warning-light">
+                    <div class="card-content">
+                        <div class="content p-1 has-text-centered">
+                            <p class="title is-size-4">Total facturation price</p>
+                            <p class="subtitle is-size-5">{{ products.total_facturation_price }} XFA</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="column">
+                <div class="card has-background-info-light">
+                    <div class="card-content">
+                        <div class="content p-1 has-text-centered">
+                            <p class="title is-size-4">Total profit</p>
+                            <p class="subtitle is-size-5">{{ products.total_profit }} XFA</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="m-2">
+        {% comment %} <p class="title is-size-3">Stocks inventory reports</p> {% endcomment %}
+        <div class="columns">
+            <div class="column">
+                <div class="card has-background-light">
+                    <div class="card-content">
+                        <div class="content p-1 has-text-centered">
+                            <p class="title is-size-4">Products</p>
+                            <p class="subtitle is-size-5">{{ counts.products }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="column">
+                <div class="card has-background-light">
+                    <div class="card-content">
+                        <div class="content p-1 has-text-centered">
+                            <p class="title is-size-4">Variants</p>
+                            <p class="subtitle is-size-5">{{ counts.variants }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="column">
+                <div class="card has-background-light">
+                    <div class="card-content">
+                        <div class="content p-1 has-text-centered">
+                            <p class="title is-size-4">Expired</p>
+                            <p class="subtitle is-size-5">{{ counts.expired_product_variants }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="m-2">
+        {% comment %} <p class="title is-size-3">Stocks inventory reports</p> {% endcomment %}
+        <div class="columns">
+            <div class="column">
+                <div class="card has-background-link-light">
+                    <div class="card-content">
+                        <div class="content p-1 has-text-centered">
+                            <p class="title is-size-4">Suppliers</p>
+                            <p class="subtitle is-size-5">{{ counts.suppliers }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="column">
+                <div class="card has-background-light">
+                    <div class="card-content">
+                        <div class="content p-1 has-text-centered">
+                            <p class="title is-size-4">Customers</p>
+                            <p class="subtitle is-size-5">{{ counts.Customers }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="column">
+                <div class="card has-background-light">
+                    <div class="card-content">
+                        <div class="content p-1 has-text-centered">
+                            <p class="title is-size-4">Employee</p>
+                            <p class="subtitle is-size-5">{{ counts.users }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="column">
+                <div class="card has-background-light">
+                    <div class="card-content">
+                        <div class="content p-1 has-text-centered">
+                            <p class="title is-size-4">Locations</p>
+                            <p class="subtitle is-size-5">{{ counts.locations }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% comment %}
+    {% include "reports/partials/stock_bar_chart.html" %}
+
+
+
+    <div class="box py-5">
+        <p class="title is-size-3">Products running out of expiration by location</p>
+        <div class="table-container">
+            <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+                <thead class="is-selected">
+                    <tr class="is-selected">
+                        <th>#</th>
+                        <th style="text-align: center;">Quanta</th>
+                        <th style="text-align: center;">Product name</th>
+                        <th style="text-align: center;">Specifications</th>
+                        <th style="text-align: center;">Quantity</th>
+                        <th style="text-align: center;">Location</th>
+                        <th style="text-align: center;">Expiration date</th>
+                        <th style="text-align: center;" colspan="3">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for stock in expired_stocks %}
+                    <tr>
+                        <td style="text-align: center;">{{ forloop.counter0 }}</td>
+                        <td style="text-align: center;">{{ stock.variant.quanta_id}}</td>
+                        <td style="text-align: center;">{{ stock.variant.product.name}}</td>
+                        <td style="text-align: center;">
+                            {% for attribute_value in stock.variant.attribute_values.all %}
+                            {{ attribute_value.value }},
+                            {% endfor %}</td>
+                        <td style="text-align: center;">{{ stock.units}}</td>
+                        <td style="text-align: center;">{{ stock.location.name}}</td>
+                        <td style="text-align: center;">{{ stock.expiration_date}}</td>
+                        <td style="text-align: center;"><a class="button is-secondary"
+                                href={{stock.variant.edit_url}}>Edit</a>
+                        </td>
+                        <td style="text-align: center;"><a class="button is-secondary"
+                                href={{stock.variant.detail_url}}>View</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <div class="box py-5">
+        <p class="title is-size-3">Expired product in stocks with their locations</p>
+        <div class="table-container">
+            <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+                <thead class="is-selected">
+                    <tr class="is-selected">
+                        <th>#</th>
+                        <th style="text-align: center;">Quanta</th>
+                        <th style="text-align: center;">Product name</th>
+                        <th style="text-align: center;">Specifications</th>
+                        <th style="text-align: center;">Quantity</th>
+                        <th style="text-align: center;">Location</th>
+                        <th style="text-align: center;">Expiration date</th>
+                        <th style="text-align: center;">Expired since</th>
+                        <th style="text-align: center;" colspan="3">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for stock in expired_stocks %}
+                    <tr>
+                        <td style="text-align: center;">{{ forloop.counter0 }}</td>
+                        <td style="text-align: center;">{{ stock.variant.quanta_id}}</td>
+                        <td style="text-align: center;">{{ stock.variant.product.name}}</td>
+                        <td style="text-align: center;">
+                            {% for attribute_value in stock.variant.attribute_values.all %}
+                            {{ attribute_value.value }},
+                            {% endfor %}</td>
+                        <td style="text-align: center;">{{ stock.units}}</td>
+                        <td style="text-align: center;">{{ stock.location.name}}</td>
+                        <td style="text-align: center;">{{ stock.expiration_date}}</td>
+                        <td style="text-align: center;">{{ stock.timesince}} ago</td>
+                        <td style="text-align: center;"><a class="button is-secondary"
+                                href={{stock.variant.edit_url}}>Edit</a>
+                        </td>
+                        <td style="text-align: center;"><a class="button is-secondary"
+                                href={{stock.variant.detail_url}}>View</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div> {% endcomment %}
+</div>
+{% comment %}
+<script src="https://cdn.bokeh.org/bokeh/release/bokeh-3.0.3.min.js"></script>
+<script src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-3.0.3.min.js"></script>
+<script src="https://cdn.bokeh.org/bokeh/release/bokeh-tables-3.0.3.min.js"></script>
+<script src="https://cdn.bokeh.org/bokeh/release/bokeh-gl-3.0.3.min.js"></script>
+<script src="https://cdn.bokeh.org/bokeh/release/bokeh-mathjax-3.0.3.min.js"></script>
+{% endcomment %}
+
+{% endblock quanta_content %}

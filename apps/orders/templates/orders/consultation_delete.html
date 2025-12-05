@@ -1,0 +1,24 @@
+{% extends 'core/quanta.html' %}
+
+{% block quanta_content %}
+{% include "core/partials/messages.html" %}
+
+<div class="section container">
+    <div class="notification is-danger">
+        <h1 class="title is-4">Delete {{ object }}</h1>
+        <p>Are you sure you want to delete this {{ object }}?</p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="button is-danger">Delete</button>
+            <button type="button" class="button is-light" id="cancelButton">Cancel</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.getElementById("cancelButton").addEventListener("click", function () {
+        history.back();
+    });
+</script>
+
+{% endblock quanta_content %}

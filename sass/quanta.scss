@@ -1,0 +1,195 @@
+
+
+// Set your brand colors
+// $purple: #8A4D76;
+// $pink: #FA7C91;
+// $brown: #757763;
+// $beige-light: #D0D1CD;
+// $beige-lighter: #EFF0EB;
+
+// // // Update Bulma's global variables
+// $grey-dark: $brown;
+// $grey-light: $beige-light;
+// $primary: $purple;
+// $link: $pink;
+// $widescreen-enabled: false;
+// $fullhd-enabled: false;
+
+// // Update some of Bulma's component variables
+// $body-background-color: $beige-lighter;
+// $control-border-width: 2px;
+// $input-border-color: transparent;
+// $input-shadow: none;
+
+ 
+/* Theme style (colors & sizes) */
+@import "theme-default";
+
+/* Core Libs & Lib configs */
+@import "libs/all";
+@import "mixins";
+@import "quanta_menu";
+@import "nav-bar";
+
+#tasty-fruits-section {
+    background-image: url(https://technext.github.io/tropika/images/tasty-image.png);
+    background-repeat: no-repeat;
+    height: 400px;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 50px;
+    margin-bottom: 100px;
+  }
+
+.card:hover {
+transform: scale(1.02);
+border-top: 5px solid #fc5d35;
+}
+
+.is-white-text-title {
+color: white !important;
+text-transform: uppercase;
+}
+
+.is-256x256 {
+    width: 256px !important;
+    height: 256px !important;
+}
+
+
+#map {
+    width: 100% !important;
+    height: 400px;
+    margin-bottom: 50px;
+}
+
+html {
+    height: 100%;
+}
+
+.content-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    justify-content: center;
+}
+
+.content-main {
+    flex: 1;
+}
+
+.footer {
+    margin-top: auto;
+}
+
+
+.footer-main {
+    background-color: white !important;
+    padding: 0 !important;
+        // background: linear-gradient(to right, #4A90E2, #55595c);
+
+}
+
+.footer-secondary {
+    // background: linear-gradient(to right, #262f3a, #6b888a);
+    padding: 20px;
+    margin-top: 20px;
+}
+  
+
+/* Custom CSS for preloader animations */
+#preloader .modal-content {
+    background-color: transparent;
+    border: none;
+    text-align: center;
+    padding: 0;
+}
+  
+  #preloader .loader {
+    border: 4px solid #3498db;
+    border-top: 4px solid transparent;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 2s linear infinite;
+    margin: 0 auto;
+}
+  
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+  
+
+/* Custom CSS for preloader animations */
+.has-fade-out {
+    opacity: 0.5;
+    transition: opacity 0.4s ease-in-out;
+}
+  
+.has-fade-out.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}
+  
+
+/*# custom css for htmx indication and display animation */
+
+.my-indicator {
+    position: fixed;
+    display: none;
+    top: 50%;
+    left: 50%;
+    z-index: 1000;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    background-color: white; /* High contrast background */
+    padding: 2rem; /* Increased padding for accessibility */
+    border-radius: 10px; /* Soft rounded corners */
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1); /* Light shadow for focus */
+}
+
+.loader {
+    border: 6px solid #f3f3f3; /* Lighter border */
+    border-top: 6px solid #3498db; /* Blue top border for animation */
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    animation: spin 1s linear infinite;
+}
+
+/* Loader spin animation */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+
+  .htmx-request .my-indicator {
+    display: inline;
+  }
+
+  .htmx-request.my-indicator {
+    display: inline;
+  }
+
+
+  @keyframes fadeInOpacity {
+    0% {
+      opacity: 0;
+    }
+
+    100% {
+      opacity: 1;
+    }
+  }
+
+  .fade-in {
+    opacity: 1;
+    animation-name: fadeInOpacity;
+    animation-iteration-count: 1;
+    animation-timing-function: ease-in;
+    animation-duration: 0.5s;
+  }

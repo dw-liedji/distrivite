@@ -1,0 +1,179 @@
+{% extends 'core/quanta.html' %}
+{% load partials %}
+{% load core %}
+{% load mathfilters %}
+{% load crispy_forms_tags %}
+{% load l10n %}
+
+{% block title %}
+Organizations Medical visit
+{% endblock title %}
+
+{% block quanta_content %}
+
+{% partialdef list inline=True %}
+{% include "core/partials/messages.html" %}
+
+<div class="block px-2 mx-2 px-5-desktop mx-5-desktop fade-in">
+
+    <section class="section mx-0 px-0 fade-in">
+        <form id="my_form" method="GET"
+            hx-get="{% url 'organization_features:orders:medical_visit_list' request.organization.slug %}"
+            hx-target="#quanta_content" hx-swap="innerHTML" hx-push-url="true" hx-indicator="#custom-htmx-indicator"
+            class="is-flex is-flex-wrap-wrap is-align-items-center is-justify-content-start" style="gap: 10px;">
+
+            {% csrf_token %}
+
+            <!-- Filters Container -->
+            <div class="is-flex is-flex-wrap-wrap is-justify-content-start" style="gap: 10px;">
+                {% for field in filter.form %}
+                <div class="field" style="width: 150px; min-width: 120px;">
+                    {{ field|as_crispy_field }}
+                </div>
+                {% endfor %}
+                {{ filter.form.media }}
+            </div>
+
+            <!-- Filter Button -->
+            <div class="is-flex">
+                <button type="submit" class="button is-primary is-rounded is-fullwidth-mobile">
+                    <span class="icon">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <span>Filter Items</span>
+                </button>
+            </div>
+        </form>
+    </section>
+
+    <div class="has-text-right my-3">
+        {% if request.organization_user.is_admin or 'orders.add_medicalvisit' in organization_user_perms %}
+        <a class="button is-primary"
+            hx-get="{% url 'organization_features:orders:medical_visit_add' request.organization.slug %}?{% url_replace %}"
+            hx-target="#quanta_content" hx-indicator="#custom-htmx-indicator" hx-swap="innerHTML">Add
+            Medical visit</a>
+        {% endif %}
+    </div>
+
+    <div class="table-container">
+        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+            <thead class="is-selected">
+                <tr class="is-selected">
+                    <th>#</th>
+                    <th style="text-align: center;">ID</th>
+                    <th style="text-align: center;">Customer</th>
+                    <th style="text-align: center;">Facturation</th>
+                    <th style="text-align: center;">Complement</th>
+                    <th style="text-align: center;">Total</th>
+                    <th style="text-align: center;">Avance</th>
+                    <th style="text-align: center;">FacturationRefund</th>
+                    <th style="text-align: center;">Refund</th>
+                    <th style="text-align: center;">Last payment</th>
+                    <th style="text-align: center;">Dette</th>
+                    <th style="text-align: center;" colspan="2">Payments</th>
+                    <th style="text-align: center;">Active</th>
+                    <th style="text-align: center;" colspan="5">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for medical_visit in medical_visits %}
+                <tr>
+                    <td style="text-align: center;">{{ forloop.counter0 }}</td>
+                    <td style="text-align: center;">{{ medical_visit.bill_number}}</td>
+                    <td style="text-align: center;">{{ medical_visit.patient}}</td>
+                    <td style="text-align: center;">{{ medical_visit.facturation_total_price.normalize}}</td>
+                    <td style="text-align: center;">{{ medical_visit.complement_total_price.normalize }}</td>
+                    <td style="text-align: center;">{{ medical_visit.total_price.normalize }}</td>
+                    <td style="text-align: center;">
+                        {{ medical_visit.current_payment.normalize }}
+                    </td>
+                    <td style="text-align: center;">
+                        {{ medical_visit.facturation_Refund_total_price.normalize }}
+                    </td>
+                    <td style="text-align: center;">
+                        {{ medical_visit.refund_total_price.normalize }}
+                    </td>
+                    <td style="text-align: center;">
+                        {{ medical_visit.last_payment.normalize }}
+                    </td>
+                    <td style="text-align: center;">
+                        {{ medical_visit.remaining.normalize }}
+                    </td>
+                    <td colspan="2" style="text-align: center;">
+                        <div>
+                            {% if medical_visit.total_price %}
+                            {% if medical_visit.current_solvability %}
+                            {{ medical_visit.current_solvability|div:medical_visit.total_price|mul:100|floatformat:2 }}
+                            %
+                            <progress class="progress is-primary"
+                                value="{{ medical_visit.current_solvability|unlocalize }}"
+                                max="{{ medical_visit.total_price|unlocalize }}">
+                            </progress>
+                            {% else %}
+                            00,00 %
+                            {% endif %}
+                            {% else %}
+                            <span class="tag is-primary">Facturation en attente</span>
+                            {% endif %}
+                        </div>
+                    </td>
+
+                    <td style="text-align: center;">
+                        {% if medical_visit.is_active %}
+                        <i class="fa-solid fa-check fa-2x has-text-success"></i>
+                        {% else %}
+                        <i class="fa-solid fa-xmark fa-2x has-text-danger-light"></i>
+                        {% endif %}
+                    </td>
+
+                    <td style="text-align: center;"><a class="button is-link"
+                            href="{% url 'organization_features:orders:medical_visit_receipt' request.organization.slug medical_visit.pk %}">Réçu
+                        </a>
+                    </td>
+
+
+                    <td style="text-align: center;"><a class="button is-link"
+                            href="{% url 'organization_features:orders:medical_visit_receipt_matrix' request.organization.slug medical_visit.pk %}">Réçu
+                            Mx
+                        </a>
+                    </td>
+
+                    {% if request.organization_user.is_admin or 'orders.change_medicalvisit' in organization_user_perms %}
+                    <td style="text-align: center;"><button
+                            hx-get="{% url 'organization_features:orders:medical_visit_change' request.organization.slug medical_visit.pk %}?{% url_replace %}"
+                            hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
+                            class="button">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                    </td>
+                    {% endif %}
+
+                    {% if request.organization_user.is_admin or 'orders.view_medicalvisit' in organization_user_perms %}
+                    <td style="text-align: center;">
+                        <button
+                            hx-get="{% url 'organization_features:orders:medical_visit_detail' request.organization.slug medical_visit.pk %}?{% url_replace %}"
+                            hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
+                            class="button">
+                            <i class="fa-solid fa-eye"></i></button>
+                    </td>
+                    {% endif %}
+
+                    {% if request.organization_user.is_admin or 'orders.delete_medicalvisit' in organization_user_perms %}
+                    <td style="text-align: center;"><button
+                            hx-get="{% url 'organization_features:orders:medical_visit_delete' request.organization.slug medical_visit.pk %}?{% url_replace %}"
+                            hx-target="#quanta_content" hx-confirm="Are you sure you want to delete?" class="button">
+                            <i class="fa-solid fa-trash-can fa-1x has-text-danger"></i></button>
+                    </td>
+                    {% endif %}
+
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% include "core/partials/pagination.html" %}
+    </div>
+</div>
+
+{% endpartialdef %}
+
+{% endblock quanta_content %}

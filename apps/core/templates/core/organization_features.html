@@ -1,0 +1,22 @@
+{% load i18n %}
+
+{% comment %} <a class="navbar-item is-hidden-touch is-hidden-desktop-only has-text-weight-bold is-size-3 pr-4 mr-4"
+    href="{% url 'organization_features:websites:home' request.organization.slug %}">
+    {{ request.organization.name|slice:":50" }}{% if request.organization.name|length > 50 %}...{% endif %}
+</a> {% endcomment %}
+
+{% comment %}
+{% if request.organization_user.is_admin or 'inventories.view_category' in organization_user_perms %}
+<a class="navbar-item" href="{% url 'organization_features:inventories:category_list' request.organization.slug %}"
+    title="Categories">{% trans 'Categories' %}</a>
+{% endif %}
+
+{% if request.organization_user.is_admin or 'inventories.view_product' in organization_user_perms %}
+<a class="navbar-item" href="{% url 'organization_features:inventories:product_list' request.organization.slug %}"
+    title="Products">{% trans 'Products' %}</a>
+{% endif %}
+
+{% if request.organization_user.is_admin or 'services.view_service' in organization_user_perms %}
+<a class="navbar-item"
+    href="{% url 'organization_features:services:service_list' request.organization.slug %}">{% trans 'Services' %}</a>
+{% endif %} {% endcomment %}

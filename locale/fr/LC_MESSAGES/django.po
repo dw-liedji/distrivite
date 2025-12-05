@@ -1,0 +1,274 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-05-13 18:39+0100\n"
+"PO-Revision-Date: 2023-05-13 17:40+0000\n"
+"Last-Translator:   <admin@admin.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Translated-Using: django-rosetta 0.9.9\n"
+
+#: apps/core/templates/core/index.html:18
+msgid "Bring your products, we'll handle the rest."
+msgstr "Apportez vos produits, nous nous occupons du reste."
+
+#: apps/core/templates/core/index.html:20
+msgid ""
+"\n"
+"    Quanta is the\n"
+"    cloud-computing platform that simplify the\n"
+"    complex\n"
+"    process of buying\n"
+"    from your suppliers,\n"
+"    tracking your inventory, and selling products to your Customers. Quanta is designed for everyone--individuals,\n"
+"    small\n"
+"    businesses, and large\n"
+"    enterprises.\n"
+"    "
+msgstr ""
+"\n"
+"Quanta est la plateforme informatique en nuage qui simplifie le processus complexe d'achat auprès de vos fournisseurs, de suivi de vos stocks et de vente de produits à vos clients. Quanta est conçu pour tous les individus, petites petites entreprises et les grandes entreprises."
+
+#: apps/core/templates/core/organization_features.html:14
+#, fuzzy
+#| msgid "categories"
+msgid "Categories"
+msgstr "Catégories"
+
+#: apps/core/templates/core/organization_features.html:17
+#, fuzzy
+#| msgid "Product types"
+msgid "Products"
+msgstr "Types de produits"
+
+#: apps/core/templates/core/organization_features.html:20
+msgid "Services"
+msgstr "Services"
+
+#: apps/core/templates/core/organization_features.html:23
+msgid "Catalogs"
+msgstr "Catalogues"
+
+#: apps/core/templates/core/quanta.html:10
+msgid "General"
+msgstr "Général"
+
+#: apps/core/templates/core/quanta.html:22
+msgid "patients"
+msgstr "Clients"
+
+#: apps/core/templates/core/quanta.html:25
+msgid "Commercials"
+msgstr "Commercials"
+
+#: apps/core/templates/core/quanta.html:28
+#| msgid "Coverage Facturation"
+msgid "Coverages"
+msgstr "Couvertures"
+
+#: apps/core/templates/core/quanta.html:34
+msgid "Suppliers"
+msgstr "Fournisseurs"
+
+#: apps/core/templates/core/quanta.html:40
+msgid "Retailers"
+msgstr "Détaillants"
+
+#: apps/core/templates/core/quanta.html:47
+msgid "Cash facturations"
+msgstr "Vente en espèces"
+
+#: apps/core/templates/core/quanta.html:53
+msgid "service facturations"
+msgstr "Vente de services"
+
+#: apps/core/templates/core/quanta.html:58
+msgid "Products facturations"
+msgstr "Vente de produits"
+
+#: apps/core/templates/core/quanta.html:66
+msgid "Purchases sent"
+msgstr "Achats envoyées"
+
+#: apps/core/templates/core/quanta.html:72
+msgid "Purchase received"
+msgstr "Achats réçu"
+
+#: apps/core/templates/core/quanta.html:82
+msgid "Credit facturations"
+msgstr "Vente à terme"
+
+#: apps/core/templates/core/quanta.html:89
+msgid "Credit products facturations"
+msgstr "Vente à terme de produits "
+
+#: apps/core/templates/core/quanta.html:97
+msgid "Credit purchases sent"
+msgstr "Achats à terme envoyées "
+
+#: apps/core/templates/core/quanta.html:103
+msgid "Credit purchase received"
+msgstr "Achats à terme réçu "
+
+#: apps/core/templates/core/quanta.html:109
+msgid "Cash flow"
+msgstr "Flux d'argents"
+
+#: apps/core/templates/core/quanta.html:114
+msgid "Cash register"
+msgstr "Caisses"
+
+#: apps/core/templates/core/quanta.html:119
+msgid "Expenses"
+msgstr "Dépenses"
+
+#: apps/core/templates/core/quanta.html:125
+msgid "Expense Categories"
+msgstr "Catégories de dépenses"
+
+#: apps/core/templates/core/quanta.html:132
+msgid "Administration"
+msgstr "Administration"
+
+#: apps/core/templates/core/quanta.html:137
+msgid "Settings"
+msgstr "Paramètres"
+
+#: apps/inventories/models.py:81
+msgid "categories"
+msgstr "Catégories"
+
+#: apps/orders/forms.py:12
+msgid "Enter the client Quanta."
+msgstr "Entrez le Quanta du client"
+
+#: apps/users/models.py:100
+msgid "email address"
+msgstr "Adresse e-mail"
+
+#: apps/users/models.py:107
+msgid "username"
+msgstr "Nom d'utilisateur"
+
+#: apps/users/models.py:111
+msgid "Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."
+msgstr ""
+"Obligatoire. 150 caractères ou moins. Lettres, chiffres et @/./+/-/_ "
+"uniquement."
+
+#: apps/users/models.py:115
+msgid "A user with that username already exists."
+msgstr "Un utilisateur avec ce nom existe déjà."
+
+#: apps/users/templates/users/organizations.html:15
+msgid "Your organizations"
+msgstr "Vos entreprise"
+
+#: apps/users/templates/users/organizations.html:17
+msgid "These are the organizations that you are a member"
+msgstr "Voici les entriprise dans lesquelles vous travaillez actuellement"
+
+#: apps/users/templates/users/organizations.html:25
+msgid "Create an new organization"
+msgstr "Créer une entreprise"
+
+#: extra_views/dates.py:18
+msgid "Monday"
+msgstr "Lundi"
+
+#: extra_views/dates.py:19
+msgid "Tuesday"
+msgstr "Mardi"
+
+#: extra_views/dates.py:20
+msgid "Wednesday"
+msgstr "Mercredi"
+
+#: extra_views/dates.py:21
+msgid "Thursday"
+msgstr "Jeudi"
+
+#: extra_views/dates.py:22
+msgid "Friday"
+msgstr "Vendredi"
+
+#: extra_views/dates.py:23
+msgid "Saturday"
+msgstr "Samedi"
+
+#: extra_views/dates.py:24
+msgid "Sunday"
+msgstr "Dimanche"
+
+#: quanta/settings/common.py:185
+msgid "English"
+msgstr "Anglais"
+
+#: quanta/settings/common.py:186
+msgid "French"
+msgstr "Frainçais"
+
+#~ msgid "Vente en espèces"
+#~ msgstr "Vente en espèces"
+
+#~ msgid "Facturations"
+#~ msgstr "Ventes en espèces"
+
+#~ msgid "Attendances"
+#~ msgstr "Assiduité"
+
+#~ msgid "Working sessions"
+#~ msgstr "Sessions de travail"
+
+#~ msgid "Attributes"
+#~ msgstr "Attributs"
+
+#~ msgid "Shop"
+#~ msgstr "Boutique"
+
+#~ msgid "Brands"
+#~ msgstr "Marques"
+
+#~ msgid "Locations"
+#~ msgstr "Magasins"
+
+#~ msgid "Orders status"
+#~ msgstr "Status de commandes"
+
+#~ msgid "Coverage Accounts"
+#~ msgstr "Compte de bons"
+
+#~ msgid " Payment methods"
+#~ msgstr "Moyen de paiements"
+
+#~ msgid "Buy now Pay Later"
+#~ msgstr "Vente à credit"
+
+#~ msgid "Collectors"
+#~ msgstr "Collecteurs"
+
+#~ msgid "Payments plans"
+#~ msgstr "Plan de paiements"
+
+#~ msgid "value"
+#~ msgstr "Valeur"
+
+#~ msgid "Product specification value (maximum of 255 words"
+#~ msgstr "Spécification du produit"
+
+#~ msgid "Attribute Value"
+#~ msgstr "Valeur de l'attribut"
+
+#~ msgid "Attribute Values"
+#~ msgstr "Valeurs de l'attribut"

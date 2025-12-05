@@ -1,0 +1,233 @@
+{% extends 'core/pdf_base.html' %}
+{% load static %}
+{% load qr_code %}
+{% load core %}
+
+{% block content %}
+<div class="has-text-left">
+    <div class="is-flex is-justify-content-center is-align-items-center">
+        <figure class="image box p-0 my-0 ml-0 mr-3">
+            {% if request.organization.logo %}
+            <img class="image" src="{{ request.organization.logo.url }}" style="width: 150px; height: 110px;">
+            {% else %}
+            <img class="image" src="{% static 'core/img/quanta_logo.jpg' %}" style="width: 150px; height: 110px;">
+            {% endif %}
+        </figure>
+        <div class="box has-text-centereded p-0 m-0">
+            <p class="title is-size-4 mb-1 pb-0">{{ request.organization.name|upper }}</p>
+            <p class="title is-size-6 mb-1 pb-0">{{ request.organization.sub_name|upper }}</p>
+            <p class="subtitle is-size-7 has-text-centereded m-0 p-0">{{ request.organization.street_address }}</p>
+            <p class="subtitle is-size-7 has-text-centereded m-0 p-0">BP 8735-YANSOKI-DOUALA,
+                tel:{{ request.organization.contact_number }}</p>
+            <p class="subtitle is-size-7 has-text-centereded m-0 p-0">Email:{{ request.organization.contact_email }}</p>
+        </div>
+    </div>
+</div>
+<hr class="my-1 py-1" />
+
+<div class="block mt-3 is-flex is-align-items-center is-justify-content-space-between">
+    <div class="block is-flex is-flex-direction-column is-justify-content-center is-align-content-center">
+        <p class="title is-size-4 has-text-centereded mb-1 p-0">Consultation</p>
+        <p class="subtitle is-size-6 has-text-centereded m-0 p-0">No:
+            {{ consultation.bill_number|default_if_none:"N/A" }}
+        </p>
+    </div>
+
+    <figure>
+        <!-- <img class="is-student-profile-code" src="../../static/accounts/img/profile.jpg" alt=""> -->
+        <img class="p-0 m-0 image is-96x96"
+            src="{% qr_url_from_text consultation.medical_visit.bill_number size=8 version=10 image_format='png' %}"
+            alt="Hello World!">
+    </figure>
+</div>
+<hr class="my-1 py-1" />
+
+<p class="has-text-centered is-size-4">FICHE DE CONSULTATION MEDICALE</p>
+
+<table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth is-size-7">
+    <tbody>
+        <tr class="is-selected">
+            <td class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
+                Customer </td>
+            <td class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
+                Téléphone </td>
+            <td class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
+                Age </td>
+            <td class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
+                Sexe </td>
+        </tr>
+        <tr>
+            <td style="text-align: center; vertical-align: middle;">
+                {{consultation.medical_visit.patient }} </td>
+            <td style="text-align: center; vertical-align: middle;">
+                {{consultation.medical_visit.patient.phone_number}} </td>
+            <td style="text-align: center; vertical-align: middle;">
+                {{consultation.medical_visit.patient.formated_age }} </td>
+            <td style="text-align: center; vertical-align: middle;">
+                {{consultation.medical_visit.patient.sex }} </td>
+        </tr>
+    </tbody>
+</table>
+
+<hr class="my-1 py-1" />
+
+<table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth is-size-7">
+
+    <tbody>
+        <tr class="is-selected">
+            <td class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
+                TA (mmHg): </td>
+            <td class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
+                FA (C/min) </td>
+            <td class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
+                Pouls (puls/min) </td>
+            <td class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
+                Poids (kg) </td>
+            <td class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
+                Taille (cm) </td>
+            <td class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
+                Périmètre brachial (cm) </td>
+            <td class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
+                Périmètre crânien (cm) </td>
+        </tr>
+        <tr>
+            <td style="text-align: center; vertical-align: middle;">
+                {{consultation.blood_pressure }} </td>
+            <td style="text-align: center; vertical-align: middle;">
+                {{consultation.respiratory_rate }} </td>
+            <td style="text-align: center; vertical-align: middle;">
+                {{consultation.pulse }} </td>
+            <td style="text-align: center; vertical-align: middle;">
+                {{consultation.weight }} </td>
+            <td style="text-align: center; vertical-align: middle;">
+                {{consultation.height }} </td>
+            <td style="text-align: center; vertical-align: middle;">
+                {{consultation.arm_circumference|default_if_none:"" }} </td>
+            <td style="text-align: center; vertical-align: middle;">
+                {{consultation.head_circumference|default_if_none:"" }} </td>
+        </tr>
+    </tbody>
+</table>
+<hr class="my-1 py-1" />
+
+
+<table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth is-size-7">
+
+    <tbody>
+        <tr class="is-selected">
+            <td class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
+                Designation </td>
+            <td class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
+                Description</td>
+        </tr>
+        <tr>
+            <td style="text-align: center; vertical-align: middle;">
+                MOTIFS DE CONSULTATION </td>
+            <td style="text-align: center; vertical-align: middle;">
+                {{consultation.consultation_detail.consultation_motives }} </td>
+        </tr>
+        <tr>
+            <td style="text-align: center; vertical-align: middle;">
+                HISTOIRE DE LA MALADIE </td>
+            <td style="text-align: center; vertical-align: middle;">
+                {{consultation.consultation_detail.disease_history }} </td>
+        </tr>
+
+        <tr>
+            <td style="text-align: center; vertical-align: middle;">
+                ENQUÊTE DES SYSTÈMES </td>
+            <td style="text-align: center; vertical-align: middle;">
+                {{consultation.consultation_detail.system_inquiry }} </td>
+        </tr>
+        <tr>
+            <td style="text-align: center; vertical-align: middle;">
+                EXAMEN PHYSIQUE </td>
+            <td style="text-align: center; vertical-align: middle;">
+                {{consultation.consultation_detail.physical_exam }} </td>
+        </tr>
+        <tr>
+            <td style="text-align: center; vertical-align: middle;">
+                DIAGNOSTIC POSITIF </td>
+            <td style="text-align: center; vertical-align: middle;">
+                {{consultation.consultation_detail.positive_diagnosis }} </td>
+        </tr>
+        <tr>
+            <td style="text-align: center; vertical-align: middle;">
+                DIAGNOSTIC ASSOCIÉ </td>
+            <td style="text-align: center; vertical-align: middle;">
+                {{consultation.consultation_detail.associated_diagnosis }} </td>
+        </tr>
+        <tr>
+            <td style="text-align: center; vertical-align: middle;">
+                DIAGNOSTIC DIFFÉRENTIEL </td>
+            <td style="text-align: center; vertical-align: middle;">
+                {{consultation.consultation_detail.differential_diagnosis }} </td>
+        </tr>
+
+        <tr>
+            <td style="text-align: center; vertical-align: middle;">
+                LABORATOIRE </td>
+            <td style="text-align: center; vertical-align: middle;">
+                {{consultation.consultation_detail.laboratory }} </td>
+        </tr>
+
+        <tr>
+            <td style="text-align: center; vertical-align: middle;">
+                IMAGERIE ET EXPLORATION FONCTIONNELLE </td>
+            <td style="text-align: center; vertical-align: middle;">
+                {{consultation.consultation_detail.imaging_exploration }} </td>
+        </tr>
+
+        <tr>
+            <td style="text-align: center; vertical-align: middle;">
+                TRAITEMENT </td>
+            <td style="text-align: center; vertical-align: middle;">
+                {{consultation.consultation_detail.treatment }} </td>
+        </tr>
+
+        <tr>
+            <td style="text-align: center; vertical-align: middle;">
+                RENDEZ-VOUS </td>
+            <td style="text-align: center; vertical-align: middle;">
+                {{consultation.consultation_detail.appointment }} </td>
+        </tr>
+
+        <tr>
+            <td style="text-align: center; vertical-align: middle;">
+                Devenir du patient </td>
+            <td style="text-align: center; vertical-align: middle;">
+                {{consultation.consultation_detail.disposition }} </td>
+        </tr>
+
+    </tbody>
+</table>
+
+<hr class="my-1 py-1" />
+
+<div class="watermarked">HOSPITAL SAINT JOHN</div>
+
+<p class="my-2 has-text-right">Fait à {{ request.organization.city }} le {{ consultation.created }} </p>
+<div class="block is-flex is-justify-content-space-between is-align-items-center mt-0">
+    <div class="block is-flex is-flex-direction-column is-align-items-start mb-2">
+        {% comment %} <p class="title is-size-4">Signature du patient</p> {% endcomment %}
+        <p class="subtitle is-size-6 mb-1"></p>
+        {% comment %} <p class="subtitle is-size-7 has-text-centereded">
+            {{ consultation.medical_visit.patient.username }}
+        </p> {% endcomment %}
+    </div>
+
+    <div class="block is-flex is-flex-direction-column is-align-items-start mb-2">
+        <p class="title is-size-4">Le médecin</p>
+        <p class="subtitle is-size-6 mb-1"></p>
+        <p class="subtitle is-size-7 has-text-centereded">{{ request.organization_user.user.username }}</p>
+    </div>
+</div>
+<div class="has-text-centereded" style="margin-top: 25px;">
+    <hr class="my-1 py-1" />
+    <p class="is-size-5">Centre Medical Saint John de Yassa Sarl</p>
+    <p>{{ request.organization.name }} • {{ request.organization.contact_number }} •
+        {{ request.organization.name }}
+    </p>
+    <p>RCM:RC/DLA/2023/B/ - NIU:M022317969368W</p>
+</div>
+{% endblock content %}

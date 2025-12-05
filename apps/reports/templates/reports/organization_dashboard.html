@@ -1,0 +1,18 @@
+{% extends 'core/base.html' %}
+
+{% block title %}
+Dashboard
+{% endblock title %}
+
+{% block content %}
+
+
+{% if request.organization_user.is_owner %}
+<p>You are the owner</p>
+{% endif %}
+{% if 'inventories.change_inventory' in organization_user_perms %}
+<p>The organization user {{ organization_user.user.email }} can change inventories in {{ organization.name }}</p>
+{% else %}
+<p>The organization user {{ organization_user.user.email }} cannot change inventories in {{ organization.name }}</p>
+{% endif %}
+{% endblock content %}

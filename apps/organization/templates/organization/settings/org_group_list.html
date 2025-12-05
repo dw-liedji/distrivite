@@ -1,0 +1,105 @@
+{% extends 'core/quanta.html' %}
+{% load partials %}
+{% load core %}
+{% load extra_filters %}
+{% load static %}
+
+{% block title %}
+Organizations users
+{% endblock title %}
+
+{% block quanta_content %}
+
+{% partialdef list inline=True %}
+{% include "core/partials/messages.html" %}
+
+<div class="block px-2 mx-2 px-5-desktop mx-5-desktop fade-in">
+
+    <div class="has-text-right my-3">
+        {% if request.organization_user.is_admin or 'organization.add_organizationgroup' in organization_user_perms %}
+        <a class="button is-primary"
+            hx-get="{% url 'organization_features:org_things:org_group_add' request.organization.slug %}?{% url_replace %}"
+            hx-target="#quanta_content" hx-indicator="#custom-htmx-indicator" hx-swap="innerHTML">Add
+            team</a>
+        {% endif %}
+    </div>
+
+    <div class="table-container">
+        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+            <thead>
+                <tr class="is-selected">
+                    <th style="text-align: center;" class="">
+                        Name
+                    </th>
+                    <th style="text-align: center;" class="">
+                        Status
+                    </th>
+                    <th style="text-align: center;" class="">
+                        Members
+                    </th>
+                    <th style="text-align: center;" class="" colspan="4">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for group in organization_groups %}
+                <tr>
+                    <td style="text-align: center;" class="">
+                        {{ group.name }}
+                    </td>
+                    <td style="text-align: center;" class="">
+                        {% if group.is_active %}
+                        <span class="green">Active</span>
+                        {% else %}
+                        <span class="orange">No active</span>
+                        {% endif %}
+                    </td>
+
+                    <td style="text-align: center;">
+                        <a hx-get="{% url 'organization_features:org_things:org_group_user_list' request.organization.slug group.pk %}"
+                            hx-target="#quanta_content" hx-indicator="#custom-htmx-indicator" hx-swap="innerHTML"
+                            hx-replace-url="true" class="button is-link">
+                            Members
+                        </a>
+                    </td>
+
+                    <td style="text-align: center;" class="">
+                        {% if request.organization_user.is_admin or request.user.is_superuser %}
+                        <button
+                            hx-get="{% url 'organization_features:org_things:org_group_change' request.organization.slug group.pk %}?{% url_replace %}"
+                            hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
+                            class="button">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                        {% endif %}
+                    </td>
+
+                    <td style="text-align: center;">
+                        {% if request.organization_user.is_admin or 'orders.view_doctor' in organization_user_perms %}
+                        <button
+                            hx-get="{% url 'organization_features:org_things:org_group_detail' request.organization.slug group.pk %}"
+                            hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
+                            class="button">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                        {% endif %}
+                    </td>
+
+                    <td style="text-align: center;">
+                        {% if request.organization_user.is_admin or 'orders.delete_doctor' in organization_user_perms %}
+                        <button
+                            hx-get="{% url 'organization_features:org_things:org_group_delete' request.organization.slug group.pk %}?{% url_replace %}"
+                            hx-target="#quanta_content" hx-confirm="Are you sure you want to delete?" class="button">
+                            <i class="fa-solid fa-trash-can fa-1x has-text-danger"></i></button>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% include "core/partials/pagination.html" %}
+    </div>
+</div>
+
+{% endpartialdef %}
+
+{% endblock quanta_content %}

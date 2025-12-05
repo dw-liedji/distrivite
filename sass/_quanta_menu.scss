@@ -1,0 +1,64 @@
+// body {
+//   user-select: none;
+// }
+
+aside.aside {
+    display: block;
+    position: fixed;
+    top: $navbar-height;
+    z-index: 30;
+    width: $aside-width;
+    padding: 0.1rem;
+    // box-shadow: $aside-box-shadow;
+    user-select: none;
+  }
+  
+@include desktop {
+    #dashboard {
+      &.has-aside-left {
+            div.main {
+                margin-left: $aside-width;
+                overflow-y: auto; 
+            }
+            aside.is-placed-left {
+                left: 0;
+                width: $aside-width;
+            }   
+        
+            &.has-aside-left-expanded {
+                div.main {
+                    margin-left: 0;
+                    @include transition(margin-left);
+                }
+
+                aside.is-placed-left {
+                    left: 0;
+                    width: $aside-mobile-width;
+                    @include transition(width);
+                }  
+            }
+      }
+      
+    }
+  
+}
+  
+  @include touch {
+    div.main {
+      margin-left: 0;
+      @include transition(margin-left);
+    }
+    aside.aside {
+      left: $aside-mobile-width*-1;
+      @include transition(left);
+    }
+    div.has-aside-mobile-expanded {
+      div.main {
+        margin-left: 0;
+      }
+      aside.aside {
+        left: 0;
+      }
+    }
+  }
+  

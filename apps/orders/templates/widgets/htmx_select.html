@@ -1,0 +1,14 @@
+<div class="htmx-select-container">
+    {# Search input for autocomplete #}
+    <input type="text" class="htmx-search-input" placeholder="Search..." {% include "django/forms/widgets/attrs.html" %}
+        value="{{ widget.get_display_value }}">
+
+    {# Native select element for value storage #}
+    <select class="htmx-select" name="{{ widget.name }}">
+        <option id="{{ widget.attrs.id }}_hidden" value="{{ widget.value }}" selected>{{ widget.get_display_value }}
+        </option>
+    </select>
+
+    {# Autocomplete results container #}
+    <div class="autocomplete-results"></div>
+</div>

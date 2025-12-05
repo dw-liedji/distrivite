@@ -1,0 +1,281 @@
+{% extends 'core/pdf_base.html' %}
+{% load static %}
+{% load qr_code %}
+{% load core %}
+
+{% block content %}
+<div class="has-text-left">
+    <div class="is-flex is-justify-content-center is-align-items-center">
+        <figure class="image box p-0 my-0 ml-0 mr-3">
+            {% if request.organization.logo %}
+            <img class="image" src="{{ request.organization.logo.url }}" style="width: 150px; height: 110px;">
+            {% else %}
+            <img class="image" src="{% static 'core/img/quanta_logo.jpg' %}" style="width: 150px; height: 110px;">
+            {% endif %}
+        </figure>
+        <div class="box has-text-centered p-0 m-0">
+            <p class="title is-size-4 mb-1 pb-0">{{ request.organization.name|upper }}</p>
+            <p class="title is-size-6 mb-1 pb-0">{{ request.organization.sub_name|upper }}</p>
+            <p class="subtitle is-size-7 has-text-centered m-0 p-0">{{ request.organization.street_address }}</p>
+            <p class="subtitle is-size-7 has-text-centered m-0 p-0">BP 8735-YANSOKI-DOUALA,
+                tel:{{ request.organization.contact_number }}</p>
+            <p class="subtitle is-size-7 has-text-centered m-0 p-0">Email:{{ request.organization.contact_email }}</p>
+        </div>
+    </div>
+</div>
+<hr />
+
+<div class="block mt-3 is-flex is-align-items-center is-justify-content-space-between">
+    <div class="block is-flex is-flex-direction-column is-justify-content-center is-align-content-center">
+        <p class="title is-size-2 has-text-centered mb-1 p-0">Réçu</p>
+        <p class="subtitle is-size-6 has-text-centered m-0 p-0">No:
+            {{ medical_visit.bill_number|default_if_none:"N/A" }}
+        </p>
+    </div>
+
+    <figure>
+        <!-- <img class="is-student-profile-code" src="../../static/accounts/img/profile.jpg" alt=""> -->
+        <img class="p-0 m-0 image is-96x96"
+            src="{% qr_url_from_text medical_visit.bill_number size=8 version=10 image_format='png' %}"
+            alt="Hello World!">
+    </figure>
+</div>
+
+<hr />
+
+<table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+
+    <tbody>
+        <tr>
+            <td class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
+                Noms et prenoms: </td>
+            <td class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
+                Téléphone </td>
+            <td class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
+                Age </td>
+            <td class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
+                Sexe </td>
+        </tr>
+        <tr>
+            <td style="text-align: center; vertical-align: middle;">
+                {{ medical_visit.patient }} </td>
+            <td style="text-align: center; vertical-align: middle;">
+                {{ medical_visit.patient.phone_number}} </td>
+            <td style="text-align: center; vertical-align: middle;">
+                {{ medical_visit.patient.formated_age }} </td>
+            <td style="text-align: center; vertical-align: middle;">
+                {{ medical_visit.patient.sex }} </td>
+        </tr>
+    </tbody>
+</table>
+
+<hr />
+
+
+<table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+
+    <tbody>
+        <tr>
+            <td class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
+                Total: </td>
+            <td class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
+                Avance </td>
+            <td class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
+                FacturationRefund </td>
+            <td class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
+                Last Payment </td>
+            <td class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
+                Dette </td>
+            <td class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
+                Dette en lettre (XFA) </td>
+        </tr>
+        <tr>
+            <td style="text-align: center; vertical-align: middle;">
+                {{ medical_visit.total_price.normalize }} </td>
+            <td style="text-align: center; vertical-align: middle;">
+                {{ medical_visit.current_payment.normalize }} </td>
+            <td style="text-align: center; vertical-align: middle;">
+                {{ medical_visit.facturation_Refund_total_price.normalize }} </td>
+            <td style="text-align: center; vertical-align: middle;">
+                {{ medical_visit.last_payment.normalize }} </td>
+            <td style="text-align: center; vertical-align: middle;">
+                {{ medical_visit.remaining.normalize }} </td>
+            <td style="text-align: center; vertical-align: middle;">
+                {{ medical_visit.remaining.normalize|to_words }} </td>
+        </tr>
+    </tbody>
+
+
+</table>
+
+<hr />
+
+<table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth is-size-7">
+
+    <thead>
+        <tr class="is-selected">
+            <th class="has-text-centered">Facture</th>
+            <th class="has-text-centered">Date</th>
+            <th class="has-text-centered">Designation</th>
+            <th class="has-text-centered">Qté</th>
+            <th class="has-text-centered">Prix unitaire</th>
+            <th class="has-text-centered">Total</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <tr class="is-selected">
+            <td colspan="6" style="text-align: center; vertical-align: middle;">
+                Facture non assurée
+            </td>
+        </tr>
+        {% for facturation in medical_visit.facturations.all %}
+        <tr>
+            <td class="is-dark has-text-weight-medium has-text-centered is-vcentered">
+                {{ facturation.bill_number }} </td>
+            <td class="is-dark  has-text-weight-medium has-text-centered is-vcentered">
+                {{ facturation.created }} </td>
+
+            <td class="is-dark has-text-centered is-vcentered" colspan="3">
+            </td>
+            <td class="is-dark" style="text-align: center; vertical-align: middle;">
+                {{ facturation.total_price.normalize }}
+            </td>
+        </tr>
+        {% for facturation_batch in facturation.facturation_batchs.all %}
+        <tr>
+            <td class="has-text-weight-medium has-text-centered is-vcentered">
+            </td>
+            <td class="has-text-weight-medium has-text-centered is-vcentered">
+            </td>
+
+            <td class="has-text-centered is-vcentered">
+                {{ facturation_batch.batch.item.name }}
+            </td>
+            <td style="text-align: center; vertical-align: middle;">{{ facturation_batch.quantity }}</td>
+            <td style="text-align: center; vertical-align: middle;">{{ facturation_batch.unit_price.normalize }}
+            </td>
+            <td style="text-align: center; vertical-align: middle;">{{ facturation_batch.total_price.normalize }}
+            </td>
+        </tr>
+        {% endfor %}
+        {% endfor %}
+        <tr>
+            <td class="is-dark has-text-weight-semibold has-text-centered" colspan="5"></td>
+            <th class="is-dark has-text-weight-semibold has-text-centered" colspan="1">
+                {{ medical_visit.facturation_total_price.normalize }}
+                FCFA
+            </th>
+        </tr>
+
+        <tr class="is-selected">
+            <td colspan="6" style="text-align: center; vertical-align: middle;">
+                Facture assurée (Ticket modérateur ou Complement)
+            </td>
+        </tr>
+
+        {% for coverage_facturation in medical_visit.coverage_facturations.all %}
+        <tr>
+            <td class="is-dark has-text-weight-medium has-text-centered is-vcentered">
+                {{ coverage_facturation.bill_number }} </td>
+            <td class="is-dark  has-text-weight-medium has-text-centered is-vcentered">
+                {{ coverage_facturation.created }} </td>
+
+            <td class="is-dark has-text-centered is-vcentered" colspan="3">
+                {{ coverage_facturation.coverage_delivery_receipt }}
+            </td>
+            <td class="is-dark" style="text-align: center; vertical-align: middle;">
+                {{ coverage_facturation.complement.normalize }}
+            </td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <td class="is-dark has-text-weight-semibold has-text-centered" colspan="5"></td>
+            <th class="is-dark has-text-weight-semibold has-text-centered" colspan="1">
+                {{ medical_visit.complement_total_price.normalize }}
+                FCFA
+            </th>
+        </tr>
+
+
+
+        <tr class="is-selected">
+            <td colspan="6" style="text-align: center; vertical-align: middle;">
+                Facture Hospitalisation
+            </td>
+        </tr>
+
+        {% for hospitalization in medical_visit.hospitalizations.all %}
+        <tr>
+            <td class="is-dark has-text-weight-medium has-text-centered is-vcentered">
+                {{ hospitalization.bill_number }} </td>
+            <td class="is-dark  has-text-weight-medium has-text-centered is-vcentered">
+                {{ hospitalization.created }} </td>
+
+            <td class="is-dark has-text-centered is-vcentered" colspan="1">
+                {{ hospitalization.room }}
+            </td>
+            <td class="is-dark" style="text-align: center; vertical-align: middle;">
+                {{ hospitalization.hospital_nights }}
+            </td>
+            <td class="is-dark" style="text-align: center; vertical-align: middle;">
+                {{ hospitalization.daily_price.normalize }}
+            </td>
+            <td class="is-dark" style="text-align: center; vertical-align: middle;">
+                {{ hospitalization.total_price.normalize }}
+            </td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <td class="is-dark has-text-weight-semibold has-text-centered" colspan="5"></td>
+            <th class="is-dark has-text-weight-semibold has-text-centered" colspan="1">
+                {{ medical_visit.hospitalization_total_price.normalize }}
+                FCFA
+            </th>
+        </tr>
+
+    </tbody>
+
+    <tfoot>
+        <tr class="is-selected">
+            <td class="has-text-weight-semibold has-text-centered" colspan="5">
+                Total Facture non assurées + Total Ticket modérateurs + Total Hospitalisations
+            </td>
+            <th class="has-text-weight-semibold has-text-centered" colspan="1">
+                {{ medical_visit.total_price.normalize }}
+                FCFA
+            </th>
+        </tr>
+    </tfoot>
+</table>
+
+<hr />
+
+<div class="watermarked">SAINT JOHN</div>
+
+<p class="my-2 has-text-right">Fait à {{ request.organization.city }} le {{ medical_visit.created }} </p>
+<div class="block is-flex is-justify-content-space-between is-align-items-center mt-0">
+    {% comment %} <div class="block is-flex is-flex-direction-column is-align-items-start mb-2">
+        <p class="title is-size-4">Signature du patient</p>
+        <p class="subtitle is-size-6 mb-1"></p>
+        <p class="subtitle is-size-7 has-text-centered">{{ medical_visit.patient.username }}</p>
+    </div> {% endcomment %}
+
+    <div class="block is-flex is-flex-direction-column is-align-items-start mb-2">
+        <p class="title is-size-4">La direction</p>
+        <p class="subtitle is-size-6 mb-1"></p>
+        <p class="subtitle is-size-7 has-text-centered">{{ request.organization_user.user.username }}</p>
+    </div>
+</div>
+<hr class"my-1" />
+<p class="subtitle is-size-7 has-text-centered">Imprimé le {% now "SHORT_DATETIME_FORMAT" %} par
+    {{ request.organization_user.user.username }}</p>
+<div class="has-text-centered" style="margin-top: 10px;">
+    <hr />
+    <p class="is-size-6">Centre Medical Saint John de Yassa Sarl</p>
+    <p class="is-size-7">{{ request.organization.name }} • {{ request.organization.contact_number }} •
+        {{ request.organization.name }}
+    </p>
+    <p>RCM:RC/DLA/2023/B/ - NIU:M022317969368W</p>
+</div>
+{% endblock content %}

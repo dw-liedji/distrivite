@@ -1,0 +1,188 @@
+{% extends "core/pdf_base.html" %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+{% load qr_code %}
+{% load static %}
+{% load mathfilters %}
+{% load l10n %}
+{% load core %}
+{% load partials %}
+
+{% block title %}
+Organizations facturation report pdf
+{% endblock title %}
+
+{% block content %}
+
+<div class="has-text-left">
+    <div class="is-flex is-justify-content-center is-align-items-center">
+        <figure class="image box p-0 my-0 ml-0 mr-3">
+            {% if request.organization.logo %}
+            <img width= "150px" height= "110px" class="image" src="{{ request.organization.logo.url }}"  style="width: 150px; height: 110px;">
+            {% else %}
+            <img class="image" src="{% static 'core/img/quanta_logo.jpg' %}"  style="width: 150px; height: 110px;">
+            {% endif %}
+        </figure>
+        <div class="box has-text-centered p-0 m-0">
+            <p class="title is-size-1 mb-3 pb-0">{{ request.organization.name|upper }}</p>
+            <p class="title is-size-3 mb-5 pb-0">{{ request.organization.sub_name|upper }}</p>
+            <p class="subtitle is-size-6 has-text-centered m-0 p-0">{{ request.organization.street_address }}</p>
+            <p class="subtitle is-size-6 has-text-centered m-0 p-0">BP 8735-YANSOKI-DOUALA,
+                tel:{{ request.organization.contact_number }}</p>
+            <p class="subtitle is-size-6 has-text-centered m-0 p-0">Email:{{ request.organization.contact_email }}</p>
+        </div>
+    </div>
+</div>
+<hr class="mb-1" />
+
+<p class="title is-size-4 has-text-weight-bold">Rapport détaillé des ventes</p>
+
+<p class="subtitle is-size-6 has-text-centered">Imprimé le {% now "SHORT_DATETIME_FORMAT" %}</p>
+    <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth is-size-7">
+        <thead>
+            <tr class="is-selected">
+                {% for field in filter_form_data_list %}<th style="text-align: center;">{{ field.label }}</th>{% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                {% for field in filter_form_data_list %}
+                    <td style="text-align: center;">
+                        {% if field.value == "None" %}
+                        {% else %}
+                            {{ field.value }}
+                        {% endif %}
+                    </td>
+                {% endfor %}
+            </tr>
+        </tbody>
+</table>
+
+<table class="table is-bordered is-striped is-hoverable is-fullwidth is-size-7">
+    <thead class="has-background-primary-light">
+        <tr class="is-size-7">
+            <th>#</th>
+            <th class="has-text-centered">Client</th>
+            <th class="has-text-centered">Commercial</th>
+            <th class="has-text-centered">Date</th>
+            <th class="has-text-centered">Articles</th>
+            <th class="has-text-centered">Montant total</th>
+            <th class="has-text-centered">Payé</th>
+            <th class="has-text-centered">Restant</th>
+            <th class="has-text-centered">Progression</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for facturation in facturations %}
+        <tr class="is-size-7">
+            <td class="has-text-centered">{{ forloop.counter }}</td>
+
+            <td class="has-text-centered">
+                {{ facturation.customer.name }}
+            </td>
+
+            <td class="has-text-centered">
+                {{ facturation.organization_user.user.username }}
+            </td>
+
+            <td class="has-text-centered">
+                {{ facturation.created }}
+            </td>
+
+            <td class="is-size-7">
+                {% for fb in facturation.facturation_batchs.all %}
+                <p class="is-size-7">
+                    <strong>{{ fb.quantity }} × {{ fb.batch.item.name }}</strong>
+                    — {{ fb.unit_price.normalize|intcomma }} F
+                </p>
+                {% endfor %}
+            </td>
+
+            <td class="has-text-centered has-text-weight-bold">
+                {{ facturation.total_amount.normalize|default:0|intcomma }} F
+            </td>
+
+            <td class="has-text-centered has-text-success">
+                {{ facturation.total_paid.normalize|default:0|intcomma }} F
+            </td>
+
+            <td class="has-text-centered has-text-danger">
+                {{ facturation.total_due.normalize|default:0|intcomma }} F
+            </td>
+
+            <td class="has-text-centered" style="min-width:120px;">
+                {% with paid=facturation.total_paid.normalize|default:0 total=facturation.total_amount|default:0 %}
+                    {% if total > 0 %}
+                        <span class="is-size-7">
+                            {{ paid|div:total|mul:100|floatformat:1 }} %
+                        </span>
+                        <progress class="progress is-primary is-size-7"
+                            value="{{ paid|unlocalize }}"
+                            max="{{ total|unlocalize }}">
+                        </progress>
+                    {% else %}
+                        <span class="is-size-7">0 %</span>
+                        <progress class="progress is-primary is-size-7"
+                            value="0" max="100"></progress>
+                    {% endif %}
+                {% endwith %}
+            </td>
+
+        </tr>
+        {% endfor %}
+    </tbody>
+
+    <!-- ======================== -->
+    <!--        TOTALS ROW        -->
+    <!-- ======================== -->
+    <tfoot>
+        <tr class="has-background-info-light is-size-7">
+
+            <th class="has-text-centered has-text-weight-bold">
+                {{ totals.total_sales_count|default:0 }} Ventes
+            </th>
+
+            <th></th>
+            <th></th>
+            <th></th>
+
+            <th class="has-text-centered has-text-weight-bold">
+                {{ totals.total_sales_items|default:0 }} Articles
+            </th>
+
+            <th class="has-text-centered has-text-weight-bold">
+                {{ totals.total_sales_amount.normalize|default:0|intcomma }} F
+            </th>
+
+            <th class="has-text-centered has-text-success has-text-weight-bold">
+                {{ totals.grand_total_paid.normalize|default:0|intcomma }} F
+            </th>
+
+            <th class="has-text-centered has-text-danger has-text-weight-bold">
+                {{ totals.grand_total_due.normalize|default:0|intcomma }} F
+            </th>
+
+            <td class="has-text-centered" style="min-width:120px;">
+                {% with paid=totals.grand_total_paid|default:0 total=totals.total_sales_amount|default:0 %}
+                    {% if total > 0 %}
+                        <span class="is-size-7">
+                            {{ paid|div:total|mul:100|floatformat:1 }} %
+                        </span>
+                        <progress class="progress is-primary is-size-7"
+                            value="{{ paid|unlocalize }}"
+                            max="{{ total|unlocalize }}">
+                        </progress>
+                    {% else %}
+                        <span class="is-size-7">0 %</span>
+                        <progress class="progress is-primary is-size-7"
+                            value="0" max="100"></progress>
+                    {% endif %}
+                {% endwith %}
+            </td>
+
+        </tr>
+    </tfoot>
+</table>
+
+{% endblock content %}

@@ -1,0 +1,164 @@
+{% extends 'core/pdf_base.html' %}
+{% load static %}
+{% load qr_code %}
+{% load core %}
+
+{% block content %}
+<div class="has-text-left">
+    <div class="is-flex is-justify-content-center is-align-items-center">
+        <figure class="image box p-0 my-0 ml-0 mr-3">
+            {% if request.organization.logo %}
+            <img class="image" src="{{ request.organization.logo.url }}" style="width: 150px; height: 110px;">
+            {% else %}
+            <img class="image" src="{% static 'core/img/quanta_logo.jpg' %}" style="width: 150px; height: 110px;">
+            {% endif %}
+        </figure>
+        <div class="box has-text-centered p-0 m-0">
+            <p class="title is-size-1 mb-1 pb-0">{{ request.organization.name|upper }}</p>
+            <p class="title is-size-3 mb-1 pb-0">{{ request.organization.sub_name|upper }}</p>
+            <p class="subtitle is-size-6 has-text-centered m-0 p-0">{{ request.organization.street_address }}</p>
+            <p class="subtitle is-size-6 has-text-centered m-0 p-0">BP 8735-YANSOKI-DOUALA,
+                tel:{{ request.organization.contact_number }}</p>
+            <p class="subtitle is-size-6 has-text-centered m-0 p-0">Email:{{ request.organization.contact_email }}</p>
+        </div>
+    </div>
+</div>
+<hr />
+
+<div class="block mt-3 is-flex is-align-items-center is-justify-content-space-between">
+    <div class="block is-flex is-flex-direction-column is-justify-content-center is-align-content-center">
+        <p class="title is-size-2 has-text-centered mb-1 p-0">Réçu</p>
+        <p class="subtitle is-size-6 has-text-centered m-0 p-0">No:
+            {{ facturation.bill_number|default_if_none:"N/A" }}
+        </p>
+    </div>
+
+    <figure>
+        <!-- <img class="is-student-profile-code" src="../../static/accounts/img/profile.jpg" alt=""> -->
+        <img class="p-0 m-0 image is-96x96"
+            src="{% qr_url_from_text facturation.pk size=8 version=10 image_format='png' %}" alt="Hello World!">
+    </figure>
+</div>
+
+<p class="has-text-left is-size-5"> <span class="has-text-weight-bold">Téléphone:</span>
+    {{ facturation.medical_visit.patient.phone_number }}</p>
+<p class="has-text-left is-size-5"> <span class="has-text-weight-bold">Noms et prenoms:</span>
+    {{ facturation.medical_visit.patient.username }}</p>
+<hr />
+
+<table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+
+    <tbody>
+        <tr>
+            <td class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
+                Profession </td>
+            <td class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
+                Age </td>
+            <td class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
+                Téléphone </td>
+        </tr>
+        <tr>
+            <td style="text-align: center; vertical-align: middle;">
+                {{ facturation.medical_visit.patient.profession}} </td>
+            <td style="text-align: center; vertical-align: middle;">
+                {{ facturation.medical_visit.patient.formated_age }} </td>
+            <td style="text-align: center; vertical-align: middle;">
+                {{ facturation.medical_visit.patient.phone_number}} </td>
+        </tr>
+    </tbody>
+
+
+</table>
+
+<hr />
+
+<table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth is-size-7">
+
+    <thead>
+        <tr class="is-selected">
+            <th class="has-text-centered">Product</th>
+            <th class="has-text-left">Description</th>
+            <th class="has-text-centered">Qté</th>
+            <th class="has-text-centered">Prix unitaire</th>
+            <th class="has-text-centered">Total</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for facturation_batch in facturation.facturation_batchs.all %}
+        <tr>
+            <td class="has-text-weight-medium has-text-centered is-vcentered">
+                {{ facturation_batch.batch.item.name }} </td>
+
+            <td class="has-text-centered is-vcentered">
+                {{ facturation_batch.description|safe }}
+            </td>
+            <td style="text-align: center; vertical-align: middle;">{{ facturation_batch.quantity }}</td>
+            <td style="text-align: center; vertical-align: middle;">{{ facturation_batch.unit_price.normalize }}
+            </td>
+            <td style="text-align: center; vertical-align: middle;">{{ facturation_batch.total_price.normalize }}
+            </td>
+        </tr>
+        {% endfor %}
+
+    </tbody>
+
+    <tfoot>
+
+        <tr>
+            <td class="has-text-weight-semibold has-text-centered" colspan="2">Total HT</td>
+            <th class="has-text-weight-semibold has-text-centered" colspan="3">
+                {{ facturation.total_price.normalize }}
+                FCFA
+            </th>
+        </tr>
+        <tr>
+            <td class="has-text-weight-semibold has-text-centered " colspan="2">Total HT EN LETTRE</td>
+            <td colspan="3" class="has-text-weight-semibold has-text-centered">
+                {{ facturation.total_price.normalize|to_words|capfirst }}
+                CFA
+            </td>
+        </tr>
+        <tr>
+            <td class="has-text-centered" colspan="2">Dernier payment</td>
+            <td class="has-text-centered" colspan="3">{{ facturation.medical_visit.last_payment.normalize }} FCFA
+            </td>
+        </tr>
+        <tr>
+            <td class="has-text-centered" colspan="2">Dette</td>
+            <td class="has-text-centered" colspan="3">{{ facturation.medical_visit.remaining.normalize }} FCFA
+            </td>
+        </tr>
+    </tfoot>
+</table>
+
+<hr />
+
+<div class="watermarked">SAINT JOHN</div>
+
+<p class="my-2 has-text-right">Fait à {{ request.organization.city }} le {{ facturation.created }} </p>
+<div class="block is-flex is-justify-content-space-between is-align-items-center mt-0">
+    <div class="block is-flex is-flex-direction-column is-align-items-start mb-2">
+        {% comment %} <p class="title is-size-4">Signature du patient</p> {% endcomment %}
+        <p class="subtitle is-size-6 mb-1"></p>
+        {% comment %} <p class="subtitle is-size-7 has-text-centered">{{ facturation.medical_visit.patient.username }}
+        </p> {% endcomment %}
+    </div>
+
+    <div class="block is-flex is-flex-direction-column is-align-items-start mb-2">
+        <p class="title is-size-4">La caisse</p>
+        <p class="subtitle is-size-6 mb-1"></p>
+        <p class="subtitle is-size-7 has-text-centered">{{ facturation.organization_user.user.username }}</p>
+    </div>
+</div>
+<p class="subtitle is-size-7 has-text-centered">Imprimé le {% now "SHORT_DATETIME_FORMAT" %} par
+    {{ request.organization_user.user.username }}</p>
+<div class="has-text-centered" style="margin-top: 10px;">
+    <hr />
+    <p class="is-size-5">Centre Medical Saint John de Yassa Sarl</p>
+    <p>{{ request.organization.name }} • {{ request.organization.contact_number }} •
+        {{ request.organization.name }}
+    </p>
+    <p>RCM:RC/DLA/2023/B/ - NIU:M022317969368W</p>
+</div>
+{% endblock content %}

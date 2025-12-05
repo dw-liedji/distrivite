@@ -1,0 +1,13 @@
+<div class="autocomplete-items">
+    {% for obj in objects %}
+    <div onclick="
+        document.getElementById('{{ input_id }}').value = '{{ obj }}';
+        document.getElementById('{{ input_id }}_hidden').value = '{{ obj.id }}';
+        this.parentElement.innerHTML = '';
+      ">
+        {{ obj }}
+    </div>
+    {% empty %}
+    <div class="no-results">No results found</div>
+    {% endfor %}
+</div>

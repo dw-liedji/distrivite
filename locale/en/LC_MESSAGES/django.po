@@ -1,0 +1,211 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-05-13 18:39+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: apps/core/templates/core/index.html:18
+msgid "Bring your products, we'll handle the rest."
+msgstr ""
+
+#: apps/core/templates/core/index.html:20
+msgid ""
+"\n"
+"    Quanta is the\n"
+"    cloud-computing platform that simplify the\n"
+"    complex\n"
+"    process of buying\n"
+"    from your suppliers,\n"
+"    tracking your inventory, and selling products to your Customers. Quanta "
+"is designed for everyone--individuals,\n"
+"    small\n"
+"    businesses, and large\n"
+"    enterprises.\n"
+"    "
+msgstr ""
+
+#: apps/core/templates/core/organization_features.html:14
+msgid "Categories"
+msgstr ""
+
+#: apps/core/templates/core/organization_features.html:17
+msgid "Products"
+msgstr ""
+
+#: apps/core/templates/core/organization_features.html:20
+msgid "Services"
+msgstr ""
+
+#: apps/core/templates/core/organization_features.html:23
+msgid "Catalogs"
+msgstr ""
+
+#: apps/core/templates/core/quanta.html:10
+msgid "General"
+msgstr ""
+
+#: apps/core/templates/core/quanta.html:22
+msgid "patients"
+msgstr ""
+
+#: apps/core/templates/core/quanta.html:25
+msgid "Commercials"
+msgstr ""
+
+#: apps/core/templates/core/quanta.html:28
+msgid "Coverages"
+msgstr ""
+
+#: apps/core/templates/core/quanta.html:34
+msgid "Suppliers"
+msgstr ""
+
+#: apps/core/templates/core/quanta.html:40
+msgid "Retailers"
+msgstr ""
+
+#: apps/core/templates/core/quanta.html:47
+msgid "Cash facturations"
+msgstr ""
+
+#: apps/core/templates/core/quanta.html:53
+msgid "service facturations"
+msgstr ""
+
+#: apps/core/templates/core/quanta.html:58
+msgid "Products facturations"
+msgstr ""
+
+#: apps/core/templates/core/quanta.html:66
+msgid "Purchases sent"
+msgstr ""
+
+#: apps/core/templates/core/quanta.html:72
+msgid "Purchase received"
+msgstr ""
+
+#: apps/core/templates/core/quanta.html:82
+msgid "Credit facturations"
+msgstr ""
+
+#: apps/core/templates/core/quanta.html:89
+msgid "Credit products facturations"
+msgstr ""
+
+#: apps/core/templates/core/quanta.html:97
+msgid "Credit purchases sent"
+msgstr ""
+
+#: apps/core/templates/core/quanta.html:103
+msgid "Credit purchase received"
+msgstr ""
+
+#: apps/core/templates/core/quanta.html:109
+msgid "Cash flow"
+msgstr ""
+
+#: apps/core/templates/core/quanta.html:114
+msgid "Cash register"
+msgstr ""
+
+#: apps/core/templates/core/quanta.html:119
+msgid "Expenses"
+msgstr ""
+
+#: apps/core/templates/core/quanta.html:125
+msgid "Expense Categories"
+msgstr ""
+
+#: apps/core/templates/core/quanta.html:132
+msgid "Administration"
+msgstr ""
+
+#: apps/core/templates/core/quanta.html:137
+msgid "Settings"
+msgstr ""
+
+#: apps/inventories/models.py:81
+msgid "categories"
+msgstr ""
+
+#: apps/orders/forms.py:12
+msgid "Enter the client Quanta."
+msgstr ""
+
+#: apps/users/models.py:100
+msgid "email address"
+msgstr ""
+
+#: apps/users/models.py:107
+msgid "username"
+msgstr ""
+
+#: apps/users/models.py:111
+msgid "Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."
+msgstr ""
+
+#: apps/users/models.py:115
+msgid "A user with that username already exists."
+msgstr ""
+
+#: apps/users/templates/users/organizations.html:15
+msgid "Your organizations"
+msgstr ""
+
+#: apps/users/templates/users/organizations.html:17
+msgid "These are the organizations that you are a member"
+msgstr ""
+
+#: apps/users/templates/users/organizations.html:25
+msgid "Create an new organization"
+msgstr ""
+
+#: extra_views/dates.py:18
+msgid "Monday"
+msgstr ""
+
+#: extra_views/dates.py:19
+msgid "Tuesday"
+msgstr ""
+
+#: extra_views/dates.py:20
+msgid "Wednesday"
+msgstr ""
+
+#: extra_views/dates.py:21
+msgid "Thursday"
+msgstr ""
+
+#: extra_views/dates.py:22
+msgid "Friday"
+msgstr ""
+
+#: extra_views/dates.py:23
+msgid "Saturday"
+msgstr ""
+
+#: extra_views/dates.py:24
+msgid "Sunday"
+msgstr ""
+
+#: quanta/settings/common.py:185
+msgid "English"
+msgstr ""
+
+#: quanta/settings/common.py:186
+msgid "French"
+msgstr ""

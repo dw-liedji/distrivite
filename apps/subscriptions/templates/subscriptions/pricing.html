@@ -1,0 +1,96 @@
+{% extends "core/base.html" %}
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 class="title">Pricing Plans</h1>
+        <div class="pricing-toggle has-text-centered">
+            <label class="radio">
+                <input type="radio" name="pricing-toggle" value="monthly" checked>
+                Monthly
+            </label>
+            <label class="radio">
+                <input type="radio" name="pricing-toggle" value="yearly">
+                Yearly
+            </label>
+        </div>
+        <div class="columns is-multiline">
+            <div class="column is-one-third">
+                <div class="card">
+                    <div class="card-header">
+                        <p class="card-header-title">Basic</p>
+                    </div>
+                    <div class="card-content">
+                        <div class="content">
+                            <p class="title is-4">$249/<span class="price-period">month</span></p>
+                            <ul>
+                                <li>5GB Storage</li>
+                                <li>10 Email Accounts</li>
+                                <li>Basic Support</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <a class="button is-primary is-fullwidth" href="#">Sign Up</a>
+                    </div>
+                </div>
+            </div>
+            <div class="column is-one-third">
+                <div class="card">
+                    <div class="card-header">
+                        <p class="card-header-title">Pro</p>
+                    </div>
+                    <div class="card-content">
+                        <div class="content">
+                            <p class="title is-4">$999/<span class="price-period">month</span></p>
+                            <ul>
+                                <li>25GB Storage</li>
+                                <li>50 Email Accounts</li>
+                                <li>Priority Support</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <a class="button is-primary is-fullwidth" href="#">Sign Up</a>
+                    </div>
+                </div>
+            </div>
+            <div class="column is-one-third">
+                <div class="card">
+                    <div class="card-header">
+                        <p class="card-header-title">Enterprise</p>
+                    </div>
+                    <div class="card-content">
+                        <div class="content">
+                            <p class="title is-4">$1400.99/<span class="price-period">month</span></p>
+                            <ul>
+                                <li>100GB Storage</li>
+                                <li>Unlimited Email Accounts</li>
+                                <li>Dedicated Support</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <a class="button is-primary is-fullwidth" href="#">Sign Up</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    // toggle monthly/yearly prices
+    $('input[name="pricing-toggle"]').change(function () {
+        var period = $(this).val();
+        $('.price-period').text(period);
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        // Add active class to the clicked pricing card
+        $('.card').click(function () {
+            $(this).addClass('is-active').siblings().removeClass('is-active');
+        });
+    });
+</script>
+{% endblock content %}

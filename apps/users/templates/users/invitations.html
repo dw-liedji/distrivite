@@ -1,0 +1,57 @@
+{% extends "core/base.html" %}
+
+{% comment %} {% load extra_filters %} {% endcomment %}
+
+{% block title %}User - invitations{% endblock title %}
+
+{% block content %}
+
+<section class="section">
+    <div class="block has-text-centered">
+        <p class="title is-size-4">
+            Invitations
+        </p>
+        <p class="subtitle is-size-5">Your invitations:</p>
+    </div>
+
+    <div class="container is-fluid is-centered">
+        {% if invitations %}
+        {% for invitation in invitations %}
+        <article class="br2 ba dark-gray b--black-10 mv4 w-100">
+            <div class="pa2 ph3-ns pb3-ns">
+                <div class="dt w-100 mt1">
+                    <div class="box">
+                        <span class="title is-size-4">Invitation to join {{ invitation.organization.name|title }}</span>
+                        <div class="is-flex is-justify-content-flex-start is-align-items-flex-center">
+                            <a class="button is-primary m-3" href="{% url 'users:invitation_accept' invitation.id %}">
+                                Accept
+                            </a>
+                            <a class="button is-secondary m-3"
+                                href="{% url 'users:invitation_rejected' invitation.id %}">
+                                Rejected
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+        {% else %}
+        <article class="block">
+            <div class="block">
+                <p class='lh-copy'>
+                    You currently don't have any invitations.
+                </p>
+                <p class="lh-copy">
+                    In case you are in need of help, feel free to browse the reference page or email
+                    <a href="mailto:liedjiwenkack@gmail.com">liedjiwenkack@gmail.com</a> with any questions you might
+                    have.
+                </p>
+            </div>
+        </article>
+        {% endif %}
+
+    </div>
+</section>
+{% endblock %}

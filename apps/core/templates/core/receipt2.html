@@ -1,0 +1,230 @@
+{% extends 'core/pdf_base.html' %}
+{% load static %}
+{% load qr_code %}
+{% load core %}
+
+{% block pdf_style %}
+<style>
+    .is-a4paper {
+        width: 794px !important;
+        height: 1123px !important;
+        margin-top: 0px !important;
+        padding-top: 10px !important;
+        margin-top: 0px !important;
+        padding-left: 60px !important;
+        padding-right: 60px !important;
+    }
+</style>
+{% endblock pdf_style %}
+
+
+{% block content %}
+<div class="has-text-left">
+    <div class="is-flex is-justify-content-center is-align-items-center">
+        <figure class="image box p-0 my-0 ml-0 mr-3">
+            <img class="image" src="{% static 'core/img/datavite.png' %}" width="150" height="60">
+        </figure>
+        <div class="box has-text-centered p-0 m-0">
+            <p class="title is-size-3 mb-1 pb-0">{{ "DATAVITE SARL"|upper }}</p>
+            <p class="subtitle is-size-6 has-text-centered m-0 p-0">BP 580 Douala, Bependa,
+                Tel:672120240 / 693124594</p>
+            <p class="subtitle is-size-6 has-text-centered m-0 p-0">Email:datavite@gmail.com</p>
+            <p class="subtitle is-size-6 has-text-centered has-text-info m-0 p-0">Platform:www.distrivite.com</p>
+        </div>
+    </div>
+</div>
+<hr class="mb-1" />
+<p class="title is-size-4 p-0 m-0 has-text-centered has-background-primary has-text-weight-bold has-text-light">
+    Facture - distrivite</p>
+
+<div class="block mt-1 mb-1 mt-0 pb-0 is-flex is-align-items-center is-justify-content-space-between">
+    <div class="block p-0 m-0 is-flex is-flex-direction-column is-justify-content-center is-align-content-center">
+        <p class="title is-size-5 has-text-centered mb-1 p-0">Facture</p>
+        <p class="subtitle is-size-6 has-text-centered m-0 p-0">
+            No:Q1697456289
+        </p>
+    </div>
+
+    <figure class="p-0 m-0">
+        <!-- <img class="is-student-profile-code" src="../../static/accounts/img/profile.jpg" alt=""> -->
+        <img class="p-0 m-0 image is-48x48" src="{% qr_url_from_text Q1697456205 size=2 version=5 image_format='png' %}"
+            alt="Hello World!">
+    </figure>
+</div>
+
+<p class="has-text-centered is-size-6 my-0"> <span class="has-text-weight-bold">CLIENT:</span>
+    INSTITUT SUPÉRIEUR DES LANGUES, DE TRADUCTION, D’INTERPRÉTATION ET DE COMMUNICATION</p>
+
+<hr class="my-1" />
+
+
+<article class="message is-dark py-0 my-1">
+    <div class="message-header">
+        <p class="is-size-6">
+            {{"Transformation digitale complète de l'éducation au cameroun"|upper}} <br>
+            <span class="is-size-7">Transformez l'Éducation avec distrivite - Votre Portail Vers l'Excellence
+                Éducative</span>
+        </p>
+    </div>
+    <div class="message-body m-0 p-0 is-size-7 has-text-justified">
+        Découvrez distrivite, bien plus qu'un simple système de gestion éducative. C'est une révolution dans la manière
+        dont les institutions éducatives fonctionnent. Avec une gestion et un suivi des cours d'une précision inégalée,
+        une planification automatisée des emplois du temps et des rapports en temps réel, distrivite libère le potentiel
+        de votre institution. Grâce à notre système basé sur le Cloud, bénéficiez d'une accessibilité mondiale, d'une
+        évolutivité instantanée et d'une sécurité renforcée. Les avantages sont infinis - éliminez les tâches
+        administratives fastidieuses, prenez des décisions éclairées avec nos KPI en temps réel, et offrez à votre
+        communauté éducative une expérience transparente et collaborative. Investissez dans distrivite aujourd'hui pour
+        façonner un avenir éducatif plus intelligent, plus connecté et plus prospère. Votre succès commence ici.
+    </div>
+</article>
+
+
+<article class="message is-dark my-5 py-0">
+    <div class="message-header">
+        <p class="is-size-6"> {{"Description du service distrivite:"|upper}} </p>
+    </div>
+    <div class="message-body m-0 p-0">
+
+        <table class="table m-0 p-0 is-bordered is-striped is-narrow is-hoverable is-fullwidth is-size-7">
+
+            <thead>
+                <tr class="is-selected">
+                    <th class="has-text-centered">#</th>
+                    <th class="has-text-centered"> {{ "Module"|upper }} </th>
+                    <th class="has-text-centered"> {{ "Plan"|upper }} </th>
+                    <th class="has-text-centered"> {{ "Description"|upper }} </th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td style="text-align: center; vertical-align: middle;">1</td>
+                    <td style="text-align: center; vertical-align: middle;">
+                        <p class="is-size-7 has-text-centered">
+                            Suivi des enseignements
+                        </p>
+                    </td>
+                    <td style="text-align: center; vertical-align: middle;">
+                        <p class="is-size-7 has-text-justified">
+                            Starter
+                        </p>
+                    </td>
+                    <td style="text-align: center; vertical-align: middle;">
+                        <p class="is-size-7 has-text-justified">
+                            1. Gestion Universitaire ;
+                            2. Gestion des enseignants ;
+                            3. Gestion de la planification des enseignements;
+                            4. Gestion des enseignements;
+                            5. Suivi des enseignements;
+                            6. Suivi de la presence et assiduité des enseignants;
+                            7. Gestion automatique de la paie des
+                            enseignants
+                            vacataires;
+                            8. Calcul Automatique
+                            des Heures de Cours
+                            Enseignées;
+                            9. Emplois du Temps
+                            Automatiques
+                            des enseignements
+                            10. Rapports des enseignements en Temps
+                            Réel; 11. Gestion des cahiers
+                            de texte digitales.
+                        </p>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+</article>
+
+
+<article class="message is-dark my-1 py-0">
+    <div class="message-header">
+        <p class="is-size-6">LICENCE ET FORFAITS</p>
+    </div>
+    <div class="message-body m-0 p-0">
+        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth is-size-7">
+
+            <thead>
+                <tr class="is-selected">
+                    <th class="has-text-centered">TYPE DE LICENCE</th>
+                    <th class="has-text-centered">DURÉE</th>
+                    <th class="has-text-centered">QUANTITÉ</th>
+                    <th class="has-text-centered">PRIX UNITAIRE</th>
+                    <th class="has-text-centered">PRIX TOTAL</th>
+                    <th class="has-text-centered">PRIX TOTAL EN LETTRE</th>
+                    <th class="has-text-centered">AVANCE</th>
+                    <th class="has-text-centered">RESTE</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td style="text-align: center; vertical-align: middle;">{{ deposit.cash_register.name }}
+                    <td style="text-align: center; vertical-align: middle;">{{ deposit.reason }}</td>
+                    </td>
+                </tr>
+            </tbody>
+
+            <tfoot>
+                <tr>
+                    <th class="has-text-weight-medium has-text-centered" colspan="1">UNIVERSITAIRE
+                    </th>
+                    <th class="has-text-weight-medium has-text-centered" colspan="1">01 AN
+                    </th>
+                    <th class="has-text-weight-medium has-text-centered" colspan="1">01
+                    </th>
+                    <th class="has-text-weight-medium has-text-centered" colspan="1">500 000 FCFA
+                    </th>
+                    <th class="has-text-weight-medium has-text-centered" colspan="1">500 000 FCFA
+                    </th>
+                    <td colspan="1" class="has-text-weight-medium has-text-centered">
+                        {{ 500000|to_words|capfirst }} francs CFA
+                    </td>
+                    <th class="has-text-weight-medium has-text-centered" colspan="1">0 FCFA
+                    </th>
+                    <th class="has-text-weight-medium has-text-centered" colspan="1">500 000 FCFA
+                    </th>
+                </tr>
+                <tr>
+                    <td colspan="8">
+                        <hr class="my-3" />
+                    </td>
+                </tr>
+                <tr>
+                    <th class="has-text-weight-medium has-text-centered" colspan="3">Net à payer
+                    </th>
+                    <th class="has-text-weight-medium has-text-centered" colspan="2">500 000 FCFA
+                    </th>
+                    <th class="has-text-weight-medium has-text-centered" colspan="3">{{500000|to_words|capfirst}} FCFA
+                    </th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</article>
+
+<hr class="my-5" />
+
+<div class="watermarked">DATAVITE</div>
+
+<p class="my-2 has-text-right">Fait à {{ "DOUALA" }} le 28/05/2024 </p>
+<div class="block is-flex is-justify-content-space-between is-align-items-center mt-0">
+    <div class="block is-flex is-flex-direction-column is-align-items-start mb-2">
+        {% comment %} <p class="title is-size-4">Signature du patient</p>
+        <p class="subtitle is-size-6 mb-1"></p>
+        <p class="subtitle is-size-7 has-text-centered">{{ deposit.patient.user.username }}</p> {% endcomment %}
+    </div>
+
+    <div class="block is-flex is-flex-direction-column is-align-items-start mb-4">
+        <p class="title is-size-5">La direction</p>
+    </div>
+</div>
+<div class="has-text-centered" style="margin-top: 0px;">
+    <hr class="my-1" />
+    {% comment %} <p class="is-size-7">Cloud computing solutions for every business</p> {% endcomment %}
+    <p>DATAVITE SARL • +237 693124594 / +237 672120240 • DATAVITE SARL </p>
+    {% comment %} <p>RCM:RC/DLA/2023/B/ - NIU:M022317969368W</p> {% endcomment %}
+</div>
+{% endblock content %}

@@ -1,0 +1,105 @@
+from django.urls import include, path
+
+from apps.organization import views
+
+from . import views
+
+app_name = "org_things"
+
+urlpatterns = [
+    path(
+        "change/",
+        views.OrganizationUpdateView.as_view(),
+        name="org_change",
+    ),
+    path(
+        "users/",
+        views.OrgUserListView.as_view(),
+        name="org_user_list",
+    ),
+    path(
+        "users/add/",
+        views.OrgUserAddView.as_view(),
+        name="org_user_add",
+    ),
+    path(
+        "users/<uuid:pk>/change",
+        views.OrgUserChangeView.as_view(),
+        name="org_user_change",
+    ),
+    path(
+        "groups/",
+        views.OrgGroupListView.as_view(),
+        name="org_group_list",
+    ),
+    path(
+        "group_add",
+        views.OrgGroupCreateView.as_view(),
+        name="org_group_add",
+    ),
+    path(
+        "groups/<uuid:pk>/change",
+        views.OrgGroupChangeView.as_view(),
+        name="org_group_change",
+    ),
+    path(
+        "groups/<uuid:pk>/detail",
+        views.OrgGroupDetailView.as_view(),
+        name="org_group_detail",
+    ),
+    path(
+        "groups/<uuid:pk>/delete",
+        views.OrgGroupDeleteView.as_view(),
+        name="org_group_delete",
+    ),
+    path(
+        "groups/<uuid:group>/users",
+        views.OrgGroupUserListView.as_view(),
+        name="org_group_user_list",
+    ),
+    path(
+        "groups/<uuid:group>/users/add/",
+        views.OrgGroupUserCreateView.as_view(),
+        name="org_group_user_add",
+    ),
+    path(
+        "groups/<uuid:group>/users/<uuid:pk>/change/",
+        views.OrgGroupUserUpdateView.as_view(),
+        name="org_group_user_change",
+    ),
+    path(
+        "groups/<uuid:group>/users/<uuid:pk>/detail/",
+        views.OrgGroupUserDetailView.as_view(),
+        name="org_group_user_detail",
+    ),
+    path(
+        "groups/<uuid:group>/users/<uuid:pk>/delete/",
+        views.OrgGroupUserDeleteView.as_view(),
+        name="org_group_user_delete",
+    ),
+    path(
+        "invitations/",
+        views.OrgInvitationListView.as_view(),
+        name="org_invitation_list",
+    ),
+    path(
+        "invitations/add/",
+        views.OrgInvitationCreateView.as_view(),
+        name="org_invitation_add",
+    ),
+    path(
+        "invitations/<uuid:pk>/change",
+        views.OrgInvitationChangeView.as_view(),
+        name="org_invitation_change",
+    ),
+    path(
+        "invitations/<uuid:pk>/detail/",
+        views.OrgInvitationDetailView.as_view(),
+        name="org_invitation_detail",
+    ),
+    path(
+        "invitations/<uuid:pk>/delete/",
+        views.OrgInvitationDeleteView.as_view(),
+        name="org_invitation_delete",
+    ),
+]

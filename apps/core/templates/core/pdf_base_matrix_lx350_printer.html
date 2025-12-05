@@ -1,0 +1,89 @@
+{% load static %}
+{% load qr_code %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- External CSS -->
+    <link rel="stylesheet" href="{% static 'core/css/quanta.min.css' %}" />
+
+    <style type="text/css" media="all">
+        @media print {
+
+            /* Defining the custom paper size for the Epson LX-350 */
+            @page {
+                size: A4 portrait;
+                margin: 0;
+                /* Remove default margins for better fitting */
+            }
+
+            html,
+            body {
+                display: block;
+                font-family: 'Courier New', Courier, monospace;
+                /* Monospace font for dot-matrix printers */
+                margin: 0;
+            }
+
+            .logo {
+                width: 30%;
+                /* Adjusting image/logo size */
+            }
+
+            /* General text and layout adjustments for printing */
+            * {
+                font-size: 12px;
+                /* Increased font size for readability */
+                /* line-height: 1.4;*/
+                /* Improved line spacing for clearer printing */
+                color: black;
+                /* Ensure black text */
+                background: none;
+                /* Avoid background for print clarity */
+            }
+
+            hr {
+                height: 1px;
+                border: 0;
+                border-top: 1px solid black;
+                margin: 1em 0;
+                padding: 0;
+            }
+
+            .watermarked {
+                color: #02020223;
+                font-size: 96px;
+                position: absolute;
+                top: 450px;
+                left: 150px;
+                transform: rotate(-75deg);
+                z-index: 0;
+                opacity: 0.15;
+            }
+
+            table,
+            th,
+            tr,
+            td {
+                border: 2px dotted black;
+                border-collapse: collapse;
+            }
+
+        }
+    </style>
+
+    <title>{% block title %}{% endblock title %}</title>
+</head>
+
+<body class="block m-0 p-0">
+    <div class="box m-0 p-0">
+        {% block content %}
+        {% endblock content %}
+    </div>
+</body>
+
+</html>

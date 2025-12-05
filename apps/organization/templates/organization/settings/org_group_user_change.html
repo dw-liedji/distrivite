@@ -1,0 +1,55 @@
+{% extends 'core/quanta.html' %}
+{% load crispy_forms_tags %}
+{% load partials %}
+{% load core %}
+
+{% block title %}
+Update team member
+{% endblock title %}
+
+{% block quanta_content %}
+{% partialdef change inline=True %}
+{% include "core/partials/messages.html" %}
+
+<section class="section fade-in">
+    <div class="container">
+        <div class="columns">
+            <div class="column is-half is-offset-one-quarter">
+                <div class="box">
+                    <h1 class="title is-4 has-text-centered">Create team members</h1>
+                    <form action="" method="POST"
+                        hx-post="{% url 'organization_features:org_things:org_group_user_change' request.organization.slug group.pk object.pk %}"
+                        hx-target="#quanta_content" hx-indicator="#custom-htmx-indicator" hx-swap="innerHTML"
+                        class="mb-4">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        {{ form.media }}
+                        <div class="columns is-multiline is-mobile">
+                            <div
+                                class="column is-full-mobile is-flex is-justify-content-center is-align-org_group_users-center">
+                                <button type="button"
+                                    hx-get="{% url 'organization_features:org_things:org_group_user_list' request.organization.slug group.pk %}"
+                                    hx-target="#quanta_content" hx-indicator="#custom-htmx-indicator"
+                                    hx-swap="innerHTML"
+                                    class="button is-light is-rounded is-medium mx-2 has-text-grey-dark dark:has-text-grey-light">
+                                    Cancel
+                                </button>
+
+                                <button id="submit_permissions_button" type="button"
+                                    class="button is-primary is-rounded is-medium mx-2">
+                                    Save Now
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% include "core/partials/dal_fix.html" %}
+{% endpartialdef  %}
+
+
+
+{% endblock quanta_content %}

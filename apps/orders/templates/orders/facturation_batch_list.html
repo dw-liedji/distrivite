@@ -1,0 +1,94 @@
+{% extends 'core/quanta.html' %}
+{% load partials %}
+{% load core %}
+
+{% block title %}
+Organizations facturation_batch
+{% endblock title %}
+
+{% block quanta_content %}
+
+{% partialdef list inline=True %}
+{% include "core/partials/messages.html" %}
+
+<div class="block px-2 mx-2 px-5-desktop mx-5-desktop fade-in">
+
+    <div class="has-text-right my-3">
+        {% if request.organization_user.is_admin or 'orders.add_facturationbatch' in organization_user_perms %}
+        <a class="button is-primary"
+            hx-get="{% url 'organization_features:orders:facturation_batch_add' request.organization.slug facturation.pk %}"
+            hx-target="#quanta_content" hx-indicator="#custom-htmx-indicator" hx-swap="innerHTML">Add
+            facturation_batch</a>
+        {% endif %}
+    </div>
+
+    <div class="table-container">
+        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+            <thead class="is-selected">
+                <tr class="is-selected">
+                    <th>#</th>
+                    <th style="text-align: center;">Pharmacy</th>
+                    <th style="text-align: center;">Name</th>
+                    <th style="text-align: center;">Unit price</th>
+                    <th style="text-align: center;">Quantity</th>
+                    <th style="text-align: center;">Total price</th>
+                    <th style="text-align: center;">User</th>
+                    <th style="text-align: center;">created</th>
+                    <th style="text-align: center;">modified</th>
+                    <th style="text-align: center;" colspan="4">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for facturation_batch in facturation_batchs %}
+                <tr>
+                    <td style="text-align: center;">{{ forloop.counter0 }}</td>
+
+                    <td style="text-align: center;">{{ facturation_batch.stock_choice }}</td>
+                    <td style="text-align: center;">{{ facturation_batch.batch.item.name}}</td>
+                    <td style="text-align: center;">{{ facturation_batch.unit_price.normalize}}</td>
+                    <td style="text-align: center;">{{ facturation_batch.quantity}}</td>
+                    <td style="text-align: center;">{{ facturation_batch.total_price.normalize}}</td>
+                    <td style="text-align: center;">{{ facturation_batch.organization_user }}</td>
+                    <td style="text-align: center;">{{ facturation_batch.created}}</td>
+                    <td style="text-align: center;">{{ facturation_batch.modified}}</td>
+
+
+                    {% if request.organization_user.is_admin or 'orders.change_facturationbatch' in organization_user_perms %}
+                    <td style="text-align: center;"><button
+                            hx-get="{% url 'organization_features:orders:facturation_batch_change' request.organization.slug facturation.pk facturation_batch.pk %}?{% url_replace %}"
+                            hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
+                            class="button">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                    </td>
+                    {% endif %}
+
+                    {% if request.organization_user.is_admin or 'orders.view_facturationbatch' in organization_user_perms %}
+                    <td style="text-align: center;">
+                        <button
+                            hx-get="{% url 'organization_features:orders:facturation_batch_detail' request.organization.slug facturation.pk facturation_batch.pk %}?{% url_replace %}"
+                            hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
+                            class="button">
+                            <i class="fa-solid fa-eye"></i></button>
+                    </td>
+                    {% endif %}
+
+                    {% if request.organization_user.is_admin or 'orders.delete_facturationbatch' in organization_user_perms %}
+                    <td style="text-align: center;"><button
+                            hx-get="{% url 'organization_features:orders:facturation_batch_delete' request.organization.slug facturation.pk facturation_batch.pk %}?{% url_replace %}"
+                            hx-target="#quanta_content" hx-confirm="Are you sure you want to delete?" class="button">
+                            <i class="fa-solid fa-trash-can fa-1x has-text-danger"></i></button>
+                    </td>
+                    {% endif %}
+
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% include "core/partials/pagination.html" %}
+    </div>
+</div>
+
+{% endpartialdef %}
+
+{% endblock quanta_content %}

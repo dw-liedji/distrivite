@@ -1,0 +1,102 @@
+{% extends "core/base.html" %}
+{% load org_tags %}
+{% load static %}
+
+{% load i18n %}
+{% comment %} {% load extra_filters %} {% endcomment %}
+
+{% block title %}User - Organizations{% endblock title %}
+{% block content %}
+
+<div class="section">
+    <div class="block has-text-centered">
+        <p class="title is-size-4">
+            {% trans 'Your organizations' %}
+        </p>
+        <p class="subtitle is-size-5">{% trans 'These are the organizations that you are a member' %}</p>
+    </div>
+
+    <div class="container">
+
+        <p class="has-text-right"><a class="button is-primary mb-3 has-text-weight-semibold"
+                href="{% url 'organizations:organization_create' %}">{% trans 'Create an new organization' %}</a>
+        </p>
+        <div class="columns is-multiline is-centered m-0 p-0">
+
+            {% if organizations.exists %}
+            {% for organization in organizations %}
+            <div class="box column p-0 m-1 is-5">
+                <article class="card">
+                    <div class="media">
+                        <aside class="media-left">
+                            {% if organization.logo %}
+                            <a class="navbar-item" data-item="home">
+                                <img class="image is-64x64 p-0 m-0" src="{{ organization.logo.url }}">
+                            </a>
+                            {% else %}
+                            <a class="navbar-item" data-item="site-home">
+                                <img class="image is-64x64 p-0 m-0"
+                                    src="{% static 'core/img/logos/color_transparent.png' %}" alt="Image">
+                            </a>
+                            {% endif %}
+                        </aside>
+
+                        <div class="media-content">
+
+                            <div class="content is-flex is-justify-content-center is-align-items-center">
+                                {% comment %} <p class="subtitle is-size-5 is-marginless">
+                                    Owner:{{organization.owner.organization_user.user.username}}
+                                </p> {% endcomment %}
+                                <div>
+                                    <p class="title is-4 is-spaced is-marginless">
+                                        {{ organization.name|title|slice:":25" }}{% if organization.name|length > 25 %}...{% endif %}
+                                    </p>
+                                    <p class="subtitle is-size-5 is-marginless">
+                                        {{ organization.get_type_choice_display|title|slice:":20" }}{% if organization.get_type_choice_display|length > 20 %}...{% endif %}
+                                    </p>
+                                    <p class="is-size-6 is-marginless">
+                                        Country:{{organization.country}}
+                                    </p>
+                                    <p class="is-size-6 is-marginless">
+                                        City: {{organization.city}}
+                                    </p>
+                                    <p class="is-size-6 is-marginless">
+                                        Contact: {{organization.contact_number}}
+                                    </p>
+                                    <p class="is-size-6 is-marginless">
+                                        E-mail: {{organization.contact_email}}
+                                    </p>
+                                </div>
+                                <a class="button is-primary is-large"
+                                    href="{% url 'organization_features:org_reports:report' organization.slug %}">Open</a>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% else %}
+        <article class="block">
+            <div class="block">
+                <p class='is-size-6'>
+                    You currently don't have any organizations.
+                    You can <a href="{% url 'organizations:organization_create' %}">create an organization</a> or
+                    ask a collegue to invite you with your email:
+                    <a href="mailto:{{ request.user.email }}">{{ request.user.email }}</a>.
+                    Organizations you are invited will be listed here.
+                </p>
+                <p class="is-size-6">
+                    In case you are in need of help, feel free to browse the reference page or email
+                    <a href="mailto:liedjiwenkack@gmail.com">liedjiwenkack@gmail.com</a> with any questions you might
+                    have.
+                </p>
+            </div>
+        </article>
+        {% endif %}
+    </div>
+</div>
+
+
+{% endblock %}

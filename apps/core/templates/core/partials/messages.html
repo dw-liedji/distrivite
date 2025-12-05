@@ -1,0 +1,19 @@
+{% block django_messages %}
+
+<section class="section py-0 my-0 mt-5">
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div
+            class="message {% if message.tags == 'success' %}is-primary{% elif message.tags == 'info' %}is-link{% elif message.tags == 'warning' %}is-info{% elif message.tags == 'error' %}is-warning{% elif message.tags == 'danger' %}is-danger{% endif %}">
+            <div class="message-body">
+                {{ message|safe }}
+                <button id="delete" class="delete" aria-label="close"></button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</section>
+
+{% endblock django_messages %}

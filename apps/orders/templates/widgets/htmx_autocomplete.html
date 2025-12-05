@@ -1,0 +1,5 @@
+<div class="htmx-autocomplete-container">
+    <input {% include "django/forms/widgets/attrs.html" %} value="{{ widget.value }}" />
+    <input type="hidden" name="{{ widget.name }}" id="{{ widget.attrs.id }}_hidden" />
+    <div class="htmx-autocomplete-results"></div>
+</div>

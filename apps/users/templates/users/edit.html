@@ -1,0 +1,34 @@
+{% extends 'core/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+Create student
+{% endblock title %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="columns">
+            <div class="column is-half is-offset-one-quarter">
+                <div class="box">
+                    <h1 class="title is-4 has-text-centered">Manage profile</h1>
+
+                    <form method="post" enctype="multipart/form-data" class="mb-4">
+                        {{ user_form|crispy }}
+                        {{ user_form.media }}
+                        {% csrf_token %}
+                        <div class="field is-grouped is-grouped-centered">
+                            <div class="control">
+                                <button class="button is-primary" type="submit">Save</button>
+                            </div>
+                            <div class="control">
+                                <a class="button is-light" href="{% url 'users:settings' %}">Cancel</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}

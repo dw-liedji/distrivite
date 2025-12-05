@@ -1,0 +1,101 @@
+{% extends 'core/quanta.html' %}
+{% load crispy_forms_tags %}
+
+{% load humanize %}
+
+{% block title %}
+Organizations facturation report
+{% endblock title %}
+
+{% block quanta_content %}
+
+<section class="section">
+    <form id="my_form" method="GET" class="form-horizontal is-horizontal">
+        {% csrf_token %}
+        <!-- Main container -->
+        <nav class="level">
+            <!-- Left side -->
+            <div class="level-left">
+                <div class="level-item">
+                    <div class="columns">
+                        {% for field in teaching_session_filter.form %}
+                        <div class="column is-one-two">
+                            {{ field|as_crispy_field }}
+                        </div>
+                        {% endfor %}
+                        {{ teaching_session_filter.form.media }}
+                    </div>
+                </div>
+            </div>
+        </nav>
+        {% include 'core/partials/filter_actions.html' %}
+    </form>
+</section>
+
+{% if organization_subscription.is_active %}
+You have an active {{organization_subscription.plan.name}} subscription
+{% else %}
+You have an expired {{organization_subscription.plan.name}} subscription
+{% endif %}
+
+{% if "dashboard" in organization_features %}
+<p class="subtitle"> {{ organization_features }} </p>
+{% else %}
+<p class="subtitle tag">Dashboard feature is not availaible in your current subscription, please upgrade to have
+    more features
+</p>
+{% endif %}
+
+
+</p>
+
+<div class="block px-0 mx-0 py-0 my-0">
+    <div class="table-container">
+        <p class="title is-size-2">Rapport des enseignements</p>
+        <p class="title is-size-5">Session de cours</p>
+        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth is-size-5">
+            <thead class="is-selected">
+                <tr class="is-selected">
+                    {% comment %} <th>#</th> {% endcomment %}
+                    <th style="text-align: center;">Taux de presence au cours</th>
+                    <th style="text-align: center;">Taux des salles de classes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    {% comment %} <td style="text-align: center;">{{ forloop.counter0 }}</td> {% endcomment %}
+                    <td style="text-align: center;">
+                        {{ reports.session.taux_presence}} %
+                    </td>
+                    <td style="text-align: center;">
+                        {{ reports.session.efficacite}} % </td>
+                </tr>
+            </tbody>
+        </table>
+
+
+    </div>
+</div>
+
+
+
+<script>
+    $(document).ready(function () {
+        $('#search').click(function () {
+            $('#my_form').attr('action',
+                "{% url 'organization_features:org_reports:report' request.organization.slug %}"
+            );
+            $('#my_form').submit();
+        });
+        $('#download').click(function () {
+            $('#my_form').attr('action',
+                "{% url 'organization_features:org_reports:report_print' request.organization.slug %}"
+            );
+            $('#my_form').submit();
+        });
+    });
+</script>
+
+
+
+{% endblock quanta_content %}

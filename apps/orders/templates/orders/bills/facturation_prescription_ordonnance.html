@@ -1,0 +1,169 @@
+{% extends 'core/pdf_base.html' %}
+{% load static %}
+{% load qr_code %}
+{% load core %}
+{% load mathfilters %}
+
+
+{% block content %}
+
+<style>
+    .protractor {
+        position: relative;
+        width: 100px;
+        height: 50px;
+        border-radius: 50px 50px 0 0;
+        border: 2px solid #00d1b2;
+        background: #f5f5f5;
+        margin: 0 auto;
+    }
+
+    .protractor .angle-line {
+        position: absolute;
+        width: 2px;
+        height: 50px;
+        background: #ff3860;
+        top: 0;
+        left: 50%;
+        transform-origin: bottom center;
+    }
+
+    .watermarked {
+        color: #02020223;
+        position: absolute;
+        text-transform: uppercase;
+        font-weight: bold;
+        font-size: 60px;
+        top: 130px;
+        padding: 4px 12px 0px;
+        opacity: 0.28;
+        transform: rotate(-45deg);
+        margin-right: 40px;
+        z-index: 1
+    }
+</style>
+
+<div class="is-flex is-justify-content-space-around is-align-items-center p-0 my-0">
+    <figure class="image p-0 my-0 ml-0 mr-3">
+        {% if request.organization.logo %}
+        <img class="image p-0 m-0" src="{{ request.organization.logo.url }}" style="width: 150px; height: 60px;">
+        {% else %}
+        <img class="image p-0 m-0" src="{% static 'core/img/quanta_logo.jpg' %}" style="width: 150px; height: 60px;">
+        {% endif %}
+    </figure>
+    <div class="box has-text-centered p-0 m-0">
+        <p class="title is-size-6 mb-0 pb-0">{{ request.organization.name|upper }}</p>
+        <p class="title is-size-6 mb-0 pb-0">{{request.organization.sub_name}}</p>
+        <p class="subtitle is-size-7 has-text-centered m-0 p-0">{{ request.organization.street_address }}</p>
+        <p class="subtitle is-size-7 has-text-centered m-0 p-0">BP 8735-YANSOKI-DOUALA,
+            tel:{{ request.organization.contact_number }}</p>
+        <p class="subtitle is-size-7 has-text-centered m-0 p-0">Email:{{ request.organization.contact_email }}</p>
+    </div>
+</div>
+
+<hr class="mb-0" />
+
+<div class="block py-0 my-0 is-flex is-align-items-center is-justify-content-space-between">
+    <div class="block is-flex is-flex-direction-column is-justify-content-center is-align-items-center">
+        <p class="title is-size-5 has-text-centered my-0 p-0">ORDONNANCE</p>
+        <p class="subtitle is-size-7 has-text-centered m-0 p-0">No:
+            {{ consultation.bill_number|default_if_none:"N/A" }}
+        </p>
+    </div>
+
+    <figure>
+        <!-- <img class="is-student-profile-code" src="../../static/accounts/img/profile.jpg" alt=""> -->
+        <img class="p-0 m-0 image is-64x64"
+            src="{% qr_url_from_text consultation.pk size=8 version=10 image_format='png' %}" alt="Hello World!">
+    </figure>
+</div>
+
+<hr class="my-0 py-0" />
+
+<table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth is-size-7 py-0 my-0">
+    <tbody>
+        <tr>
+            <td class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
+                Noms et prenoms </td>
+            <td class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
+                Profession </td>
+            <td class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
+                Age </td>
+            <td class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
+                Téléphone </td>
+        </tr>
+        <tr>
+            <td style="text-align: center; vertical-align: middle;">
+                {{ consultation.facturation.patient.username }} </td>
+            <td style="text-align: center; vertical-align: middle;">
+                {{ consultation.facturation.patient.profession}} </td>
+            <td style="text-align: center; vertical-align: middle;">
+                {{ consultation.facturation.patient.birth_date|extract_years }} </td>
+            <td style="text-align: center; vertical-align: middle;">
+                {{ consultation.facturation.patient.phone_number}} </td>
+        </tr>
+    </tbody>
+</table>
+
+<table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth is-size-7 py-0 my-0">
+
+    <tbody>
+        <tr class="is-selected">
+            <td class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
+                Oeil Droit </td>
+            <td class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
+                Oeil Gauche </td>
+            <td class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
+                Traitement </td>
+        </tr>
+        <tr>
+            <td style="text-align: center; vertical-align: middle;">
+                {{ consultation.render_right|safe }} </td>
+            <td style="text-align: center; vertical-align: middle;">
+                {{ consultation.render_left|safe }} </td>
+            <td style="text-align: center; vertical-align: middle;">
+                {{ consultation.render_additional_info|safe }} </td>
+        </tr>
+        <tr>
+            <td style="text-align: center; vertical-align: middle;">
+                <div class="protractor">
+                    <!-- Ligne de l'axe -->
+                    <div class="angle-line" style="transform: rotate( {{ -270|sub:consultation.right_axis }}deg);">
+                    </div>
+                </div>
+            </td>
+
+            <td style="text-align: center; vertical-align: middle;">
+                <div class="protractor">
+                    <!-- Ligne de l'axe -->
+                    <div class="angle-line" style="transform: rotate( {{ -270|sub:consultation.left_axis }}deg);">
+                    </div>
+                </div>
+            </td>
+
+            <td style="text-align: center; vertical-align: middle;">
+                <div class="block is-flex is-flex-direction-column is-align-items-start mb-2 pb-2 is-size-7">
+                    <p class="my-1 has-text-right">Fait à {{ request.organization.city }} le
+                        {{ consultation.created }} </p>
+                    <p class="title is-size-6">Médecin</p>
+                    <p class="subtitle is-size-6 mb-1"></p>
+                    {% comment %} <p class="subtitle is-size-7 has-text-centered">
+                        {{ request.organization_user.user.username }}</p> {% endcomment %}
+                </div>
+            </td>
+
+        </tr>
+    </tbody>
+</table>
+
+<div class="watermarked">SAINT JOHN</div>
+
+<div class="has-text-centered is-size-7" style="margin-top: 2px;">
+    <hr class="py-0 my-1" />
+    <p class="is-size-7">Centre Medical Saint John de Yassa Sarl</p>
+    <p class="is-size-7">{{ request.organization.name }} • {{ request.organization.contact_number }} •
+        {{ request.organization.name }}
+    </p>
+    <p class="is-size-7">RCM:RC/DLA/2023/B/ - NIU:M022317969368W</p>
+</div>
+{% endblock content %}

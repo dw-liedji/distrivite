@@ -1,0 +1,48 @@
+{% load core %}
+<nav class="pagination is-centered" role="navigation" aria-label="pagination">
+    <ul class="pagination-list">
+        {% if page_obj.has_previous %}
+        <li>
+            <a class="pagination-previous" hx-target="#quanta_content" hx-indicator="#custom-htmx-indicator"
+                hx-swap="innerHTML" hx-get="?{% url_replace page=page_obj.previous_page_number %}"
+                aria-label="previous page">
+                <span class="icon is-small">
+                    <i class="fas fa-chevron-left"></i>
+                </span>
+                Previous
+            </a>
+        </li>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+        <li>
+            <a class="pagination-link is-current" hx-target="#quanta_content" hx-indicator="#custom-htmx-indicator"
+                hx-swap="innerHTML" hx-get="?{% url_replace page=num %}" aria-current="page"
+                aria-label="page {{ num }}">
+                {{ num }}
+            </a>
+        </li>
+        {% elif num > page_obj.number|add:-3 and num < page_obj.number|add:3 %}
+        <li>
+            <a class="pagination-link" hx-target="#quanta_content" hx-indicator="#custom-htmx-indicator"
+                hx-swap="innerHTML" hx-get="?{% url_replace page=num %}" aria-label="page {{ num }}">
+                {{ num }}
+            </a>
+        </li>
+        {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+        <li>
+            <a class="pagination-next" hx-target="#quanta_content" hx-indicator="#custom-htmx-indicator"
+                hx-swap="innerHTML" hx-get="?{% url_replace page=page_obj.next_page_number %}" aria-label="next page">
+                Next
+                <span class="icon is-small">
+                    <i class="fas fa-chevron-right"></i>
+                </span>
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>

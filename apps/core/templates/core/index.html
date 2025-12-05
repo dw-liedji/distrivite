@@ -1,0 +1,284 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% load i18n %}
+{% load embed_video_tags %}
+
+{% comment %} {% block info %}
+<div class="notification is-info my-0 has-text-centered">
+  <span class="title is-size-4">Let's talk :</span>
+  <a class="mx-3" href="mailto:liedjiwenkack@gmail.com"><i
+      class="fa fa-envelope fa-2xl mr-2"></i><span>liedjiwenkack@gmail.com</span></a>
+  <a class="mx-3" href="tel:+237672120240"><i class="fa-brands fa-whatsapp fa-2xl mr-2"></i><span>+237
+      672120240</span></a>
+  <a class="mx-3" href="tel:+237693124594"><i class="fa fa-phone fa-2xl mr-2"></i><span>+237 693124594</span></a>
+</div>
+{% endblock info %} {% endcomment %}
+
+{% block content %}
+
+<!--Hero-->
+<section id="hero" class="hero is-medium">
+  <div class="hero-body">
+    <div class="container">
+      <div class="columns">
+        <div class="column is-two-thirds-desktop">
+          <h1 class="title is-size-1 has-text-white">Cloud computing solutions for every business</h1>
+          <p class="subtitle is-size-3 has-text-centered-mobile has-text-white">
+            Relevant, reliable, responsible AI is built into DATAVITE cloud business solutions – to help you predict,
+            manage,
+            and
+            navigate whatever comes next.
+          </p>
+
+          <a class="button is-primary is-rounded has-text-weight-semibold has-text-left has-text-centered-mobile is-large"
+            href="{% url 'users:accounts' %}">Get started</a>
+        </div>
+
+        <div class="column is-one-third-desktop">
+          <div id="carousel" class="carousel" style="overflow: hidden">
+
+            {% comment %} <video width="600" height="240" controls>
+              <source src="https://www.youtube.com/watch?v=obRENgwHS7A" type="video/mp4">
+              Your browser does not support the video tag.
+            </video> {% endcomment %}
+
+
+            <div class="item-1">
+              <p>item 1</p>
+              <img class="is-rounded" src="{% static 'core/img/dev/img/undraw_real_time_collaboration_c62i.svg' %}"
+                alt="Image">
+            </div>
+
+            <div class="item-2">
+              <p>item 2</p>
+              <img class="is-rounded" src="{% static 'core/img/dev/img/undraw_having_fun_iais.svg' %}" alt="Image">
+            </div>
+
+            <div class="item-3">
+              <p>item 3</p>
+              <img class="is-rounded" src="{% static 'core/img/dev/img/undraw_agreement_aajr.svg' %}" alt="Image">
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<section class="section">
+  <div class="container">
+    <div class="has-text-centered" id="services-text-container">
+      <h1 class="title is-1">Cloud solutions for every business</h1>
+      <h4 class="subtitle">
+        Proven and best in class: integrated, with silos down, productivity up, and potential unleashed. </h4>
+    </div>
+    <br />
+    <div class="columns">
+      <div class="column">
+        <a class="has-text-weight-semibold" href="https://opticio-prod-65386f79ce95.herokuapp.com/">
+          <div class="card">
+            <div class="card-content">
+              <div class="has-text-centered">
+                <img src="images/card-item-1.png" />
+              </div>
+              <h3 class="title is-3 has-text-centered" id="card-product-description">Opticion</h3>
+              <p class="has-text-centered">
+                Quanta est la plateforme informatique en nuage
+                qui simplifie le processus complexe d'achat auprès de vos fournisseurs,
+                de suivi de vos stocks et de vente de produits à vos clients. Quanta est conçu pour tous les individus,
+                petites
+                petites entreprises et les grandes entreprises.
+              </p>
+            </div>
+          </div>
+        </a>
+
+      </div>
+      <div class="column">
+        <a class="has-text-weight-semibold" href="">
+          <div class="card">
+            <div class="card-content">
+              <div class="has-text-centered">
+                <img src="images/card-item-1.png" />
+              </div>
+              <h3 class="title is-3 has-text-centered" id="card-product-description">distrivite</h3>
+              <p class="has-text-centered">
+                Quanta est la plateforme informatique en nuage qui simplifie le processus complexe d'achat auprès de vos
+                fournisseurs, de suivi de vos stocks et de vente de produits à vos clients. Quanta est conçu pour tous
+                les individus, petites petites entreprises et les grandes entreprises.
+              </p>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="column">
+        <a class="has-text-weight-semibold" href="">
+
+          <div class="card">
+            <div class="card-content">
+              <div class="has-text-centered">
+                <img src="images/card-item-1.png" />
+              </div>
+              <h3 class="title is-3 has-text-centered" id="card-product-description">Quanton</h3>
+              <p class="has-text-centered">
+                Quanta est la plateforme informatique en nuage qui simplifie le processus complexe d'achat auprès de vos
+                fournisseurs, de suivi de vos stocks et de vente de produits à vos clients. Quanta est conçu pour tous
+                les individus, petites petites entreprises et les grandes entreprises.
+              </p>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="buttons is-centered">
+      <button class="button is-black is-medium is-link">Read More</button>
+    </div>
+  </div>
+</section>
+
+
+<section class="section" id="tasty-fruits-section">
+  <h1 class="title is-1 is-white-text-title has-text-centered">VERY TASTY FRUITS</h1>
+</section>
+
+<section class="section">
+  <div class="has-text-centered">
+    <h1 class="title is-1">Trusted by companies small and large around the globe
+    </h1>
+    <h4 class="subtitle">
+      There are many variations of passages of Lorem Ipsum available, but the majority have
+    </h4>
+  </div>
+  <div class="container">
+    <div id="carousel" class="carousel" style="overflow: hidden">
+      <div class="container">
+        <div class="has-text-centered">
+          <figure class="image is-256x256 container">
+            <img class="is-rounded" src="{% static 'core/img/dev/img/client.png' %}" alt="Image">
+          </figure>
+          <h3 class="title is-3">George Ipsum</h3>
+          <p class="">
+            There are many variations of passages of Lorem Ipsum available, but the majority
+            have suffered alteration in some form, by injected humour, or randomised words which
+            don't look even slightly believable. If you are going to use a passage of Lorem
+            Ipsum, you need to be sure
+          </p>
+        </div>
+      </div>
+      <!-- end of first -->
+      <div class="container">
+        <div class="has-text-centered">
+          <figure class="image is-256x256 container">
+            <img class="is-rounded" src="{% static 'core/img/dev/img/client.png' %}" alt="Image">
+          </figure>
+          <h3 class="title is-3">George Ipsum</h3>
+          <p class="">
+            There are many variations of passages of Lorem Ipsum available, but the majority
+            have suffered alteration in some form, by injected humour, or randomised words which
+            don't look even slightly believable. If you are going to use a passage of Lorem
+            Ipsum, you need to be sure
+          </p>
+        </div>
+      </div>
+      <!-- end of second -->
+    </div>
+  </div>
+</section>
+{% comment %}
+<section id="contact" class="section">
+  <div class="container">
+    <h3 class="is-size-3 has-text-centered">
+      <strong>Let s connect</strong>
+    </h3>
+
+    <div class="box">
+      <div class="columns">
+        <div class="column">
+          <img class="is-rounded" src="{% static 'core/img/dev/img/undraw_wedding_t1yl.svg' %}" alt="Image"
+            style="height: 80%;">
+          <p class="has-text-black paragraph has-text-centered" style="padding-top: 10px;">
+            One of our team members will contact you soon <i class="fa fa-heart" aria-hidden="true"
+              style="color: red;"></i>
+
+          </p>
+        </div>
+
+        <div class="column">
+          <div class="field">
+            <label class="label">Name</label>
+            <div class="control">
+              <input class="input" type="text" placeholder="Text input">
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Email</label>
+            <div class="control has-icons-left has-icons-right">
+              <input class="input" type="email" placeholder="Email input" placeholder="example@gmail.com">
+              <span class="icon is-small is-left">
+                <i class="fa fa-envelope"></i>
+              </span>
+
+            </div>
+
+            <div class="field">
+              <label class="label">Subject</label>
+              <div class="control">
+                <input class="input" type="text" placeholder="Type subject">
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="label">Message</label>
+              <div class="control">
+                <textarea class="textarea" placeholder="Text area"></textarea>
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="control">
+                <label class="checkbox">
+                  <input type="checkbox">
+                  I agree to the <a href="#">terms and conditions</a>
+                </label>
+              </div>
+            </div>
+
+
+            <div class="field is-grouped">
+              <div class="control">
+                <button class="button is-link">Submit</button>
+              </div>
+              <div class="control">
+                <button class="button is-link is-light">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</section> {% endcomment %}
+
+<section class="map-section">
+  <iframe
+    src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d10499.966498430253!2d2.2944813!3d48.8583701!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x8ddca9ee380ef7e0!2zz4DPjc-BzrPOv8-CIM-Ezr_PhSDOkc6Qz4bOtc67!5e0!3m2!1sel!2sgr!4v1609878476869!5m2!1sel!2sgr"
+    id="map"></iframe>
+</section>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bulma-carousel@4.0.3/dist/js/bulma-carousel.min.js"></script>
+<script>
+  bulmaCarousel.attach('#carousel', {
+    initialSlide: 0,
+    slidesToScroll: 1,
+    slidesToShow: 1,
+    loop: true,
+    autoplay: true,
+    infinite: true,
+  });
+</script>
+
+{% endblock content %}

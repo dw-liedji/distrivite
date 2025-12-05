@@ -1,0 +1,66 @@
+{% extends 'core/pdf_base.html' %}
+{% load static %}
+{% load qr_code %}
+{% load core %}
+
+{% block content %}
+
+<div class="has-text-left">
+    <div class="is-flex is-justify-content-center is-align-items-center">
+        <figure class="image box p-0 my-0 ml-0 mr-3">
+            {% if request.organization.logo %}
+            <img class="image" src="{{ request.organization.logo.url }}" width="110" height="110">
+            {% else %}
+            <img class="image" src="{% static 'core/img/quanta_logo.jpg' %}" width="110" height="110">
+            {% endif %}
+        </figure>
+        <div class="box has-text-centered p-0 m-0">
+            <p class="title is-size-1 mb-1 pb-0">{{ request.organization.name }}</p>
+            <p class="subtitle is-size-6 has-text-centered m-0 p-0">{{ request.organization.street_address }}</p>
+            <p class="subtitle is-size-6 has-text-centered m-0 p-0">BP 8735-YANSOKI-DOUALA,
+                tel:{{ request.organization.contact_number }}</p>
+            <p class="subtitle is-size-6 has-text-centered m-0 p-0">Email:{{ request.organization.contact_email }}</p>
+        </div>
+    </div>
+</div>
+
+<hr />
+
+<p class="title is-size-1 has-text-centered mb-1 p-0">Rapport caisse recette</p>
+
+<table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+    <thead class="is-selected">
+        <tr class="is-selected">
+            <th>#</th>
+            <th style="text-align: center;">Somme</th>
+            <th style="text-align: center;">Employé</th>
+            <th style="text-align: center;">Raison</th>
+            <th style="text-align: center;">Heure</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for deposit in filtered_transactions %}
+        <tr>
+            <td style="text-align: center;">{{ forloop.counter }}</td>
+            <td style="text-align: center;">{{ deposit.amount.normalize}}</td>
+            <td style="text-align: center;">{{ deposit.organization_user.user.username}}</td>
+            <td style="text-align: center;">{{ deposit.reason}}</td>
+            <td style="text-align: center;">{{ deposit.created}}</td>
+        </tr>
+        {% endfor %}
+
+    </tbody>
+    <tfoot class="has-text-centered">
+        <tr>
+            <td colspan="4" class="has-text-weight-bold is-size-3">Total amount</td>
+            <td colspan="2">{{ total_amount }}</td>
+        </tr>
+        <tr>
+            <td colspan="4" class="has-text-weight-bold is-size-3">Total deposits</td>
+            <td colspan="2">{{ total_transactions }}</td>
+        </tr>
+
+    </tfoot>
+</table>
+
+{% endblock content %}

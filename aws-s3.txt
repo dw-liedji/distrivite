@@ -1,0 +1,37 @@
+
+# Django 4.2+ STORAGES configuration
+STORAGES = {
+    # Static files (CSS, JS, images)
+    "staticfiles": {
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+        "OPTIONS": {
+            "access_key": config("AWS_ACCESS_KEY_ID"),  # Or hardcode (not recommended)
+            "secret_key": config("AWS_SECRET_ACCESS_KEY"),
+            "bucket_name": config("AWS_STORAGE_BUCKET_NAME"),
+            "region_name": config("AWS_S3_REGION_NAME", "us-east-1"),
+            "location": "static",  # Directory in S3 bucket for static files
+            # "default_acl": "public-read",
+            "querystring_auth": False,  # Remove query params from URLs
+            "file_overwrite": False,
+            "custom_domain": f"{config('AWS_STORAGE_BUCKET_NAME')}.s3.amazonaws.com",
+        },
+    },
+    # Media files (uploads)
+    "default": {
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+        "OPTIONS": {
+            "access_key": config("AWS_ACCESS_KEY_ID"),
+            "secret_key": config("AWS_SECRET_ACCESS_KEY"),
+            "bucket_name": config("AWS_STORAGE_BUCKET_NAME"),
+            "region_name": config("AWS_S3_REGION_NAME", "us-east-1"),
+            "location": "media",  # Directory in S3 bucket for media files
+            # "default_acl": "public-read",
+            "file_overwrite": False,
+            "custom_domain": f"{config('AWS_STORAGE_BUCKET_NAME')}.s3.amazonaws.com",
+        },
+    },
+}
+
+# Static/Media URL settings (adjust based on your S3 setup)
+STATIC_URL = f'https://{STORAGES["staticfiles"]["OPTIONS"]["custom_domain"]}/static/'
+MEDIA_URL = f'https://{STORAGES["default"]["OPTIONS"]["custom_domain"]}/media/'

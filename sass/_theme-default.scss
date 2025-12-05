@@ -1,0 +1,152 @@
+/* We'll need some initial vars to use here */
+@charset "utf-8";
+@import "../node_modules/bulma/sass/utilities/initial-variables.sass";
+@import url('https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@1,300;1,700;1,900&family=Inter:wght@400;700&family=Lato:ital,wght@0,400;1,300;1,900&family=Roboto+Mono:ital,wght@0,300;0,400;1,700&family=Roboto:ital,wght@0,400;0,500;0,900;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+/* Base: Size */
+$size-base: 1rem;
+$default-padding: $size-base * 1.5;
+
+/* Default font */
+$family-sans-serif: 'Roboto', sans-serif,'Fira Sans', sans-serif, 'Inter', sans-serif, 'Lato', sans-serif, 'Roboto Mono', monospace;
+
+/* Base color */
+$base-color: #2e323a;
+$base-color-light: rgba(24, 28, 33, .06);
+
+/* General overrides */
+// $primary: $turquoise;
+$body-background-color: #fffcfc;
+// $link: $blue;
+// $link-visited: $purple;
+// $light-border: 1px solid $base-color-light;
+// $hr-height: 1px;
+
+/* Aside: Bulma override */
+// $menu-item-radius: 0;
+// $menu-list-link-padding: $size-base * .5 0;
+// $menu-label-color: lighten($base-color, 25%);
+// $menu-item-color: lighten($base-color, 30%);
+// $menu-item-hover-color: $white;
+// $menu-item-hover-background-color: darken($base-color, 3.5%);
+// $menu-item-active-color: $white;
+// $menu-item-active-background-color: darken($base-color, 2.5%);
+
+/* Aside: specifics */
+$aside-width: $size-base * 17;
+$aside-mobile-width: $size-base * 17;
+// $aside-icon-width: $size-base * 3;
+// $aside-submenu-font-size: $size-base * .95;
+$aside-box-shadow: none;
+$aside-background-color: $base-color;
+// $aside-tools-background-color: darken($aside-background-color, 10%);
+// $aside-tools-color: $white;
+
+// body{
+    // font-family: 'Nunito Sans', sans-serif, 'Segoe UI','Fira Sans','Droid Sans', 'Helvetica Neue',Helvetica Arial,sans-serif;
+// }
+
+$navbar-height:4.8rem;
+
+/* Additional Styles for the Template */
+/* Example: Apply background color to the form input fields */
+input[type="text"],
+input[type="password"],
+textarea {
+    background-color: $base-color-light;
+    border-color: $base-color;
+    color: $base-color;
+    font-family: $family-sans-serif;
+}
+
+
+
+html {
+    scroll-behavior: smooth;
+}
+
+.button{
+    background-color: #c7b8ea;
+}
+
+.button:hover {
+    text-shadow: 0px 0px 6px rgba(255, 255, 255, 1);
+    -webkit-box-shadow: 0px 5px 40px -10px rgba(0,0,0,0.57);
+    -moz-box-shadow: 0px 5px 40px -10px rgba(0,0,0,0.57);
+    transition: all 0.4s ease 0s;
+}
+
+/* Example: Style the submit button */
+.button.is-primary {
+    background-color: $base-color;
+    border-color: $base-color;
+}
+
+/* Example: Style the cancel button */
+.button.is-light {
+    color: $base-color;
+    border-color: $base-color;
+}
+
+/* View Button */
+.button.is-view {
+    background-color: #00b894; /* Green */
+    border-color: #00b894;
+    color: #ffffff;
+}
+.button.is-view:hover {
+    background-color: #009c7a; /* Darker green on hover */
+}
+
+/* Edit Button */
+.button.is-edit {
+    background-color: #f39c12; /* Yellow */
+    border-color: #f39c12;
+    color: #ffffff;
+}
+.button.is-edit:hover {
+    background-color: #c87f0a; /* Darker yellow on hover */
+}
+
+/* Delete Button */
+.button.is-delete {
+    background-color: #e74c3c; /* Red */
+    border-color: #e74c3c;
+    color: #ffffff;
+}
+.button.is-delete:hover {
+    background-color: #c13929; /* Darker red on hover */
+}
+
+/* External Link Button */
+.button.is-external-link {
+    background-color: #3498db; /* Blue */
+    border-color: #3498db;
+    color: #ffffff;
+}
+.button.is-external-link:hover {
+    background-color: #217dbb; /* Darker blue on hover */
+}
+
+hr.rounded {
+    border-top: 2px solid  #c7b8ea;
+    border-radius: 2px;
+  }
+
+
+#hero {
+    background: linear-gradient(180deg, rgba(63, 105, 181, 0.85) 66.67%, rgba(84, 147, 219, 0.85) 100%);
+}
+
+    
+.sectionf{
+    padding-top: 1.5rem;
+}
+
+#footer{
+    padding: 0.5rem;
+}
+
+#users-feed{
+    padding: 4rem 1.5rem;
+}
