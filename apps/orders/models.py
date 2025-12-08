@@ -260,6 +260,7 @@ class Batch(BaseModel):
     def __str__(self):
         return f"{self.item.name} ({self.expiration_date}) | {self.facturation_price.quantize(Decimal('1.'))} FCFA"
 
+
 class Stock(BaseModel):
     organization = models.ForeignKey(
         Organization, on_delete=models.CASCADE, related_name="stocks"
@@ -352,8 +353,6 @@ class Facturation(AbstractFacturation):
     custom_customer = models.CharField(max_length=100, null=True, blank=True)
     organization_user = models.ForeignKey(OrganizationUser, on_delete=models.PROTECT)
 
-    is_pay = models.BooleanField(default=False)
-    is_approved = models.BooleanField(default=False)
     is_delivered = models.BooleanField(default=True)
     is_proforma = models.BooleanField(default=False)
     objects = managers.FacturationManager()
@@ -392,35 +391,6 @@ class FacturationStock(AbstractFacturationStock):
         return f"{self.quantity} {self.stock.batch.item.name}"
 
 
-class FacturationPayment(BaseModel):
-    organization = models.ForeignKey(
-        Organization, related_name="facturation_payments", on_delete=models.CASCADE
-    )
-    facturation = models.ForeignKey(
-        Facturation,
-        on_delete=models.PROTECT,
-        related_name="facturation_payments",
-    )
-    bill_number = ProfessionalBillNumberField(unique=False)
-    user = models.ForeignKey(
-        User, on_delete=models.PROTECT, related_name="facturation_payments"
-    )
-    accounting_date = models.DateField(
-        help_text="Date the traitement par la compabilité"
-    )
-    operation_date = models.DateField(help_text="Date of the operation (transaction)")
-    cash_register = models.ForeignKey(
-        cashflow_models.CashRegister,
-        related_name="facturation_payments",
-        on_delete=models.PROTECT,
-    )
-    amount = models.DecimalField(max_digits=19, decimal_places=3)
-    objects = managers.PaymentManager()
-
-    class Meta:
-        unique_together = [("organization", "bill_number")]
-
-
 class TransactionBroker(models.TextChoices):
     CASHIER = ("cashier", "Cashier")
     ORANGE_MONEY = ("orange_money", "Orange Money")
@@ -449,15 +419,15 @@ class Transaction(BaseModel):
     reason = models.CharField(max_length=100)
 
 
-class FacturationPayment2(BaseModel):
+class FacturationPayment(BaseModel):
     facturation = models.ForeignKey(
-        Facturation, related_name="facturation_payments2", on_delete=models.CASCADE
+        Facturation, related_name="facturation_payments", on_delete=models.CASCADE
     )
     organization = models.ForeignKey(
-        Organization, related_name="facturation_payments2", on_delete=models.CASCADE
+        Organization, related_name="facturation_payments", on_delete=models.CASCADE
     )
     organization_user = models.ForeignKey(
-        OrganizationUser, on_delete=models.PROTECT, related_name="facturation_payments2"
+        OrganizationUser, on_delete=models.PROTECT, related_name="facturation_payments"
     )
     transaction_broker = models.CharField(
         choices=TransactionBroker.choices,

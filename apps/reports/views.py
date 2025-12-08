@@ -1,28 +1,34 @@
-from decimal import Decimal
 from collections import defaultdict
-from django.db.models import (
-    Case,
-    DecimalField,
-    ExpressionWrapper,
-    F,
-    DurationField,
-    Value,
-    When,
-)
-from django.db.models.functions import Coalesce
-from django.db.models.functions import Concat
-from apps.cashflow import models as cashflow_models
-from apps.orders import models as orders_models
-from django.db.models import Sum
+from decimal import Decimal
+
 from bokeh.models import ColumnDataSource
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Avg, Count, F, Func, Q, Sum, Value, Window
+from django.db.models import (
+    Avg,
+    Case,
+    Count,
+    DecimalField,
+    DurationField,
+    ExpressionWrapper,
+    F,
+    Func,
+    Q,
+    Sum,
+    Value,
+    When,
+    Window,
+)
+from django.db.models.functions import Coalesce, Concat
 from django.shortcuts import HttpResponse, redirect, render
 from django.utils import timezone
 from django.views.generic import ListView, TemplateView
+
+from apps.cashflow import models as cashflow_models
 from apps.core import services
 from apps.core.filters import BaseFilter
+from apps.orders import models as order_models
+from apps.orders import models as orders_models
 from apps.orders.filters import BaseOrganizationFilter
 from apps.organization.mixins import (
     AdminRequiredMixin,
@@ -30,7 +36,6 @@ from apps.organization.mixins import (
     OrgFormMixin,
 )
 from apps.organization.models import Organization, OrganizationUser
-from apps.orders import models as order_models
 from apps.reports import plots as report_plots
 
 
@@ -106,8 +111,8 @@ class OrgReportView(
         total_facturation_price = (
             facturation_filter.qs.aggregate(
                 total_price=Sum(
-                    F("facturation_batchs__unit_price")
-                    * F("facturation_batchs__quantity")
+                    F("facturation_stocks__unit_price")
+                    * F("facturation_stocks__quantity")
                 )
             )["total_price"]
             or 0.0
@@ -153,13 +158,15 @@ class OrgReportView(
         global_balance = Decimal(global_deposit) - Decimal(global_withdrawal)
 
         # Processing inventory report
-        facturation_batchs = order_models.FacturationBatch.objects.filter(
+        s = order_models.FacturationStock.objects.filter(
             organization=self.request.organization
         )
 
         inventory = (
-            BaseFilter(self.request.GET, queryset=facturation_batchs)
-            .qs.values("batch__item__id", "batch__item__name", "batch__quantity")
+            BaseFilter(self.request.GET, queryset=s)
+            .qs.values(
+                "stock__batch__item__id", "stock__batch__item__name", "stock__quantity"
+            )
             .annotate(total_facturation=Coalesce(Sum("quantity"), Value(0)))
         )
 
@@ -174,10 +181,12 @@ class OrgReportView(
         )
 
         for inv in inventory:
-            item_id = inv["batch__item__id"]
-            merged_inventory[item_id]["batch___item__id"] = item_id
-            merged_inventory[item_id]["batch__item__name"] = inv["batch__item__name"]
-            merged_inventory[item_id]["batch__quantity"] = inv["batch__quantity"]
+            item_id = inv["stock__batch__item__id"]
+            merged_inventory[item_id]["stock__batch__item__id"] = item_id
+            merged_inventory[item_id]["stock__batch__item__name"] = inv[
+                "stock__batch__item__name"
+            ]
+            merged_inventory[item_id]["stock__quantity"] = inv["stock__quantity"]
             merged_inventory[item_id]["total_facturation"] = inv["total_facturation"]
             merged_inventory[item_id]["total"] = inv["total_facturation"]
 
@@ -188,9 +197,9 @@ class OrgReportView(
 
         # Sorting by item name
         for item in items:
-            merged_inventory[item.id]["batch__item__id"] = item.id
-            merged_inventory[item.id]["batch__item__name"] = item.name
-            merged_inventory[item.id]["batch__quantity"] = item.quantity
+            merged_inventory[item.id]["stock__batch__item__id"] = item.id
+            merged_inventory[item.id]["stock__batch__item__name"] = item.name
+            merged_inventory[item.id]["stock__quantity"] = item.quantity
         inventory_list = list(merged_inventory.values())
         context["inventories"] = inventory_list
         sale_inventory_bar_plot, sale_inventory_bar_script = (
@@ -275,10 +284,7 @@ class OrgFacturationDetailedReportView(
 
         total_facturation_price = (
             facturation_filter.qs.aggregate(
-                total_price=Sum(
-                    F("facturation_batchs__unit_price")
-                    * F("facturation_batchs__quantity")
-                )
+                total_price=Sum(F("s__unit_price") * F("s__quantity"))
             )["total_price"]
             or 0.0
         )

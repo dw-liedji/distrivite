@@ -41,4 +41,9 @@ urlpatterns = [
         views.OrgBatchAutocomplete.as_view(),
         name="batch-autocomplete",
     ),
+    path(
+        "stock-autocomplete/",
+        views.OrgStockAutocomplete.as_view(),
+        name="stock-autocomplete",
+    ),
 ]

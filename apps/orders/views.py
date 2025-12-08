@@ -525,6 +525,171 @@ class OrgBatchDetailView(
         return ["orders/batch_detail.html"]
 
 
+class OrgStockListView(
+    LoginRequiredMixin,
+    mixins.OrgPermissionRequiredMixin,
+    mixins.MembershipRequiredMixin,
+    FilterView,
+):
+    model = models.Stock
+    template_name = "orders/stock_list.html"
+    context_object_name = "stocks"
+    filterset_class = orders_filters.StockFilter
+    paginate_by = 30
+    permission_required = ("orders.view_stock",)
+
+    def get_template_names(self):
+        if self.request.htmx:
+            if self.request.headers.get("HX-Request-Source") == "sidebar":
+                return ["orders/stock_list.html#list"]
+            return ["orders/stock_list.html#list"]
+        return ["orders/stock_list.html"]
+
+    def get_queryset(self):
+        return models.Stock.objects.filter(
+            organization=self.request.organization
+        ).order_by("batch__item__name")
+
+
+class OrgStockAddView(
+    LoginRequiredMixin,
+    mixins.OrgPermissionRequiredMixin,
+    mixins.MembershipRequiredMixin,
+    mixins.OrgFormMixin,
+    CreateView,
+):
+    model = models.Stock
+    form_class = forms.StockForm
+    template_name = "orders/stock_add.html"
+    permission_required = ("orders.add_stock",)
+
+    def get_template_names(self):
+        if self.request.htmx:
+            return ["orders/stock_add.html#add"]
+        return ["orders/stock_add.html"]
+
+    def form_valid(self, form):
+        consultation = form.save()
+        messages.success(self.request, f"Stock {consultation} saved successfully")
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.success(
+            self.request, f"Stock failed to be saved. Somthing went wrong."
+        )
+        return super().form_invalid(form)
+
+    @core_decorators.preserve_query_params()
+    def get_success_url(self):
+        return reverse_lazy(
+            "organization_features:orders:stock_list",
+            kwargs={"organization": self.request.organization.slug},
+        )
+
+
+class OrgStockChangeView(
+    LoginRequiredMixin,
+    mixins.OrgPermissionRequiredMixin,
+    mixins.MembershipRequiredMixin,
+    mixins.OrgFormMixin,
+    UpdateView,
+):
+    model = models.Stock
+    form_class = forms.StockForm
+    template_name = "orders/stock_change.html"
+    permission_required = ("orders.change_stock",)
+
+    def get_template_names(self):
+        if self.request.htmx:
+            return ["orders/stock_change.html#change"]
+        return ["orders/stock_change.html"]
+
+    def form_valid(self, form):
+        consultation = form.save()
+        messages.success(self.request, f"Stock {consultation} updated successfully")
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.success(
+            self.request, f"Error updating consultation {self.get_object()}"
+        )
+        return super().form_invalid(form)
+
+    @core_decorators.preserve_query_params()
+    def get_success_url(self):
+        return reverse_lazy(
+            "organization_features:orders:stock_list",
+            kwargs={"organization": self.request.organization.slug},
+        )
+
+
+class OrgStockDeleteView(
+    LoginRequiredMixin,
+    mixins.OrgPermissionRequiredMixin,
+    mixins.MembershipRequiredMixin,
+    DeleteView,
+):
+    model = models.Stock
+    template_name = "orders/stock_confirm_delete.html"
+    permission_required = ("orders.delete_stock",)
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if request.headers.get("HX-Request"):
+            try:
+                self.object.delete()
+                messages.success(self.request, f"{self.object} deleted successfully")
+                return HttpResponseRedirect(self.get_success_url())
+            except ProtectedError as e:
+                related_objects = e.protected_objects  # This is already a set
+                related_model_names = {
+                    rel._meta.verbose_name for rel in related_objects
+                }
+
+                if related_model_names:
+                    messages.error(
+                        request,
+                        f"This {self.object._meta.verbose_name} cannot be deleted because it is linked to: {', '.join(related_model_names)}.",
+                    )
+                else:
+                    messages.error(
+                        request,
+                        f"This {self.object._meta.verbose_name} cannot be deleted because it is linked to other records.",
+                    )
+                return HttpResponseRedirect(self.get_success_url())
+            except Exception:
+                messages.error(
+                    request, "An unexpected error occurred. Please try again later."
+                )
+                return HttpResponseRedirect(self.get_success_url())
+
+        return super().get(request, *args, **kwargs)
+
+    @core_decorators.preserve_query_params()
+    def get_success_url(self):
+        return reverse_lazy(
+            "organization_features:orders:stock_list",
+            kwargs={"organization": self.request.organization.slug},
+        )
+
+
+class OrgStockDetailView(
+    LoginRequiredMixin,
+    mixins.OrgPermissionRequiredMixin,
+    mixins.MembershipRequiredMixin,
+    DetailView,
+):
+    model = models.Stock
+    context_object_name = "stock"
+    template_name = "orders/stock_detail.html"
+    permission_required = ("orders.view_stock",)
+
+    def get_template_names(self):
+        if self.request.htmx:
+            return ["orders/stock_detail.html#detail"]
+        return ["orders/stock_detail.html"]
+
+
 class OrgItemListView(
     LoginRequiredMixin,
     mixins.OrgPermissionRequiredMixin,
@@ -1391,7 +1556,7 @@ class OrgFacturationDeliverView(
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
-        batchs = self.object.facturation_batchs.all()
+        batchs = self.object.facturation_stocks.all()
         with transaction.atomic():
 
             # Update delivery state of the facturation
@@ -1399,10 +1564,10 @@ class OrgFacturationDeliverView(
             self.object.save()
 
             # Update quantity of each product in stock for each batch in the facturation
-            for facturation_batch in batchs:
-                batch = facturation_batch.batch
-                batch.quantity -= facturation_batch.quantity
-                batch.save()
+            for facturation_stock in batchs:
+                stock = facturation_stock.stock
+                stock.quantity -= facturation_stock.quantity
+                stock.save()
             messages.error(self.request, f"{self.object} delivered successfully")
 
         if request.headers.get("HX-Request"):
@@ -1525,8 +1690,8 @@ class OrgFacturationStockListView(
     ListView,
 ):
     model = models.FacturationStock
-    template_name = "orders/facturation_batch_list.html"
-    context_object_name = "facturation_batchs"
+    template_name = "orders/facturation_stock_list.html"
+    context_object_name = "facturation_stocks"
     facturation = None
 
     permission_required = ("orders.view_facturationbatch",)
@@ -1534,9 +1699,9 @@ class OrgFacturationStockListView(
     def get_template_names(self):
         if self.request.htmx:
             if self.request.headers.get("HX-Request-Source") == "sidebar":
-                return ["orders/facturation_batch_list.html#list"]
-            return ["orders/facturation_batch_list.html#list"]
-        return ["orders/facturation_batch_list.html"]
+                return ["orders/facturation_stock_list.html#list"]
+            return ["orders/facturation_stock_list.html#list"]
+        return ["orders/facturation_stock_list.html"]
 
     def get_queryset(self):
         self.facturation = get_object_or_404(
@@ -1562,22 +1727,22 @@ class OrgFacturationStockCreateView(
 ):
     model = models.FacturationStock
     form_class = forms.FacturationStockForm
-    template_name = "orders/facturation_batch_add.html"
-    success_message = "facturation_batchs %(name)s successfully created!"
+    template_name = "orders/facturation_stock_add.html"
+    success_message = "facturation_stocks %(name)s successfully created!"
     facturation = None
 
     permission_required = ("orders.add_facturationbatch",)
 
     def get_template_names(self):
         if self.request.htmx:
-            return ["orders/facturation_batch_add.html#add"]
-        return ["orders/facturation_batch_add.html"]
+            return ["orders/facturation_stock_add.html#add"]
+        return ["orders/facturation_stock_add.html"]
 
     @core_decorators.preserve_query_params()
     def get_success_url(self):
         if "save" in self.request.POST:
             return reverse_lazy(
-                "organization_features:orders:facturation_batch_list",
+                "organization_features:orders:facturation_stock_list",
                 kwargs={
                     "organization": self.request.organization.slug,
                     "facturation": self.kwargs.get("facturation"),
@@ -1585,7 +1750,7 @@ class OrgFacturationStockCreateView(
             )
         elif "save_continue" in self.request.POST:
             return reverse_lazy(
-                "organization_features:orders:facturation_batch_add",
+                "organization_features:orders:facturation_stock_add",
                 kwargs={
                     "organization": self.request.organization.slug,
                     "facturation": self.kwargs.get("facturation"),
@@ -1595,7 +1760,7 @@ class OrgFacturationStockCreateView(
             # p Invalid action or form submission
             # ...
             return reverse_lazy(
-                "organization_features:orders:facturation_batch_add",
+                "organization_features:orders:facturation_stock_add",
                 kwargs={
                     "organization": self.request.organization.slug,
                     "facturation": self.kwargs.get("facturation"),
@@ -1632,19 +1797,19 @@ class OrgFacturationStockUpdateView(
 ):
     model = models.FacturationStock
     form_class = forms.FacturationStockForm
-    template_name = "orders/facturation_batch_edit.html"
+    template_name = "orders/facturation_stock_edit.html"
     facturation = None
     permission_required = ("orders.change_facturationbatch",)
 
     def get_template_names(self):
         if self.request.htmx:
-            return ["orders/facturation_batch_change.html#change"]
-        return ["orders/facturation_batch_change.html"]
+            return ["orders/facturation_stock_change.html#change"]
+        return ["orders/facturation_stock_change.html"]
 
     @core_decorators.preserve_query_params()
     def get_success_url(self):
         return reverse_lazy(
-            "organization_features:orders:facturation_batch_list",
+            "organization_features:orders:facturation_stock_list",
             kwargs={
                 "organization": self.request.organization.slug,
                 "facturation": self.kwargs.get("facturation"),
@@ -1679,7 +1844,7 @@ class OrgFacturationStockDeleteView(
     DeleteView,
 ):
     model = models.FacturationStock
-    template_name = "orders/facturation_batch_confirm_delete.html"
+    template_name = "orders/facturation_stock_confirm_delete.html"
     permission_required = ("orders.delete_facturationbatch",)
 
     def get(self, request, *args, **kwargs):
@@ -1717,7 +1882,7 @@ class OrgFacturationStockDeleteView(
     @core_decorators.preserve_query_params()
     def get_success_url(self):
         return reverse_lazy(
-            "organization_features:orders:facturation_batch_list",
+            "organization_features:orders:facturation_stock_list",
             kwargs={
                 "organization": self.request.organization.slug,
                 "facturation": self.kwargs.get("facturation"),
@@ -1733,14 +1898,14 @@ class OrgFacturationStockDetailView(
     DetailView,
 ):
     model = models.FacturationStock
-    context_object_name = "facturation_batch"
-    template_name = "orders/facturation_batch_detail.html"
+    context_object_name = "facturation_stock"
+    template_name = "orders/facturation_stock_detail.html"
     permission_required = ("orders.view_facturationbatch",)
 
     def get_template_names(self):
         if self.request.htmx:
-            return ["orders/facturation_batch_detail.html#detail"]
-        return ["orders/facturation_batch_detail.html"]
+            return ["orders/facturation_stock_detail.html#detail"]
+        return ["orders/facturation_stock_detail.html"]
 
     def get_object(self, queryset=None):
         self.object = get_object_or_404(

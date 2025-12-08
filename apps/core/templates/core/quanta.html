@@ -9,7 +9,6 @@
         <div class="menu px-4 has-background-light"
             style="height: 90vh; overflow-y: auto; border-radius: 25px; padding: 15px;">
 
-
             {% if request.organization_user.is_active %}
 
             <p class="menu-label">
@@ -88,6 +87,15 @@
                         hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
                         hx-replace-url="true" class="menu-item" data-item="batch">
                         Batches</a>
+                </li>
+                {% endif %}
+
+                {% if request.organization_user.is_admin or request.organization_user.is_owner or 'orders.view_batch' in organization_user_perms %}
+                <li>
+                    <a hx-get="{% url 'organization_features:orders:stock_list' request.organization.slug %}"
+                        hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
+                        hx-replace-url="true" class="menu-item" data-item="stock">
+                        Stocks</a>
                 </li>
                 {% endif %}
 

@@ -6,7 +6,7 @@ from django.db import transaction
 from django.db.models import BooleanField, Case, Q, Value, When
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import generics, permissions, serializers, status, viewsets
+from rest_framework import generics, permissions, status, viewsets
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from twilio.rest import Client
@@ -40,28 +40,91 @@ class OrganizationUserList(generics.ListAPIView):
     # permission_classes = [permissions.IsAuthenticated] add authentication in future to authenticate the organization (virtual user)
 
 
-class BatchListAPIView(generics.ListAPIView):
+class StockListAPIView(generics.ListAPIView):
     """
     API endpoint that returns all batches for the current organization.
     """
 
-    serializer_class = serializers.BatchSerializer
+    serializer_class = serializers.StockSerializer
     pagination_class = None
     # permission_classes = [permissions.IsAuthenticated]  # Enable later
 
     def get_queryset(self):
         return (
-            order_models.Batch.objects.filter(organization=self.request.organization)
+            order_models.Stock.objects.filter(organization=self.request.organization)
             .select_related(
-                "organization",
-                "item",
-                "item__category",
-                "supplier",
-                "last_maintainer",
-                "last_maintainer__user",
+                "batch__organization",
+                "batch__item",
+                "batch__item__category",
+                "batch__supplier",
+                "batch__last_maintainer",
+                "batch__last_maintainer__user",
             )
             .order_by("-created")
         )
+
+
+class StockIdListsView(generics.ListAPIView):
+    serializer_class = serializers.StockIdSerializer
+    pagination_class = None
+
+    def get_queryset(self):
+        return order_models.Stock.objects.filter(organization=self.request.organization)
+
+    def list(self, request, *args, **kwargs):
+        qs = self.get_queryset().values_list("id", flat=True)
+        return Response(list(qs))
+
+
+class StockChangesView(StockListAPIView):
+    """
+    API endpoint to get facturations changed since a specific timestamp
+    """
+
+    def get_queryset(self):
+        since_timestamp = self.request.GET.get("since")
+
+        if not since_timestamp:
+            logger.warning("No 'since' parameter provided, returning all facturations")
+            return super().get_queryset()
+
+        try:
+            # Convert milliseconds timestamp to datetime
+            since_timestamp = int(since_timestamp)
+
+            # Handle milliseconds (Android sends milliseconds)
+            if since_timestamp > 1000000000:  # It's in milliseconds
+                since_timestamp_seconds = since_timestamp / 1000.0
+            else:  # It's in seconds
+                since_timestamp_seconds = since_timestamp
+
+            # Create timezone-aware datetime
+            since_date = datetime.fromtimestamp(
+                since_timestamp_seconds, tz=timezone.utc
+            )
+
+            logger.info(
+                f"Fetching facturations changed since {since_date} (timestamp: {since_timestamp})"
+            )
+
+            # Get the base queryset from parent
+            queryset = super().get_queryset()
+
+            # Filter facturations updated after the given timestamp
+            # Assuming you have updated_at field, if not, use created_at or placed_at
+            queryset = queryset.filter(modified__gt=since_date)
+
+            changes_count = queryset.count()
+            logger.info(
+                f"Found {changes_count} facturations changed since {since_date}"
+            )
+
+            return queryset
+
+        except (ValueError, TypeError) as e:
+            logger.error(f"Invalid timestamp '{since_timestamp}': {e}")
+            # Fallback to returning all facturations
+            return super().get_queryset()
 
 
 class CustomerListAPIView(generics.ListAPIView):
@@ -81,6 +144,71 @@ class CustomerListAPIView(generics.ListAPIView):
             )
             .order_by("-created")
         )
+
+
+class CustomerIdListsView(generics.ListAPIView):
+    serializer_class = serializers.CustomerIdSerializer
+    pagination_class = None
+
+    def get_queryset(self):
+        return order_models.Customer.objects.filter(
+            organization=self.request.organization
+        )
+
+    def list(self, request, *args, **kwargs):
+        qs = self.get_queryset().values_list("id", flat=True)
+        return Response(list(qs))
+
+
+class CustomerChangesView(CustomerListAPIView):
+    """
+    API endpoint to get facturations changed since a specific timestamp
+    """
+
+    def get_queryset(self):
+        since_timestamp = self.request.GET.get("since")
+
+        if not since_timestamp:
+            logger.warning("No 'since' parameter provided, returning all facturations")
+            return super().get_queryset()
+
+        try:
+            # Convert milliseconds timestamp to datetime
+            since_timestamp = int(since_timestamp)
+
+            # Handle milliseconds (Android sends milliseconds)
+            if since_timestamp > 1000000000:  # It's in milliseconds
+                since_timestamp_seconds = since_timestamp / 1000.0
+            else:  # It's in seconds
+                since_timestamp_seconds = since_timestamp
+
+            # Create timezone-aware datetime
+            since_date = datetime.fromtimestamp(
+                since_timestamp_seconds, tz=timezone.utc
+            )
+
+            logger.info(
+                f"Fetching facturations changed since {since_date} (timestamp: {since_timestamp})"
+            )
+
+            # Get the base queryset from parent
+            queryset = super().get_queryset()
+
+            # Filter facturations updated after the given timestamp
+            # Assuming you have updated_at field, if not, use created_at or placed_at
+            queryset = queryset.filter(modified__gt=since_date)
+
+            changes_count = queryset.count()
+            logger.info(
+                f"Found {changes_count} facturations changed since {since_date}"
+            )
+
+            return queryset
+
+        except (ValueError, TypeError) as e:
+            logger.error(f"Invalid timestamp '{since_timestamp}': {e}")
+            # Fallback to returning all facturations
+            return super().get_queryset()
 
 
 class CustomerCreateView(generics.CreateAPIView):
@@ -118,6 +246,71 @@ class TransactionListAPIView(generics.ListAPIView):
         )
 
 
+class TransactionIdListsView(generics.ListAPIView):
+    serializer_class = serializers.TransactionIdSerializer
+    pagination_class = None
+
+    def get_queryset(self):
+        return order_models.Transaction.objects.filter(
+            organization=self.request.organization
+        )
+
+    def list(self, request, *args, **kwargs):
+        qs = self.get_queryset().values_list("id", flat=True)
+        return Response(list(qs))
+
+
+class TransactionChangesView(TransactionListAPIView):
+    """
+    API endpoint to get facturations changed since a specific timestamp
+    """
+
+    def get_queryset(self):
+        since_timestamp = self.request.GET.get("since")
+
+        if not since_timestamp:
+            logger.warning("No 'since' parameter provided, returning all facturations")
+            return super().get_queryset()
+
+        try:
+            # Convert milliseconds timestamp to datetime
+            since_timestamp = int(since_timestamp)
+
+            # Handle milliseconds (Android sends milliseconds)
+            if since_timestamp > 1000000000:  # It's in milliseconds
+                since_timestamp_seconds = since_timestamp / 1000.0
+            else:  # It's in seconds
+                since_timestamp_seconds = since_timestamp
+
+            # Create timezone-aware datetime
+            since_date = datetime.fromtimestamp(
+                since_timestamp_seconds, tz=timezone.utc
+            )
+
+            logger.info(
+                f"Fetching facturations changed since {since_date} (timestamp: {since_timestamp})"
+            )
+
+            # Get the base queryset from parent
+            queryset = super().get_queryset()
+
+            # Filter facturations updated after the given timestamp
+            # Assuming you have updated_at field, if not, use created_at or placed_at
+            queryset = queryset.filter(modified__gt=since_date)
+
+            changes_count = queryset.count()
+            logger.info(
+                f"Found {changes_count} facturations changed since {since_date}"
+            )
+
+            return queryset
+
+        except (ValueError, TypeError) as e:
+            logger.error(f"Invalid timestamp '{since_timestamp}': {e}")
+            # Fallback to returning all facturations
+            return super().get_queryset()
+
+
 class TransactionCreateView(generics.CreateAPIView):
     """
     POST /en/<org_slug>/api/v1/data/billing/
@@ -144,7 +337,7 @@ class FacturationListView(generics.ListAPIView):
                 organization=self.request.organization
             )
             .select_related("organization_user", "organization")
-            .prefetch_related("facturation_batchs", "facturation_payments2")
+            .prefetch_related("facturation_stocks", "facturation_payments")
             .order_by("-placed_at")
         )
 
@@ -255,7 +448,7 @@ class FacturationUpdateView(generics.UpdateAPIView):
                 organization=self.request.organization
             )
             .select_related("organization_user", "organization")
-            .prefetch_related("facturation_batchs", "facturation_payments2")
+            .prefetch_related("facturation_stocks", "facturation_payments")
         )
 
     def perform_update(self, serializer):
@@ -277,7 +470,7 @@ class FacturationRetrieveView(generics.RetrieveAPIView):
                 organization=self.request.organization
             )
             .select_related("organization_user", "medical_visit")
-            .prefetch_related("facturation_batchs", "facturation_payments")
+            .prefetch_related("facturation_stocks", "facturation_payments")
         )
 
 

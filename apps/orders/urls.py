@@ -81,6 +81,31 @@ urlpatterns = [
         name="item_delete",
     ),
     path(
+        "stocks/",
+        views.OrgStockListView.as_view(),
+        name="stock_list",
+    ),
+    path(
+        "stocks/add/",
+        views.OrgStockAddView.as_view(),
+        name="stock_add",
+    ),
+    path(
+        "stocks/<uuid:pk>/change/",
+        views.OrgStockChangeView.as_view(),
+        name="stock_change",
+    ),
+    path(
+        "stocks/<uuid:pk>/",
+        views.OrgStockDetailView.as_view(),
+        name="stock_detail",
+    ),
+    path(
+        "stocks/<uuid:pk>/delete/",
+        views.OrgStockDeleteView.as_view(),
+        name="stock_delete",
+    ),
+    path(
         "batchs/",
         views.OrgBatchListView.as_view(),
         name="batch_list",
@@ -211,27 +236,27 @@ urlpatterns = [
         name="facturation_mini_receipt",
     ),
     path(
-        "facturations/<uuid:facturation>/batchs/",
+        "facturations/<uuid:facturation>/stocks/",
         views.OrgFacturationStockListView.as_view(),
         name="facturation_stock_list",
     ),
     path(
-        "facturations/<uuid:facturation>/batchs/add/",
+        "facturations/<uuid:facturation>/stocks/add/",
         views.OrgFacturationStockCreateView.as_view(),
         name="facturation_stock_add",
     ),
     path(
-        "facturations/<uuid:facturation>/batchs/<uuid:pk>/change/",
+        "facturations/<uuid:facturation>/stocks/<uuid:pk>/change/",
         views.OrgFacturationStockUpdateView.as_view(),
         name="facturation_stock_change",
     ),
     path(
-        "facturations/<uuid:facturation>/batchs/<uuid:pk>/detail/",
+        "facturations/<uuid:facturation>/stocks/<uuid:pk>/detail/",
         views.OrgFacturationStockDetailView.as_view(),
         name="facturation_stock_detail",
     ),
     path(
-        "facturations/<uuid:facturation>/batchs/<uuid:pk>/delete/",
+        "facturations/<uuid:facturation>/stocks/<uuid:pk>/delete/",
         views.OrgFacturationStockDeleteView.as_view(),
         name="facturation_stock_delete",
     ),

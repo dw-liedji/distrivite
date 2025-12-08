@@ -46,17 +46,47 @@ urlpatterns = [
     ),
     path("transactions/", views.TransactionListAPIView.as_view()),
     path(
+        "transaction-ids/",
+        views.TransactionIdListsView.as_view(),
+        name="transaction-id-list",
+    ),
+    path(
+        "transaction-changes/",
+        views.TransactionChangesView.as_view(),
+        name="transaction-changes",
+    ),
+    path(
         "transactions/create/",
         views.TransactionCreateView.as_view(),
         name="transaction-create",
     ),
     path("customers/", views.CustomerListAPIView.as_view(), name="customer-list"),
     path(
+        "customer-ids/",
+        views.CustomerIdListsView.as_view(),
+        name="customer-id-list",
+    ),
+    path(
+        "customer-changes/",
+        views.CustomerChangesView.as_view(),
+        name="customer-changes",
+    ),
+    path(
         "customers/create/",
         views.CustomerCreateView.as_view(),
         name="customer-create",
     ),
-    path("stocks/", views.BatchListAPIView.as_view()),
+    path("stocks/", views.StockListAPIView.as_view()),
+    path(
+        "stock-ids/",
+        views.StockIdListsView.as_view(),
+        name="stock-id-list",
+    ),
+    path(
+        "stock-changes/",
+        views.StockChangesView.as_view(),
+        name="stock-changes",
+    ),
     path("users/", views.OrganizationUserList.as_view()),
     path("make-payment/", views.make_payment, name="make-payment"),
 ]

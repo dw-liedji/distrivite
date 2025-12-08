@@ -36,7 +36,7 @@ class OrgFacturationListExportView(
             )
             .select_related("organization_user")
             .prefetch_related("facturation_payments")
-            .prefetch_related("facturation_payments2")
+            .prefetch_related("facturation_payments")
             .prefetch_related("facturation_batchs")
         )
 
@@ -64,7 +64,7 @@ class OrgFacturationListExportView(
 
         # 2️⃣ Get payments separately
         payments = (
-            order_models.FacturationPayment2.objects.filter(
+            order_models.FacturationPayment.objects.filter(
                 facturation__in=filtered_queryset
             )
             .values("facturation__organization_user_id")
@@ -204,7 +204,7 @@ class OrgFacturationListExportView(
             elif export_format == "pdf":
                 # 1. Aggregate Payments - Fixed version
                 total_paid_sq = (
-                    order_models.FacturationPayment2.objects.filter(
+                    order_models.FacturationPayment.objects.filter(
                         facturation_id=OuterRef("id")
                     )
                     .values("facturation_id")  # Group by facturation_id
@@ -284,7 +284,7 @@ class OrgFacturationListExportView(
                     ),
                 )
 
-                payment_totals = order_models.FacturationPayment2.objects.filter(
+                payment_totals = order_models.FacturationPayment.objects.filter(
                     facturation_id__in=filtered_queryset.values("id")
                 ).aggregate(
                     grand_total_paid=Coalesce(
@@ -325,6 +325,49 @@ class OrgFacturationListExportView(
 
 class OrgBatchListExportView(
     order_views.OrgBatchListView,
+):
+    def get(self, request, *args, **kwargs):
+
+        if request.htmx:
+            return htmx_http.HttpResponseClientRedirect(request.get_full_path())
+
+        export_format = self.kwargs.get("export_format", "xlsx")
+        selected_elements = self.request.GET.getlist("selected_elements")
+        queryset = None
+        if selected_elements:
+            queryset = self.get_queryset().filter(id__in=selected_elements)
+        else:
+            queryset = self.get_queryset()
+
+        filter = self.filterset_class(request.GET, queryset=queryset)
+
+        filtered_form = filter.form
+        filtered_queryset = filter.qs
+
+        if export_format == "xlsx":
+            resource = order_resources.ConsultationResource()
+            return services.render_xlsx(
+                request,
+                resource,
+                filtered_queryset,
+                f"batchs",
+            )
+        else:
+            context = {
+                "batchs": filtered_queryset,
+                "filtered_form": filtered_form,
+            }
+
+            return services.render_pdf(
+                request,
+                "orders/documents/batch_list_print.html",
+                context,
+                f"batchs",
+            )
+
+
+class OrgStockListExportView(
+    order_views.OrgStockListView,
 ):
     def get(self, request, *args, **kwargs):
 

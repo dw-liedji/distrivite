@@ -106,7 +106,7 @@ Organizations coverage_facturation
                     <td style="text-align: center;">{{ coverage_facturation.complement_total_price.normalize}}F</td>
                     <td style="text-align: center;">{{ coverage_facturation.coverage_total_price.normalize}}F</td>
                     <td style="text-align: center;"><a
-                            hx-get="{% url 'organization_features:orders:coverage_facturation_batch_list' request.organization.slug coverage_facturation.pk %}"
+                            hx-get="{% url 'organization_features:orders:coverage_facturation_stock_list' request.organization.slug coverage_facturation.pk %}"
                             hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
                             hx-replace-url="true" class="button is-primary">Items</a>
                     </td>

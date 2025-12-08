@@ -282,6 +282,74 @@ class BatchFilter(BaseFilter):
         ]
 
 
+class StockFilter(BaseFilter):
+
+    def __init__(self, *args, **kwargs):
+
+        super().__init__(*args, **kwargs)
+        self.filters["organization_user"].label = "Supplier"
+        self.filters["organization_user"].queryset = (
+            models.OrganizationUser.objects.filter(
+                organization=self.request.organization
+            )
+        )
+        self.filters["batch__item__category"].label = "Category"
+        self.filters["batch__item__category"].queryset = models.Category.objects.filter(
+            organization=self.request.organization
+        )
+
+    EXPIRATION_STATUS_CHOICES = (
+        ("super_valid", "En Très bon état (plus de 6 mois)"),
+        ("valid", "En bon état (en utilisable)"),
+        ("expiring_soon", "En cours d'expiration (moins de 6 mois)"),
+        ("expired", "Expiré (Non utilisable)"),
+    )
+
+    expiration_status = ChoiceFilter(
+        label="État d'expiration",
+        choices=EXPIRATION_STATUS_CHOICES,
+        method="filter_by_expiration_status",
+    )
+
+    def filter_by_expiration_status(self, queryset, name, value):
+        today = datetime.now().date()
+        three_months_later = today + timedelta(days=90 * 2)
+
+        if value == "super_valid":
+            return queryset.filter(batch__expiration_date__gt=three_months_later)
+        elif value == "valid":
+            return queryset.filter(batch__expiration_date__gt=today)
+        elif value == "expiring_soon":
+            return queryset.filter(
+                batch__expiration_date__gt=today,
+                batch__expiration_date__lte=three_months_later,
+            )
+        elif value == "expired":
+            return queryset.filter(batch__expiration_date__lt=today)
+        return queryset
+
+    def filter_by_name_or_category(self, queryset, name, value):
+        return queryset.filter(
+            Q(batch__item__name__icontains=value)
+            | Q(batch__item__category__name__icontains=value)
+        )
+
+    name = CharFilter(
+        field_name="name",
+        label="Article ou Category",
+        method="filter_by_name_or_category",
+    )
+
+    class Meta:
+        model = models.Stock
+        fields = [
+            "organization_user",
+            "expiration_status",
+            "name",
+            "batch__item__category",
+        ]
+
+
 class SupplierFilter(BaseFilter):
 
     name = CharFilter(
@@ -349,14 +417,16 @@ class FacturationPaymentFilter(BaseFilter):
 
     def filter_by_payer(self, queryset, name, value):
         return queryset.filter(
-            Q(Q(first_name__icontains=value) | Q(last_name__icontains=value))
+            Q(
+                Q(organization_user__user__username__icontains=value)
+                | Q(organization_user__user__email__icontains=value)
+            )
         )
 
     class Meta:
         model = models.FacturationPayment
         fields = [
-            "cash_register",
-            "customer__name",
+            "transaction_broker",
             "payer_field",
         ]
 

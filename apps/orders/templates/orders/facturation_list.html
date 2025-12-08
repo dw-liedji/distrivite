@@ -98,7 +98,7 @@ Organizations facturation
 
                     <td style="text-align: center;">{{ facturation.total_price.normalize}}F</td>
                     <td style="text-align: center;"><a
-                            hx-get="{% url 'organization_features:orders:facturation_batch_list' request.organization.slug facturation.pk %}"
+                            hx-get="{% url 'organization_features:orders:facturation_stock_list' request.organization.slug facturation.pk %}"
                             hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
                             hx-replace-url="true" class="button is-primary">Items</a>
                     </td>
@@ -113,7 +113,7 @@ Organizations facturation
 
                     {% if request.organization_user.is_admin or request.organization_user.is_owner or 'orders.view_facturationRefund' in organization_user_perms %}
                     <td style="text-align: center;"><a
-                            hx-get="{% url 'organization_features:orders:facturation_Refund_list' request.organization.slug facturation.pk %}"
+                            hx-get="{% url 'organization_features:orders:facturation_refund_list' request.organization.slug facturation.pk %}"
                             hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
                             hx-replace-url="true" class="button is-primary">Refunds</a>
                     </td>

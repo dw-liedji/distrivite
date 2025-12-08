@@ -16,7 +16,7 @@ Organizations coverage_facturation_batch
     <div class="has-text-right my-3">
         {% if request.organization_user.is_admin or 'orders.add_coveragefacturationbatch' in organization_user_perms %}
         <a class="button is-primary"
-            hx-get="{% url 'organization_features:orders:coverage_facturation_batch_add' request.organization.slug coverage_facturation.pk %}"
+            hx-get="{% url 'organization_features:orders:coverage_facturation_stock_add' request.organization.slug coverage_facturation.pk %}"
             hx-target="#quanta_content" hx-indicator="#custom-htmx-indicator" hx-swap="innerHTML">Add
             coverage_facturation_batch</a>
         {% endif %}

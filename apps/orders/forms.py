@@ -71,6 +71,7 @@ class CustomerForm(forms.ModelForm):
             ),
         }
 
+
 class StockForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         organization = kwargs.pop(
@@ -83,8 +84,8 @@ class StockForm(forms.ModelForm):
         super(StockForm, self).__init__(*args, **kwargs)
         self.fields["organization"].initial = organization
         self.fields["organization"].label = ""
-        self.fields["organization_user"].queryset = order_models.OrganizationUser.objects.filter(
-            organization=organization
+        self.fields["organization_user"].queryset = (
+            order_models.OrganizationUser.objects.filter(organization=organization)
         )
 
     class Meta:
@@ -106,6 +107,7 @@ class StockForm(forms.ModelForm):
                 forward=["organization"],
             ),
         }
+
 
 class BatchForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -389,7 +391,7 @@ class FacturationStockForm(forms.ModelForm):
         self.fields["organization_user"].label = ""
         self.fields["facturation"].initial = facturation
         self.fields["facturation"].label = ""
-        self.fields["stock"].queryset = order_models.Stock.objects.for_organization(
+        self.fields["stock"].queryset = order_models.Stock.objects.filter(
             organization=organization
         )
 
@@ -465,10 +467,7 @@ class FacturationPaymentForm(forms.ModelForm):
         fields = [
             "organization",
             "facturation",
-            "user",
-            "cash_register",
-            "operation_date",
-            "accounting_date",
+            "organization_user",
             "amount",
         ]
 
@@ -488,8 +487,6 @@ class FacturationPaymentForm(forms.ModelForm):
                     "class": "is-hidden",
                 }
             ),
-            "operation_date": flatpickr_widgets.DatePickerInput(),
-            "accounting_date": flatpickr_widgets.DatePickerInput(),
             "customer": autocomplete.ModelSelect2(
                 url="core:customer-autocomplete",
                 forward=["organization"],

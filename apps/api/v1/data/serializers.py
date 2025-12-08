@@ -28,30 +28,52 @@ class OrganizationUserSerializer(serializers.Serializer):
         return organization_user.user.id
 
 
-class BatchSerializer(serializers.ModelSerializer):
+class StockSerializer(serializers.ModelSerializer):
     organization_slug = serializers.CharField(
         source="organization.slug", read_only=True
     )
+
+    organization_user_name = serializers.CharField(
+        source="organization_user.user.username", read_only=True
+    )
     id = serializers.UUIDField()
-    item_name = serializers.CharField(source="item.name", read_only=True)
-    category_id = serializers.CharField(source="item.category.id", read_only=True)
-    category_name = serializers.CharField(source="item.category.name", read_only=True)
-    category = serializers.CharField(source="item.category_choice", read_only=True)
+    item_id = serializers.CharField(source="batch.item.id", read_only=True)
+    item_name = serializers.CharField(source="batch.item.name", read_only=True)
+    category_id = serializers.CharField(source="batch.item.category.id", read_only=True)
+    category_name = serializers.CharField(
+        source="batch.item.category.name", read_only=True
+    )
+
+    batch_number = serializers.CharField(source="batch.batch_number", read_only=True)
+    received_date = serializers.CharField(source="batch.received_date", read_only=True)
+    expiration_date = serializers.CharField(
+        source="batch.expiration_date", read_only=True
+    )
+    purchase_price = serializers.CharField(
+        source="batch.purchase_price", read_only=True
+    )
+    facturation_price = serializers.CharField(
+        source="batch.facturation_price", read_only=True
+    )
+
+    is_active = serializers.CharField(source="batch.is_active", read_only=True)
 
     class Meta:
-        model = order_models.Batch
+        model = order_models.Stock
         fields = [
             "id",
             "created",
             "modified",
             "organization_id",
             "organization_slug",
-            "item",
+            "organization_user_id",
+            "organization_user_name",
+            "batch_id",
+            "batch_number",
+            "item_id",
             "item_name",
-            "category",
             "category_id",
             "category_name",
-            "stock_number",
             "received_date",
             "expiration_date",
             "purchase_price",
@@ -132,7 +154,7 @@ class FacturationPaymentSerializer(serializers.ModelSerializer):
     facturation_id = serializers.UUIDField()
 
     class Meta:
-        model = order_models.FacturationPayment2
+        model = order_models.FacturationPayment
         fields = [
             "id",
             "created",
@@ -154,7 +176,7 @@ class FacturationStockSerializer(serializers.ModelSerializer):
     facturation_id = serializers.UUIDField()
     stock_id = serializers.UUIDField()
 
-    stock_name = serializers.CharField(source="stock.item.name", read_only=True)
+    stock_name = serializers.CharField(source="stock.batch.item.name", read_only=True)
     organization_slug = serializers.CharField(
         source="organization.slug", read_only=True
     )
@@ -178,7 +200,7 @@ class FacturationStockSerializer(serializers.ModelSerializer):
 
 class FacturationSerializer(serializers.ModelSerializer):
     facturation_stocks = FacturationStockSerializer(many=True, required=False)
-    facturation_payments2 = FacturationPaymentSerializer(many=True, required=False)
+    facturation_payments = FacturationPaymentSerializer(many=True, required=False)
 
     id = serializers.UUIDField()
     organization_id = serializers.UUIDField()
@@ -211,17 +233,15 @@ class FacturationSerializer(serializers.ModelSerializer):
             "customer_name",
             "customer_phone_number",
             "placed_at",
-            "is_pay",
-            "is_approved",
             "is_delivered",
             "facturation_stocks",
-            "facturation_payments2",
+            "facturation_payments",
         ]
         # read_only_fields = ["created", "modified"]
 
     def create(self, validated_data):
         stock_data = validated_data.pop("facturation_stocks", [])
-        payment_data = validated_data.pop("facturation_payments2", [])
+        payment_data = validated_data.pop("facturation_payments", [])
 
         with transaction.atomic():
             billing = order_models.Facturation.objects.create(**validated_data)
@@ -232,7 +252,7 @@ class FacturationSerializer(serializers.ModelSerializer):
                 )
 
             for pay_data in payment_data:
-                order_models.FacturationPayment2.objects.create(
+                order_models.FacturationPayment.objects.create(
                     facturation=billing, **pay_data
                 )
 
@@ -240,7 +260,7 @@ class FacturationSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         stock_data = validated_data.pop("facturation_stocks", [])
-        payment_data = validated_data.pop("facturation_payments2", [])
+        payment_data = validated_data.pop("facturation_payments", [])
 
         # Update main Facturation fields
         for attr, value in validated_data.items():
@@ -250,7 +270,7 @@ class FacturationSerializer(serializers.ModelSerializer):
         # Simple approach: remove and recreate related data
         with transaction.atomic():
             if stock_data:
-                instance.facturation_stocks.all().delete()
+                instance.s.all().delete()
                 order_models.FacturationStock.objects.bulk_create(
                     [
                         order_models.FacturationStock(facturation=instance, **item)
@@ -259,10 +279,10 @@ class FacturationSerializer(serializers.ModelSerializer):
                 )
 
             if payment_data:
-                instance.facturation_payments2.all().delete()
-                order_models.FacturationPayment2.objects.bulk_create(
+                instance.facturation_payments.all().delete()
+                order_models.FacturationPayment.objects.bulk_create(
                     [
-                        order_models.FacturationPayment2(facturation=instance, **pay)
+                        order_models.FacturationPayment(facturation=instance, **pay)
                         for pay in payment_data
                     ]
                 )
@@ -289,6 +309,39 @@ class FacturationIdSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = order_models.Facturation
+        fields = [
+            "id",
+        ]
+
+
+class TransactionIdSerializer(serializers.ModelSerializer):
+
+    id = serializers.UUIDField()
+
+    class Meta:
+        model = order_models.Transaction
+        fields = [
+            "id",
+        ]
+
+
+class CustomerIdSerializer(serializers.ModelSerializer):
+
+    id = serializers.UUIDField()
+
+    class Meta:
+        model = order_models.Customer
+        fields = [
+            "id",
+        ]
+
+
+class StockIdSerializer(serializers.ModelSerializer):
+
+    id = serializers.UUIDField()
+
+    class Meta:
+        model = order_models.Stock
         fields = [
             "id",
         ]

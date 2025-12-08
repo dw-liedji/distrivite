@@ -25,4 +25,9 @@ urlpatterns = [
         docs_views.OrgBatchListExportView.as_view(),
         name="batch_list_export",
     ),
+    path(
+        "stocks/<str:export_format>/export",
+        docs_views.OrgStockListExportView.as_view(),
+        name="stock_list_export",
+    ),
 ]

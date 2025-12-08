@@ -1,20 +1,18 @@
-from bokeh.plotting import figure
-from bokeh.models import ColumnDataSource, Select
+from bokeh.embed import components, file_html
 from bokeh.layouts import column
-from bokeh.embed import components
-from bokeh.transform import factor_cmap
+from bokeh.models import ColumnDataSource, CustomJS, Select
 from bokeh.palettes import Spectral6
-from bokeh.embed import file_html
+from bokeh.plotting import figure
 from bokeh.resources import CDN
-from bokeh.models import CustomJS
+from bokeh.transform import factor_cmap
 
 
 def sale_inventory_bar_plot(sales_data):
     # Extract item names and totals
 
     # Extract item names and totals
-    items = [item["batch__item__name"] for item in sales_data]
-    stocks = [int(item["batch__quantity"]) for item in sales_data]
+    items = [item["stock__batch__item__name"] for item in sales_data]
+    stocks = [int(item["stock__quantity"]) for item in sales_data]
     totals = [item["total"] for item in sales_data]
     total_facturation = [item["total_facturation"] for item in sales_data]
 
