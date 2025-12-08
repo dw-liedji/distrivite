@@ -1,13 +1,36 @@
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db import models
 from django.shortcuts import get_object_or_404
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
-from django.contrib.auth.mixins import PermissionRequiredMixin
-from apps.organization.models import Organization
+
+# views.py
+from rest_framework.views import APIView
+
+from apps.organization.models import Organization, OrganizationUser
 
 
-# -*- coding: utf-8 -*-
+class OrganizationAPIUserMixin:
+    """Mixin for DRF views to set organization_user"""
+
+    def initial(self, request, *args, **kwargs):
+        super().initial(request, *args, **kwargs)
+
+        # Now authentication is complete
+
+        if hasattr(request, "organization"):
+
+            if request.user and request.user.is_authenticated:
+                organization_user = OrganizationUser.objects.filter(
+                    organization=request.organization, user=request.user
+                ).first()
+
+                if organization_user:
+                    request.organization_user = organization_user
+                else:
+                    # Handle unauthorized access to organization
+                    pass
 
 
 class OrgPermissionRequiredMixin(PermissionRequiredMixin):

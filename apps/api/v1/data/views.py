@@ -13,11 +13,12 @@ from twilio.rest import Client
 
 from apps.api.v1.data import serializers
 from apps.orders import models as order_models
+from apps.organization import mixins as org_mixins
 from apps.organization import models as org_models
 from apps.users.models import User
 
 
-class OrganizationUserList(generics.ListAPIView):
+class OrganizationUserList(org_mixins.OrganizationAPIUserMixin, generics.ListAPIView):
     """
     API endpoint that allows groups to be viewed or edited.
     """
@@ -40,18 +41,21 @@ class OrganizationUserList(generics.ListAPIView):
     # permission_classes = [permissions.IsAuthenticated] add authentication in future to authenticate the organization (virtual user)
 
 
-class StockListAPIView(generics.ListAPIView):
+class StockListAPIView(org_mixins.OrganizationAPIUserMixin, generics.ListAPIView):
     """
     API endpoint that returns all batches for the current organization.
     """
 
     serializer_class = serializers.StockSerializer
     pagination_class = None
-    # permission_classes = [permissions.IsAuthenticated]  # Enable later
+    permission_classes = [permissions.IsAuthenticated]  # Enable later
 
     def get_queryset(self):
         return (
-            order_models.Stock.objects.filter(organization=self.request.organization)
+            order_models.Stock.objects.filter(
+                organization=self.request.organization,
+                organization_user=self.request.organization_user,
+            )
             .select_related(
                 "batch__organization",
                 "batch__item",
@@ -64,9 +68,10 @@ class StockListAPIView(generics.ListAPIView):
         )
 
 
-class StockIdListsView(generics.ListAPIView):
+class StockIdListsView(org_mixins.OrganizationAPIUserMixin, generics.ListAPIView):
     serializer_class = serializers.StockIdSerializer
     pagination_class = None
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         return order_models.Stock.objects.filter(organization=self.request.organization)
@@ -127,14 +132,14 @@ class StockChangesView(StockListAPIView):
             return super().get_queryset()
 
 
-class CustomerListAPIView(generics.ListAPIView):
+class CustomerListAPIView(org_mixins.OrganizationAPIUserMixin, generics.ListAPIView):
     """
     API endpoint that returns all batches for the current organization.
     """
 
     serializer_class = serializers.CustomerSerializer
     pagination_class = None
-    # permission_classes = [permissions.IsAuthenticated]  # Enable later
+    permission_classes = [permissions.IsAuthenticated]  # Enable later
 
     def get_queryset(self):
         return (
@@ -146,9 +151,10 @@ class CustomerListAPIView(generics.ListAPIView):
         )
 
 
-class CustomerIdListsView(generics.ListAPIView):
+class CustomerIdListsView(org_mixins.OrganizationAPIUserMixin, generics.ListAPIView):
     serializer_class = serializers.CustomerIdSerializer
     pagination_class = None
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         return order_models.Customer.objects.filter(
@@ -224,19 +230,21 @@ class CustomerCreateView(generics.CreateAPIView):
         serializer.save()
 
 
-class TransactionListAPIView(generics.ListAPIView):
+class TransactionListAPIView(org_mixins.OrganizationAPIUserMixin, generics.ListAPIView):
     """
     API endpoint that returns all batches for the current organization.
     """
 
     serializer_class = serializers.TransactionSerializer
     pagination_class = None
-    # permission_classes = [permissions.IsAuthenticated]  # Enable later
+    permission_classes = [permissions.IsAuthenticated]  # Enable later
 
     def get_queryset(self):
+        print("this is the current user:", self.request.user)
         return (
             order_models.Transaction.objects.filter(
-                organization=self.request.organization
+                organization=self.request.organization,
+                organization_user=self.request.organization_user,
             )
             .select_related(
                 "organization",
@@ -246,13 +254,15 @@ class TransactionListAPIView(generics.ListAPIView):
         )
 
 
-class TransactionIdListsView(generics.ListAPIView):
+class TransactionIdListsView(org_mixins.OrganizationAPIUserMixin, generics.ListAPIView):
     serializer_class = serializers.TransactionIdSerializer
     pagination_class = None
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         return order_models.Transaction.objects.filter(
-            organization=self.request.organization
+            organization=self.request.organization,
+            organization_user=self.request.organization_user,
         )
 
     def list(self, request, *args, **kwargs):
@@ -327,14 +337,16 @@ class TransactionCreateView(generics.CreateAPIView):
         )
 
 
-class FacturationListView(generics.ListAPIView):
+class FacturationListView(org_mixins.OrganizationAPIUserMixin, generics.ListAPIView):
     serializer_class = serializers.FacturationSerializer
     pagination_class = None
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         return (
             order_models.Facturation.objects.filter(
-                organization=self.request.organization
+                organization=self.request.organization,
+                organization_user=self.request.organization_user,
             )
             .select_related("organization_user", "organization")
             .prefetch_related("facturation_stocks", "facturation_payments")
@@ -342,9 +354,10 @@ class FacturationListView(generics.ListAPIView):
         )
 
 
-class FacturationIdListsView(generics.ListAPIView):
+class FacturationIdListsView(org_mixins.OrganizationAPIUserMixin, generics.ListAPIView):
     serializer_class = serializers.FacturationIdSerializer
     pagination_class = None
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         return order_models.Facturation.objects.filter(
