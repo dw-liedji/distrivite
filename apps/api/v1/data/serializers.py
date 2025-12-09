@@ -190,6 +190,7 @@ class FacturationStockSerializer(serializers.ModelSerializer):
             "organization_id",
             "organization_user_id",
             "facturation_id",
+            "is_delivered",
             "stock_id",
             "stock_name",
             "quantity",
@@ -246,9 +247,14 @@ class FacturationSerializer(serializers.ModelSerializer):
             billing = order_models.Facturation.objects.create(**validated_data)
 
             for item_data in stock_data:
-                order_models.FacturationStock.objects.create(
+                facturation_stock = order_models.FacturationStock.objects.create(
                     facturation=billing, **item_data
                 )
+
+                if facturation_stock.is_delivered:
+                    stock = facturation_stock.stock
+                    stock.quantity -= facturation_stock.quantity
+                    stock.save()
 
             for pay_data in payment_data:
                 order_models.FacturationPayment.objects.create(

@@ -81,6 +81,7 @@ Organizations stock
                 <tr class="is-selected">
                     <th>#</th>
                     <th style="text-align: center;">Batch</th>
+                    <th style="text-align: center;">User</th>
                     <th style="text-align: center;">Name</th>
                     <th style="text-align: center;">Quantity</th>
                     <th style="text-align: center;">Stock</th>
@@ -100,6 +101,7 @@ Organizations stock
                 <tr>
                     <td style="text-align: center;">{{ forloop.counter0 }}</td>
                     <td style="text-align: center;">{{ stock.batch.batch_number }}</td>
+                    <td style="text-align: center;">{{ stock.organization_user }}</td>
                     <td style="text-align: center;">{{ stock.batch.item.name }}</td>
                     <td style="text-align: center;">{{ stock.quantity }}</td>
                     <td style="text-align: center;">

@@ -379,6 +379,7 @@ class FacturationStock(AbstractFacturationStock):
     facturation = models.ForeignKey(
         Facturation, on_delete=models.CASCADE, related_name="facturation_stocks"
     )
+    is_delivered = models.BooleanField(default=False)
     unit_price = models.DecimalField(
         max_digits=19,
         decimal_places=6,
