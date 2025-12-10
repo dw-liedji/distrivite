@@ -275,7 +275,7 @@ class FacturationSerializer(serializers.ModelSerializer):
         # Simple approach: remove and recreate related data
         with transaction.atomic():
             if stock_data:
-                instance.s.all().delete()
+                instance.facturation_stocks.all().delete()
                 order_models.FacturationStock.objects.bulk_create(
                     [
                         order_models.FacturationStock(facturation=instance, **item)
@@ -291,6 +291,20 @@ class FacturationSerializer(serializers.ModelSerializer):
                         for pay in payment_data
                     ]
                 )
+
+        return instance
+
+
+class FacturationDeliverSerializer(FacturationSerializer):
+    def update(self, instance, validated_data):
+
+        with transaction.atomic():
+            instance = super().update(instance, validated_data)
+
+            for facturation_stock in instance.facturation_stocks.all():
+                stock = facturation_stock.stock
+                stock.quantity = stock.quantity - facturation_stock.quantity
+                stock.save()
 
         return instance
 

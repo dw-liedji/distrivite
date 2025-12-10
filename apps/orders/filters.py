@@ -376,15 +376,11 @@ class SupplierFilter(BaseFilter):
 
 class FacturationFilter(BaseFilter):
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.filters["organization_user"].queryset = (
-            models.OrganizationUser.objects.filter(
-                organization=self.request.organization
-            )
-        )
-        self.filters["organization_user"].label = "User"
+    item_category = filters.ModelChoiceFilter(
+        field_name="facturation_stocks__stock__batch__item__category",
+        queryset=models.Category.objects.none(),  # override later
+        label="Catégorie",
+    )
 
     customer__name = filters.CharFilter(
         field_name="customer__name",
@@ -398,7 +394,24 @@ class FacturationFilter(BaseFilter):
             "organization_user",
             "is_delivered",
             "customer__name",
+            "item_category",
         ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Filter organization_user by current organization
+        self.filters["organization_user"].queryset = (
+            models.OrganizationUser.objects.filter(
+                organization=self.request.organization
+            )
+        )
+        self.filters["organization_user"].label = "User"
+
+        # Filter categories by organization
+        self.filters["item_category"].queryset = models.Category.objects.filter(
+            organization=self.request.organization
+        )
 
 
 class FacturationPaymentFilter(BaseFilter):

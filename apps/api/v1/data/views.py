@@ -468,6 +468,28 @@ class FacturationUpdateView(generics.UpdateAPIView):
         serializer.save(modified_by=self.request.user)
 
 
+class FacturationDeliverView(generics.UpdateAPIView):
+    """
+    PUT/PATCH /en/<org_slug>/api/v1/data/billing/<id>/edit/
+    Updates billing details, items, and payments.
+    """
+
+    serializer_class = serializers.FacturationDeliverSerializer
+    # permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return (
+            order_models.Facturation.objects.filter(
+                organization=self.request.organization
+            )
+            .select_related("organization_user", "organization")
+            .prefetch_related("facturation_stocks", "facturation_payments")
+        )
+
+    def perform_update(self, serializer):
+        serializer.save(modified_by=self.request.user)
+
+
 class FacturationRetrieveView(generics.RetrieveAPIView):
     """
     GET /en/<org_slug>/api/v1/data/billing/<id>/

@@ -40,6 +40,11 @@ urlpatterns = [
         name="sale-update",
     ),
     path(
+        "sales/<uuid:pk>/deliver/",
+        views.FacturationDeliverView.as_view(),
+        name="sale-deliver",
+    ),
+    path(
         "sales/<uuid:pk>/delete/",
         views.FacturationDeleteView.as_view(),
         name="sale-delete",
