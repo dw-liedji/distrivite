@@ -36,14 +36,6 @@
                 </li>
                 {% endif %}
 
-                {% if request.organization_user.is_admin or request.organization_user.is_owner or 'orders.view_coveragepayment' in organization_user_perms %}
-                <li>
-                    <a hx-get="{% url 'organization_features:orders:supplier_payment_list' request.organization.slug %}"
-                        hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
-                        hx-replace-url="true" class="menu-item" data-item="supplier_payment">
-                        Reglements</a>
-                </li>
-                {% endif %}
 
                 {% if request.organization_user.is_admin or request.organization_user.is_owner or 'orders.view_commercial' in organization_user_perms %}
                 <li>
@@ -131,56 +123,6 @@
 
             {% if request.organization_user.is_active %}
 
-            <p class="menu-label">
-                Cashflows
-            </p>
-
-            <ul class="menu-list">
-                {% if request.organization_user.is_admin or 'cashflow.view_cashregister' in organization_user_perms %}
-                <li>
-                    <a hx-get="{% url 'organization_features:cashflow:cash_register_list' request.organization.slug %}"
-                        hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
-                        hx-replace-url="true" class="menu-item" data-item="cash_register">
-                        {% trans 'Caisses' %}</a>
-                </li>
-                {% endif %}
-
-                {% if request.organization_user.is_admin or 'cashflow.view_transaction' in organization_user_perms %}
-                <li>
-                    <a hx-get="{% url 'organization_features:cashflow:transaction_list' request.organization.slug %}"
-                        hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
-                        hx-replace-url="true" class="menu-item" data-item="transaction">
-                        {% trans 'Transactions' %}</a>
-                </li>
-                {% endif %}
-
-                {% if request.organization_user.is_admin or 'cashflow.view_deposit' in organization_user_perms %}
-                <li><a hx-get="{% url 'organization_features:cashflow:deposit_list' request.organization.slug %}"
-                        hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
-                        hx-replace-url="true" class="menu-item" data-item="deposit">
-                        {% trans 'Encaissements' %}</a>
-                </li>
-                {% endif %}
-
-                {% if request.organization_user.is_admin or 'cashflow.view_withdrawal' in organization_user_perms %}
-                <li>
-                    <a hx-get="{% url 'organization_features:cashflow:withdrawal_list' request.organization.slug %}"
-                        hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
-                        hx-replace-url="true" class="menu-item" data-item="withdrawal">
-                        {% trans 'Decaissements' %}</a>
-                </li>
-                {% endif %}
-
-
-                {% if request.organization_user.is_admin or 'cashflow.view_category' in organization_user_perms %}
-                <li>
-                    <a hx-get="{% url 'organization_features:cashflow:category_list' request.organization.slug %}"
-                        hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
-                        hx-replace-url="true" class="menu-item" data-item="category">
-                        {% trans 'Categories' %}</a>
-                </li>
-                {% endif %}
-            </ul>
             <p class="menu-label">
                 {% trans 'Administration' %}
             </p>

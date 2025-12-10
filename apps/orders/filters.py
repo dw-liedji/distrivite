@@ -447,42 +447,6 @@ class FacturationPaymentFilter(BaseFilter):
         super().__init__(*args, **kwargs)
 
 
-class SupplierPaymentFilter(BaseFilter):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.filters["cash_register"].queryset = (
-            models.cashflow_models.CashRegister.objects.filter(
-                organization=self.request.organization
-            )
-        )
-
-    supplier__name = filters.CharFilter(
-        field_name="supplier__name",
-        label="Supplier",
-        lookup_expr="icontains",
-    )
-
-    payer_field = filters.CharFilter(
-        field_name="payer",
-        label="Payer",
-        method="filter_by_payer",
-    )
-
-    def filter_by_payer(self, queryset, name, value):
-        return queryset.filter(
-            Q(Q(first_name__icontains=value) | Q(last_name__icontains=value))
-        )
-
-    class Meta:
-        model = models.SupplierPayment
-        fields = [
-            "cash_register",
-            "supplier__name",
-            "payer_field",
-        ]
-
-
 class FacturationRefundFilter(BaseFilter):
 
     customer__name = filters.CharFilter(

@@ -311,31 +311,6 @@ urlpatterns = [
         name="facturation_refund_delete",
     ),
     path(
-        "supplier-payments/",
-        views.OrgSupplierPaymentListView.as_view(),
-        name="supplier_payment_list",
-    ),
-    path(
-        "supplier-payments/add/",
-        views.OrgSupplierPaymentCreateView.as_view(),
-        name="supplier_payment_add",
-    ),
-    path(
-        "supplier-payments/<uuid:pk>/change/",
-        views.OrgSupplierPaymentUpdateView.as_view(),
-        name="supplier_payment_change",
-    ),
-    path(
-        "supplier-payments/<uuid:pk>/detail/",
-        views.OrgSupplierPaymentDetailView.as_view(),
-        name="supplier_payment_detail",
-    ),
-    path(
-        "supplier-payments/<uuid:pk>/delete/",
-        views.OrgSupplierPaymentDeleteView.as_view(),
-        name="supplier_payment_delete",
-    ),
-    path(
         "transactions/",
         views.OrgTransactionListView.as_view(),
         name="transaction_list",

@@ -4,7 +4,6 @@ from django_flatpickr import schemas as flatpickr_schemas
 from django_flatpickr import widgets as flatpickr_widgets
 from phonenumber_field.formfields import PhoneNumberField
 
-from apps.cashflow import models as cashflow_models
 from apps.orders import models as order_models
 from apps.orders.widgets import HTMXAutoCompleteWidget
 from apps.organization import models as org_models
@@ -491,68 +490,6 @@ class FacturationPaymentForm(forms.ModelForm):
                 url="core:customer-autocomplete",
                 forward=["organization"],
             ),
-        }
-
-
-class SupplierPaymentForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        organization = kwargs.pop(
-            "organization", None
-        )  # Must be pop before the super method
-
-        organization_user = kwargs.pop(
-            "organization_user", None
-        )  # Must be pop before the super method
-
-        facturation = kwargs.pop(
-            "facturation", None
-        )  # Must be pop before the super method
-
-        user = kwargs.pop("user", None)  # Must be pop before the super method
-        print("this is a user from attributes", user)
-
-        print(organization, "this is a child")
-        super(SupplierPaymentForm, self).__init__(*args, **kwargs)
-        self.fields["organization"].initial = organization
-        self.fields["organization"].label = ""
-        self.fields["user"].initial = user
-        self.fields["user"].label = ""
-        self.fields["cash_register"].queryset = (
-            cashflow_models.CashRegister.objects.filter(organization=organization)
-        )
-        self.fields["supplier"].queryset = order_models.Supplier.objects.filter(
-            organization=organization
-        )
-
-        # self.helper = FormHelper(self)
-        # self.helper.form_tag = False
-        # self.helper.layout = Layout()
-
-    class Meta:
-        model = order_models.SupplierPayment
-        fields = [
-            "organization",
-            "supplier",
-            "user",
-            "cash_register",
-            "operation_date",
-            "accounting_date",
-            "amount",
-        ]
-
-        widgets = {
-            "organization": forms.TextInput(
-                attrs={
-                    "class": "is-hidden",
-                }
-            ),
-            "user": forms.TextInput(
-                attrs={
-                    "class": "is-hidden",
-                }
-            ),
-            "operation_date": flatpickr_widgets.DatePickerInput(),
-            "accounting_date": flatpickr_widgets.DatePickerInput(),
         }
 
 

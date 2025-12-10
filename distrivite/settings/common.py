@@ -1,8 +1,9 @@
 import codecs
 import os
 import sys
-from pathlib import Path
 from datetime import timedelta
+from pathlib import Path
+
 from django.utils.translation import gettext_lazy as _
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -57,7 +58,7 @@ INSTALLED_APPS = [
     # "apps.ecommerce",
     "apps.orders",
     # "apps.transfers",
-    "apps.cashflow",
+    # "apps.cashflow",
     # "ckeditor",
     # "apps.coverages",
     # "apps.boxes",

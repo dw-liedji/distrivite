@@ -17,7 +17,6 @@ from django.db.models.functions import Coalesce
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django_htmx import http as htmx_http
 
-from apps.cashflow import views as cashflow_views
 from apps.core import services
 from apps.orders import models as order_models
 
@@ -406,49 +405,6 @@ class OrgStockListExportView(
                 "orders/documents/batch_list_print.html",
                 context,
                 f"batchs",
-            )
-
-
-class OrgWithdrawalListExportView(
-    cashflow_views.OrgWithdrawalListView,
-):
-    def get(self, request, *args, **kwargs):
-
-        if request.htmx:
-            return htmx_http.HttpResponseClientRedirect(request.get_full_path())
-
-        export_format = self.kwargs.get("export_format", "xlsx")
-        selected_elements = self.request.GET.getlist("selected_elements")
-        queryset = None
-        if selected_elements:
-            queryset = self.get_queryset().filter(id__in=selected_elements)
-        else:
-            queryset = self.get_queryset()
-
-        filter = self.filterset_class(request.GET, queryset=queryset, request=request)
-
-        filtered_form = filter.form
-        filtered_queryset = filter.qs
-
-        if export_format == "xlsx":
-            resource = order_resources.ConsultationResource()
-            return services.render_xlsx(
-                request,
-                resource,
-                filtered_queryset,
-                f"withdrawals",
-            )
-        else:
-            context = {
-                "withdrawals": filtered_queryset,
-                "filtered_form": filtered_form,
-            }
-
-            return services.render_pdf(
-                request,
-                "orders/documents/withdrawal_list_print.html",
-                context,
-                f"withdrawals",
             )
 
 

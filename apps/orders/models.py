@@ -16,7 +16,6 @@ from django.utils.timesince import timesince
 from django.utils.translation import gettext_lazy as _
 from phonenumber_field.modelfields import PhoneNumberField
 
-from apps.cashflow import models as cashflow_models
 from apps.core import models as core_models
 from apps.core import utils as core_utils
 from apps.core.fields import ProfessionalBillNumberField, QuantaField, QuantaNumberField
@@ -436,31 +435,6 @@ class FacturationPayment(BaseModel):
     )
     amount = models.DecimalField(max_digits=19, decimal_places=3)
     objects = OrgFeatureManager()
-
-
-class SupplierPayment(BaseModel):
-    organization = models.ForeignKey(
-        Organization, related_name="supplier_payments", on_delete=models.CASCADE
-    )
-    supplier = models.ForeignKey(
-        Supplier,
-        on_delete=models.PROTECT,
-        related_name="supplier_payments",
-    )
-    user = models.ForeignKey(
-        User, on_delete=models.PROTECT, related_name="supplier_payments"
-    )
-    accounting_date = models.DateField(
-        help_text="Date the traitement par la compabilité"
-    )
-    operation_date = models.DateField(help_text="Date of the operation (transaction)")
-    cash_register = models.ForeignKey(
-        cashflow_models.CashRegister,
-        related_name="supplier_payments",
-        on_delete=models.PROTECT,
-    )
-    amount = models.DecimalField(max_digits=19, decimal_places=3)
-    objects = managers.PaymentManager()
 
 
 class FacturationRefund(BaseModel):

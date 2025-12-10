@@ -16,11 +16,6 @@ urlpatterns = [
         name="transaction_list_export",
     ),
     path(
-        "withdrawals/<str:export_format>/export",
-        docs_views.OrgWithdrawalListExportView.as_view(),
-        name="withdrawal_list_export",
-    ),
-    path(
         "batchs/<str:export_format>/export",
         docs_views.OrgBatchListExportView.as_view(),
         name="batch_list_export",

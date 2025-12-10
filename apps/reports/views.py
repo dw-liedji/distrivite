@@ -24,7 +24,6 @@ from django.shortcuts import HttpResponse, redirect, render
 from django.utils import timezone
 from django.views.generic import ListView, TemplateView
 
-from apps.cashflow import models as cashflow_models
 from apps.core import services
 from apps.core.filters import BaseFilter
 from apps.orders import models as order_models
@@ -77,34 +76,11 @@ class OrgReportView(
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        withdrawals = cashflow_models.Withdrawal.objects.for_organization(
-            organization=self.request.organization
-        ).all()
-        deposits = cashflow_models.Deposit.objects.for_organization(
-            organization=self.request.organization
-        ).all()
-
         facturations = order_models.Facturation.objects.filter(
             organization=self.request.organization
         ).all()
 
         facturation_filter = BaseFilter(self.request.GET, queryset=facturations)
-
-        deposit_filter = BaseFilter(self.request.GET, queryset=deposits)
-        withdrawal_filter = BaseFilter(self.request.GET, queryset=withdrawals)
-
-        total_deposits = deposit_filter.qs.count()
-        total_withdrawals = withdrawal_filter.qs.count()
-
-        total_deposit_amount = (
-            deposit_filter.qs.aggregate(total_amount=Sum("amount"))["total_amount"]
-            or 0.0
-        )
-
-        total_withdrawal_amount = (
-            withdrawal_filter.qs.aggregate(total_amount=Sum("amount"))["total_amount"]
-            or 0.0
-        )
 
         total_facturations = facturation_filter.qs.count() or 0
 
@@ -140,22 +116,6 @@ class OrgReportView(
             ),
             request=self.request,
         )
-
-        global_deposit = (
-            cashflow_models.Deposit.objects.filter(
-                organization=self.request.organization
-            ).aggregate(total_amount=Sum("amount"))["total_amount"]
-            or 0.0
-        )
-
-        global_withdrawal = (
-            cashflow_models.Withdrawal.objects.filter(
-                organization=self.request.organization
-            ).aggregate(total_amount=Sum("amount"))["total_amount"]
-            or 0.0
-        )
-
-        global_balance = Decimal(global_deposit) - Decimal(global_withdrawal)
 
         # Processing inventory report
         s = order_models.FacturationStock.objects.filter(
@@ -218,17 +178,17 @@ class OrgReportView(
             "transactions": [
                 {
                     "name": "Encaissements",
-                    "total": total_deposits,
-                    "total_amount": total_deposit_amount,
+                    "total": 0,
+                    "total_amount": 0,
                 },
                 {
                     "name": "Décaissements",
-                    "total": total_withdrawals,
-                    "total_amount": total_withdrawal_amount,
+                    "total": 0,
+                    "total_amount": 0,
                 },
             ],
-            "balance": Decimal(total_deposit_amount) - Decimal(total_withdrawal_amount),
-            "global_balance": global_balance,
+            "balance": Decimal(0) - Decimal(0),
+            "global_balance": 0,
         }
 
         return context
@@ -251,35 +211,11 @@ class OrgFacturationDetailedReportView(
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        withdrawals = cashflow_models.Withdrawal.objects.for_organization(
-            organization=self.request.organization
-        ).all()
-        deposits = cashflow_models.Deposit.objects.for_organization(
-            organization=self.request.organization
-        ).all()
-
         facturations = order_models.Facturation.objects.filter(
             organization=self.request.organization
         ).all()
 
         facturation_filter = BaseFilter(self.request.GET, queryset=facturations)
-
-        deposit_filter = BaseFilter(self.request.GET, queryset=deposits)
-        withdrawal_filter = BaseFilter(self.request.GET, queryset=withdrawals)
-
-        total_deposits = deposit_filter.qs.count()
-        total_withdrawals = withdrawal_filter.qs.count()
-
-        total_deposit_amount = (
-            deposit_filter.qs.aggregate(total_amount=Sum("amount"))["total_amount"]
-            or 0.0
-        )
-
-        total_withdrawal_amount = (
-            withdrawal_filter.qs.aggregate(total_amount=Sum("amount"))["total_amount"]
-            or 0.0
-        )
-
         total_facturations = facturation_filter.qs.count() or 0
 
         total_facturation_price = (
@@ -309,22 +245,6 @@ class OrgFacturationDetailedReportView(
             ),
         )
 
-        global_deposit = (
-            cashflow_models.Deposit.objects.aggregate(total_amount=Sum("amount"))[
-                "total_amount"
-            ]
-            or 0.0
-        )
-
-        global_withdrawal = (
-            cashflow_models.Withdrawal.objects.aggregate(total_amount=Sum("amount"))[
-                "total_amount"
-            ]
-            or 0.0
-        )
-
-        global_balance = Decimal(global_deposit) - Decimal(global_withdrawal)
-
         context["filter"] = order_filter
 
         context["facturations"] = facturations
@@ -337,17 +257,17 @@ class OrgFacturationDetailedReportView(
             "transactions": [
                 {
                     "name": "Encaissements",
-                    "total": total_deposits,
-                    "total_amount": total_deposit_amount,
+                    "total": 0,
+                    "total_amount": 0,
                 },
                 {
                     "name": "Décaissements",
-                    "total": total_withdrawals,
-                    "total_amount": total_withdrawal_amount,
+                    "total": 0,
+                    "total_amount": 0,
                 },
             ],
-            "balance": Decimal(total_deposit_amount) - Decimal(total_withdrawal_amount),
-            "global_balance": global_balance,
+            "balance": Decimal(0) - Decimal(0),
+            "global_balance": 0,
         }
 
         return context

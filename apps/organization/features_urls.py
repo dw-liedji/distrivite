@@ -24,18 +24,18 @@ urlpatterns = [
         "order_docs/",
         include("apps.orders.docs_urls", namespace="order_docs"),
     ),
-    path(
-        "cashflow/",
-        include("apps.cashflow.urls", namespace="cashflow"),
-    ),
+    # path(
+    #     "cashflow/",
+    #     include("apps.cashflow.urls", namespace="cashflow"),
+    # ),
     # path(
     #     "coverages/",
     #     include("apps.coverages.urls", namespace="coverages"),
     # ),
-    path(
-        "api/",
-        include("apps.api.docta.urls", namespace="api"),
-    ),
+    # path(
+    #     "api/",
+    #     include("apps.api.docta.urls", namespace="api"),
+    # ),
 ]
 urlpatterns = (
     urlpatterns
