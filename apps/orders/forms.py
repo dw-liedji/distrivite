@@ -9,39 +9,6 @@ from apps.orders.widgets import HTMXAutoCompleteWidget
 from apps.organization import models as org_models
 
 
-class CommercialForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        organization = kwargs.pop(
-            "organization", None
-        )  # Must be pop before the super method
-        organization_user = kwargs.pop(
-            "organization_user", None
-        )  # Must be pop before the super method
-
-        super(CommercialForm, self).__init__(*args, **kwargs)
-        self.fields["organization"].initial = organization
-        self.fields["organization"].label = ""
-        self.fields["organization_user"].queryset = (
-            order_models.OrganizationUser.objects.filter(organization=organization)
-        )
-
-    class Meta:
-        model = order_models.Commercial
-        fields = [
-            "organization",
-            "organization_user",
-            "is_active",
-            "type",
-        ]
-        widgets = {
-            "organization": forms.TextInput(
-                attrs={
-                    "class": "is-hidden",
-                }
-            ),
-        }
-
-
 class CustomerForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         organization = kwargs.pop(
@@ -613,53 +580,6 @@ class TransactionForm(forms.ModelForm):
                 attrs={
                     "class": "input",
                     "placeholder": "Reason for transaction",
-                }
-            ),
-        }
-
-
-class PrepaidAccountForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        organization = kwargs.pop(
-            "organization", None
-        )  # Must be pop before the super method
-
-        organization_user = kwargs.pop(
-            "organization_user", None
-        )  # Must be pop before the super method
-
-        facturation = kwargs.pop(
-            "facturation", None
-        )  # Must be pop before the super method
-
-        user = kwargs.pop("user", None)  # Must be pop before the super method
-        print("this is a user from attributes", user)
-
-        print(organization, "this is a child")
-        super(PrepaidAccountForm, self).__init__(*args, **kwargs)
-        self.fields["organization"].initial = organization
-        self.fields["organization"].label = ""
-
-        self.fields["customer"].queryset = order_models.Customer.objects.filter(
-            organization=organization
-        )
-
-        # self.helper = FormHelper(self)
-        # self.helper.form_tag = False
-        # self.helper.layout = Layout()
-
-    class Meta:
-        model = order_models.PrepaidAccount
-        fields = [
-            "organization",
-            "customer",
-            "amount",
-        ]
-
-        widgets = {
-            "organization": forms.TextInput(
-                attrs={
-                    "class": "is-hidden",
                 }
             ),
         }

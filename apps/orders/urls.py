@@ -6,31 +6,6 @@ app_name = "orders"
 
 urlpatterns = [
     path(
-        "commercials/",
-        views.OrgCommercialListView.as_view(),
-        name="commercial_list",
-    ),
-    path(
-        "commercials/add/",
-        views.OrgCommercialAddView.as_view(),
-        name="commercial_add",
-    ),
-    path(
-        "commercials/<uuid:pk>/change/",
-        views.OrgCommercialChangeView.as_view(),
-        name="commercial_change",
-    ),
-    path(
-        "commercials/<uuid:pk>/",
-        views.OrgCommercialDetailView.as_view(),
-        name="commercial_detail",
-    ),
-    path(
-        "commercials/<uuid:pk>/delete/",
-        views.OrgCommercialDeleteView.as_view(),
-        name="commercial_delete",
-    ),
-    path(
         "patients/",
         views.OrgCustomerListView.as_view(),
         name="patient_list",
@@ -334,30 +309,5 @@ urlpatterns = [
         "transactions/<uuid:pk>/detail/",
         views.OrgTransactionDetailView.as_view(),
         name="transaction_detail",
-    ),
-    path(
-        "prepaid-accounts/",
-        views.OrgPrepaidAccountListView.as_view(),
-        name="prepaid_account_list",
-    ),
-    path(
-        "prepaid-accounts/add/",
-        views.OrgPrepaidAccountAddView.as_view(),
-        name="prepaid_account_add",
-    ),
-    path(
-        "prepaid-accounts/<uuid:pk>/change/",
-        views.OrgPrepaidAccountChangeView.as_view(),
-        name="prepaid_account_change",
-    ),
-    path(
-        "prepaid-accounts/<uuid:pk>/detail/",
-        views.OrgPrepaidAccountDetailView.as_view(),
-        name="prepaid_account_detail",
-    ),
-    path(
-        "prepaid-accounts/<uuid:pk>/delete/",
-        views.OrgPrepaidAccountDeleteView.as_view(),
-        name="prepaid_account_delete",
     ),
 ]

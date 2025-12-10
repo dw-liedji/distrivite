@@ -30,41 +30,6 @@ from .validators import validate_file_size
 User = settings.AUTH_USER_MODEL
 
 
-class Commercial(org_models.BaseModel):
-    """
-    The ``Customer`` model represents a Customer of the online
-    store or offline. It wraps Django's built-in ``auth.User`` model, which
-    contains information like first and last name, and email, and adds
-    phone number and address information.
-    """
-
-    class CommercialType(models.TextChoices):
-        MUTUAL = "INTERNAL", "Internal"
-        INSURANCE = "EXTERNAL", "External"
-
-    organization = models.ForeignKey(org_models.Organization, on_delete=models.CASCADE)
-    organization_user = models.OneToOneField(
-        org_models.OrganizationUser, on_delete=models.CASCADE
-    )
-    is_active = models.BooleanField(default=True)
-
-    type = models.CharField(
-        max_length=10,
-        choices=CommercialType.choices,
-    )
-
-    objects = orders_managers.CommercialManager()
-
-    class Meta:
-        unique_together = [
-            ("organization", "organization_user"),
-        ]
-        ordering = ["organization_user__user__username"]
-
-    def __str__(self) -> str:
-        return str(self.organization_user.user)
-
-
 class Customer(BaseModel):
     """
     The ``Customer`` model represents a Customer of the online
@@ -91,12 +56,6 @@ class Customer(BaseModel):
 
     def __str__(self) -> str:
         return self.name
-
-
-class PrepaidAccount(BaseModel):
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
-    customer = models.OneToOneField(Customer, on_delete=models.CASCADE)
-    amount = models.DecimalField(max_digits=19, decimal_places=2, default=0.0)
 
 
 class Supplier(BaseModel):

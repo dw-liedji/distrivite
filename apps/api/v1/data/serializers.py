@@ -309,19 +309,6 @@ class FacturationDeliverSerializer(FacturationSerializer):
         return instance
 
 
-class PrepaidAccountSerializer(serializers.ModelSerializer):
-
-    org_slug = serializers.CharField(source="organization.slug", read_only=True)
-
-    class Meta:
-        model = order_models.PrepaidAccount
-        fields = [
-            "customer_id",
-            "org_slug",
-            "amount",
-        ]
-
-
 class FacturationIdSerializer(serializers.ModelSerializer):
 
     id = serializers.UUIDField()

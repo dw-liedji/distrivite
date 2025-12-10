@@ -127,24 +127,6 @@ class ItemFilter(BaseFilter):
         ]
 
 
-class PrepaidAccountFilter(BaseFilter):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.filters["customer"].label = "Customer"
-        self.filters["customer"].queryset = models.Customer.objects.filter(
-            organization=self.request.organization
-        )
-
-    class Meta:
-        model = models.PrepaidAccount
-        fields = [
-            "customer",
-            "amount",
-        ]
-
-
 class CategoryFilter(BaseFilter):
 
     def filter_by_name(self, queryset, name, value):

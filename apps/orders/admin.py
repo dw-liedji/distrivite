@@ -2,12 +2,6 @@ from django.contrib import admin
 
 from . import models
 
-
-@admin.register(models.Commercial)
-class CommercialAdmin(admin.ModelAdmin):
-    list_display = ["organization_user"]
-
-
 # @admin.register(models.CoverageFacturation)
 # class CoverageFacturationAdmin(admin.ModelAdmin):
 #     list_display = ["patient"]
