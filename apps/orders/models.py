@@ -369,10 +369,14 @@ class Transaction(BaseModel):
         OrganizationUser, on_delete=models.PROTECT, related_name="transactions"
     )
     transaction_broker = models.CharField(
+        max_length=20,
         choices=TransactionBroker.choices,
         default=TransactionBroker.CASHIER,
     )
-    transaction_type = models.CharField(choices=TransactionType.choices)
+    transaction_type = models.CharField(
+        choices=TransactionType.choices,
+        max_length=20,
+    )
     amount = models.DecimalField(max_digits=19, decimal_places=3)
     participant = models.CharField(max_length=100)
     reason = models.CharField(max_length=100)
@@ -389,6 +393,7 @@ class FacturationPayment(BaseModel):
         OrganizationUser, on_delete=models.PROTECT, related_name="facturation_payments"
     )
     transaction_broker = models.CharField(
+        max_length=20,
         choices=TransactionBroker.choices,
         default=TransactionBroker.CASHIER,
     )
