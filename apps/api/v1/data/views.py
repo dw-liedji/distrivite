@@ -3,6 +3,7 @@ from datetime import date, datetime, timedelta
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.db import transaction
+from django.db.models import Prefetch  # Add this import
 from django.db.models import BooleanField, Case, Q, Value, When
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -343,15 +344,51 @@ class FacturationListView(org_mixins.OrganizationAPIUserMixin, generics.ListAPIV
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return (
-            order_models.Facturation.objects.filter(
-                organization=self.request.organization,
-                organization_user=self.request.organization_user,
-            )
-            .select_related("organization_user", "organization")
-            .prefetch_related("facturation_stocks", "facturation_payments")
-            .order_by("-placed_at")
+        """
+        Optimized queryset keeping all serializer fields.
+        Focus on reducing N+1 queries with proper prefetching.
+        """
+        # Base filter
+        queryset = order_models.Facturation.objects.filter(
+            organization=self.request.organization,
+            organization_user=self.request.organization_user,
         )
+
+        # CRITICAL: Use select_related for foreign keys (reduces queries for related objects)
+        queryset = queryset.select_related(
+            "organization",  # For organization.slug
+            "customer",  # For customer.name and customer.phone_number
+            "organization_user",  # For organization_user_id
+            "organization_user__user",  # For organization_user.user.username
+        )
+
+        # CRITICAL: Use Prefetch objects to control related queries
+        # Optimize FacturationStock queries
+        stock_prefetch = Prefetch(
+            "facturation_stocks",
+            queryset=order_models.FacturationStock.objects.select_related(
+                "organization",  # For organization.slug
+                "stock",  # For stock_id
+                "stock__batch",  # For stock.batch
+                "stock__batch__item",  # For stock.batch.item.name
+                "organization_user",  # For organization_user_id
+            ),
+        )
+
+        # Optimize FacturationPayment queries
+        payment_prefetch = Prefetch(
+            "facturation_payments",
+            queryset=order_models.FacturationPayment.objects.select_related(
+                "organization",  # For organization.slug
+                "organization_user",  # For organization_user_id
+            ),
+        )
+
+        # Apply both prefetches
+        queryset = queryset.prefetch_related(stock_prefetch, payment_prefetch)
+
+        # Order by placed_at descending
+        return queryset.order_by("-placed_at")
 
 
 class FacturationIdListsView(org_mixins.OrganizationAPIUserMixin, generics.ListAPIView):

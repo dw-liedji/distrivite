@@ -229,6 +229,9 @@ class Stock(BaseModel):
     batch = models.ForeignKey(Batch, on_delete=models.PROTECT, related_name="stocks")
     quantity = models.IntegerField()
 
+    class Meta:
+        unique_together = ("organization", "organization_user", "batch")
+
 
 class AbstractFacturation(BaseModel):
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
