@@ -134,7 +134,7 @@ Organizations stock
 
                     {% if request.organization_user.is_admin or 'orders.change_stock' in organization_user_perms %}
                     <td style="text-align: center;"><button
-                            hx-get="{% url 'organization_features:orders:stock_change' request.organization.slug stock.batch.pk %}?{% url_replace %}"
+                            hx-get="{% url 'organization_features:orders:stock_change' request.organization.slug stock.pk %}?{% url_replace %}"
                             hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
                             class="button">
                             <i class="fa-solid fa-pen-to-square"></i>
@@ -145,7 +145,7 @@ Organizations stock
                     {% if request.organization_user.is_admin or 'orders.view_stock' in organization_user_perms %}
                     <td style="text-align: center;">
                         <button
-                            hx-get="{% url 'organization_features:orders:stock_detail' request.organization.slug stock.batch.pk %}?{% url_replace %}"
+                            hx-get="{% url 'organization_features:orders:stock_detail' request.organization.slug stock.pk %}?{% url_replace %}"
                             hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
                             class="button">
                             <i class="fa-solid fa-eye"></i></button>
