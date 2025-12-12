@@ -36,7 +36,7 @@ class OrgFacturationListExportView(
             .select_related("organization_user")
             .prefetch_related("facturation_payments")
             .prefetch_related("facturation_payments")
-            .prefetch_related("facturation_batchs")
+            .prefetch_related("facturation_stocks")
         )
 
     def generate_financial_report_simplified(self, filtered_queryset):
@@ -44,13 +44,13 @@ class OrgFacturationListExportView(
 
         # 1️⃣ Get all batch data
         batches = (
-            order_models.FacturationBatch.objects.filter(
+            order_models.FacturationStock.objects.filter(
                 facturation__in=filtered_queryset
             )
             .values(
                 "facturation__organization_user_id",
                 "facturation__organization_user__user__username",
-                "batch__item__name",
+                "stock__batch__item__name",
             )
             .annotate(
                 total_quantity=Sum("quantity", output_field=IntegerField()),
@@ -105,7 +105,7 @@ class OrgFacturationListExportView(
             # Add item details
             user_entry["items"].append(
                 {
-                    "item_name": row["batch__item__name"],
+                    "item_name": row["stock__batch__item__name"],
                     "quantity": row["total_quantity"],
                     "total_price": row["total_price"],
                 }
@@ -213,7 +213,7 @@ class OrgFacturationListExportView(
 
                 # 2. Aggregate Batches/Items - Fixed version
                 total_quantity_sq = (
-                    order_models.FacturationBatch.objects.filter(
+                    order_models.FacturationStock.objects.filter(
                         facturation_id=OuterRef("id")
                     )
                     .values("facturation_id")  # Group by facturation_id
@@ -222,7 +222,7 @@ class OrgFacturationListExportView(
                 )
 
                 total_amount_sq = (
-                    order_models.FacturationBatch.objects.filter(
+                    order_models.FacturationStock.objects.filter(
                         facturation_id=OuterRef("id")
                     )
                     .values("facturation_id")  # Group by facturation_id
@@ -264,7 +264,7 @@ class OrgFacturationListExportView(
                 )
 
                 # BEST APPROACH: Calculate totals directly from related models with proper output_field
-                batch_totals = order_models.FacturationBatch.objects.filter(
+                batch_totals = order_models.FacturationStock.objects.filter(
                     facturation_id__in=filtered_queryset.values("id")
                 ).aggregate(
                     total_sales_amount=Coalesce(

@@ -269,12 +269,13 @@ class StockFilter(BaseFilter):
     def __init__(self, *args, **kwargs):
 
         super().__init__(*args, **kwargs)
-        self.filters["organization_user"].label = "Supplier"
+        self.filters["organization_user"].label = "Users"
         self.filters["organization_user"].queryset = (
             models.OrganizationUser.objects.filter(
                 organization=self.request.organization
             )
         )
+        # 237AI.com
         self.filters["batch__item__category"].label = "Category"
         self.filters["batch__item__category"].queryset = models.Category.objects.filter(
             organization=self.request.organization

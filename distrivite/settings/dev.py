@@ -31,7 +31,7 @@ INSTALLED_APPS += ("debug_toolbar",)
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "distrivitedb",
+        "NAME": "distrivitedb3",
         "USER": "liedji",
         "PASSWORD": "password",
         "HOST": "localhost",

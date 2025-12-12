@@ -91,9 +91,9 @@ Organizations facturation report pdf
             </td>
 
             <td class="is-size-7">
-                {% for fb in facturation.facturation_batchs.all %}
+                {% for fb in facturation.facturation_stocks.all %}
                 <p class="is-size-7">
-                    <strong>{{ fb.quantity }} × {{ fb.batch.item.name }}</strong>
+                    <strong>{{ fb.quantity }} × {{ fb.stock.batch.item.name }}</strong>
                     — {{ fb.unit_price.normalize|intcomma }} F
                 </p>
                 {% endfor %}
