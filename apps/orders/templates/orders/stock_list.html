@@ -8,14 +8,44 @@ Organizations stock
 {% endblock title %}
 
 {% block quanta_content %}
-
 {% partialdef list inline=True %}
+
+<div x-data="{
+        selected: {},
+        init() {
+            // Initialize selected object with all stock IDs set to false
+            {% for stock in stocks %}
+            this.selected['{{ stock.pk }}'] = false;
+            {% endfor %}
+        },
+        toggleAll(e) {
+            const checked = e.target.checked;
+            for (const key in this.selected) {
+                this.selected[key] = checked;
+            }
+        },
+        get anySelected() {
+            return Object.values(this.selected).some(v => v === true);
+        },
+        get selectedIds() {
+            return Object.entries(this.selected)
+                .filter(([id, isSelected]) => isSelected)
+                .map(([id]) => id);
+        },
+        get selectedCount() {
+            return this.selectedIds.length;
+        },
+        getSelectedIdsFormatted() {
+            return this.selectedIds.join(',');
+        }
+    }">
+
 {% include "core/partials/messages.html" %}
 <div class="block px-2 mx-2 px-5-desktop mx-5-desktop fade-in">
 
     <section class="section mx-0 px-0 fade-in">
         <form id="my_form" class="is-flex is-flex-wrap-wrap is-align-stocks-center is-justify-content-start"
-            style="gap: 10px;">
+              style="gap: 10px;">
 
             {% csrf_token %}
 
@@ -29,57 +59,113 @@ Organizations stock
                 {{ filter.form.media }}
             </div>
 
-            <!-- Filter Button -->
+            <!-- Filter Buttons -->
             <div class="is-flex is-flex-wrap-wrap is-align-items-center is-justify-content-start">
+
                 <button type="submit"
-                    hx-get="{% url 'organization_features:orders:stock_list' request.organization.slug %}"
-                    hx-target="#quanta_content" hx-swap="innerHTML" hx-push-url="true"
-                    hx-indicator="#custom-htmx-indicator" hx-include="#my_form"
-                    class="button mx-1 is-primary is-rounded is-fullwidth-mobile">
-                    <span class="icon">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                    </span>
+                        hx-get="{% url 'organization_features:orders:stock_list' request.organization.slug %}"
+                        hx-target="#quanta_content"
+                        hx-swap="innerHTML"
+                        hx-push-url="true"
+                        hx-indicator="#custom-htmx-indicator"
+                        hx-include="#my_form"
+                        class="button mx-1 is-primary is-rounded is-fullwidth-mobile">
+                    <span class="icon"><i class="fa-solid fa-magnifying-glass"></i></span>
                     <span>Filter Items</span>
                 </button>
 
                 <button type="submit"
-                    hx-get="{% url 'organization_features:order_docs:stock_list_export' request.organization.slug 'pdf' %}"
-                    target="_blank" hx-swap="none" hx-push-url="true" hx-include="#my_form"
-                    class="button mx-1 is-primary is-rounded is-fullwidth-mobile">
-                    <span class="icon">
-                        <i class="fa-regular fa-file-pdf"></i>
-                    </span>
-                    <span>PDF</span>
+                        hx-get="{% url 'organization_features:order_docs:stock_list_export' request.organization.slug 'pdf' %}"
+                        target="_blank" hx-swap="none" hx-push-url="true" hx-include="#my_form"
+                        class="button mx-1 is-primary is-rounded is-fullwidth-mobile">
+                    <span class="icon"><i class="fa-regular fa-file-pdf"></i></span><span>PDF</span>
                 </button>
 
                 <button type="submit"
-                    hx-get="{% url 'organization_features:order_docs:stock_list_export' request.organization.slug 'excel' %}"
-                    target="_blank" hx-swap="none" hx-push-url="true" hx-include="#my_form"
-                    class="button mx-1 is-primary is-rounded is-fullwidth-mobile">
-                    <span class="icon">
-                        <i class="fa-solid fa-file-excel"></i>
-                    </span>
-                    <span>Excel</span>
+                        hx-get="{% url 'organization_features:order_docs:stock_list_export' request.organization.slug 'excel' %}"
+                        target="_blank" hx-swap="none" hx-push-url="true" hx-include="#my_form"
+                        class="button mx-1 is-primary is-rounded is-fullwidth-mobile">
+                    <span class="icon"><i class="fa-solid fa-file-excel"></i></span><span>Excel</span>
                 </button>
             </div>
+
+            <!-- ACTION BAR THAT TOGGLES -->
+            <div class="my-4" x-show="anySelected" x-transition x-cloak>
+                <div class="notification is-info is-light">
+                    <strong x-text="selectedCount"></strong> items selected.
+                    
+                    <!-- Bulk Actions -->
+                    <div class="buttons mt-2">
+                        <!-- Bulk Delete using HTMX - INCLUDES FILTER -->
+                        <button class="button is-danger is-small"
+                                {% comment %} hx-post="{% url 'organization_features:orders:stock_bulk_delete' request.organization.slug %}" {% endcomment %}
+                                hx-target="#quanta_content"
+                                hx-confirm="Are you sure you want to delete the selected items?"
+                                hx-include="#my_form, [name='selected_ids']"
+                                x-bind:disabled="selectedCount === 0">
+                            <span class="icon"><i class="fa-solid fa-trash"></i></span>
+                            <span>Delete Selected</span>
+                        </button>
+                        
+                        <!-- Bulk Export using HTMX - INCLUDES FILTER -->
+                        <button class="button is-info is-small"
+                                {% comment %} hx-get="{% url 'organization_features:order_docs:stock_list_export_selected' request.organization.slug 'excel' %}" {% endcomment %}
+                                target="_blank"
+                                hx-include="#my_form, [name='selected_ids']"
+                                hx-swap="none"
+                                x-bind:disabled="selectedCount === 0">
+                            <span class="icon"><i class="fa-solid fa-download"></i></span>
+                            <span>Export Selected</span>
+                        </button>
+
+                        <!-- Bulk Return to Store - INCLUDES FILTER -->
+                        <button class="button is-success is-small"
+                                hx-get="{% url 'organization_features:order_docs:stock_return_to_store' request.organization.slug %}"
+                                hx-target="#quanta_content"
+                                hx-confirm="Are you sure you want to return selected items to store?"
+                                hx-include="#my_form, [name='selected_ids']"
+                                x-bind:disabled="selectedCount === 0">
+                            <span class="icon"><i class="fa-solid fa-store"></i></span>
+                            <span>Return to Store</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
         </form>
     </section>
 
-
+    <!-- Add Stock Button -->
     <div class="has-text-right my-3">
         {% if request.organization_user.is_admin or 'orders.add_stock' in organization_user_perms %}
         <a class="button is-primary"
-            hx-get="{% url 'organization_features:orders:stock_add' request.organization.slug %}?{% url_replace %}"
-            hx-target="#quanta_content" hx-indicator="#custom-htmx-indicator" hx-swap="innerHTML">Add
-            stock</a>
+           hx-get="{% url 'organization_features:orders:stock_add' request.organization.slug %}?{% url_replace %}"
+           hx-target="#quanta_content"
+           hx-indicator="#custom-htmx-indicator"
+           hx-swap="innerHTML">
+            Add stock
+        </a>
         {% endif %}
     </div>
 
+    <!-- Hidden form for selected IDs -->
+    <div style="display: none;">
+        <template x-for="id in selectedIds" :key="id">
+            <input type="hidden" name="selected_ids" :value="id">
+        </template>
+    </div>
+
+    <!-- TABLE -->
     <div class="table-container">
         <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
             <thead class="is-selected">
                 <tr class="is-selected">
-                    <th>#</th>
+                    <th style="text-align:center;">
+                        <input type="checkbox" 
+                               @change="toggleAll($event)"
+                               :indeterminate="anySelected && selectedCount < Object.keys(selected).length"
+                               :checked="selectedCount === Object.keys(selected).length && Object.keys(selected).length > 0">
+                    </th>
                     <th style="text-align: center;">Batch</th>
                     <th style="text-align: center;">User</th>
                     <th style="text-align: center;">Name</th>
@@ -96,46 +182,62 @@ Organizations stock
                     <th style="text-align: center;" colspan="3">Actions</th>
                 </tr>
             </thead>
+
             <tbody>
                 {% for stock in stocks %}
-                <tr>
-                    <td style="text-align: center;">{{ forloop.counter0 }}</td>
+                <tr :class="{ 'has-background-info-light': selected['{{ stock.pk }}'] }">
+                    <td style="text-align:center;">
+                        <input type="checkbox"
+                               x-model="selected['{{ stock.pk }}']"
+                               @change="updateSelectAllState()"
+                               value="{{ stock.pk }}">
+                    </td>
+
                     <td style="text-align: center;">{{ stock.batch.batch_number }}</td>
                     <td style="text-align: center;">{{ stock.organization_user }}</td>
                     <td style="text-align: center;">{{ stock.batch.item.name }}</td>
                     <td style="text-align: center;">{{ stock.quantity }}</td>
-                    <td style="text-align: center;">
+
+                    <td style="text-align:center;">
                         {% if stock.batch.item.is_alert %}
                         <span class="tag is-danger is-rounded">Alert</span>
                         {% else %}
                         <span class="tag is-success is-rounded">Dispo</span>
                         {% endif %}
                     </td>
-                    <td style="text-align: center;">{{ stock.batch.purchase_price.normalize }}</td>
-                    <td style="text-align: center;">{{ stock.batch.facturation_price.normalize }}</td>
-                    <td style="text-align: center;">{{ stock.batch.received_date }}</td>
-                    <td style="text-align: center;">
+
+                    <td style="text-align:center;">{{ stock.batch.purchase_price.normalize }}</td>
+                    <td style="text-align:center;">{{ stock.batch.facturation_price.normalize }}</td>
+                    <td style="text-align:center;">{{ stock.batch.received_date }}</td>
+
+                    <td style="text-align:center;">
                         {% if stock.batch.is_expired %}
                         <span class="tag is-danger is-rounded">{{ stock.batch.expiration_date }}</span>
                         {% else %}
                         <span class="tag is-success is-rounded">{{ stock.batch.expiration_date }}</span>
                         {% endif %}
                     </td>
-                    <td style="text-align: center;">{{ stock.batch.item.category.name }}</td>
-                    <td style="text-align: center;">{{ stock.batch.supplier }}</td>
-                    <td style="text-align: center;">
+
+                    <td style="text-align:center;">{{ stock.batch.item.category.name }}</td>
+                    <td style="text-align:center;">{{ stock.batch.supplier }}</td>
+
+                    <td style="text-align:center;">
                         {% if stock.batch.is_active %}
                         <i class="fa-solid fa-check fa-2x has-text-success"></i>
                         {% else %}
                         <i class="fa-solid fa-xmark fa-2x has-text-danger-light"></i>
                         {% endif %}
                     </td>
-                    <td style="text-align: center;">{{ stock.batch.last_maintainer.user.username }}</td>
+
+                    <td style="text-align:center;">{{ stock.batch.last_maintainer.user.username }}</td>
 
                     {% if request.organization_user.is_admin or 'orders.change_stock' in organization_user_perms %}
-                    <td style="text-align: center;"><button
+                    <td style="text-align:center;">
+                        <button
                             hx-get="{% url 'organization_features:orders:stock_change' request.organization.slug stock.pk %}?{% url_replace %}"
-                            hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
+                            hx-target="#quanta_content"
+                            hx-swap="innerHTML"
+                            hx-indicator="#custom-htmx-indicator"
                             class="button">
                             <i class="fa-solid fa-pen-to-square"></i>
                         </button>
@@ -143,31 +245,56 @@ Organizations stock
                     {% endif %}
 
                     {% if request.organization_user.is_admin or 'orders.view_stock' in organization_user_perms %}
-                    <td style="text-align: center;">
+                    <td style="text-align:center;">
                         <button
                             hx-get="{% url 'organization_features:orders:stock_detail' request.organization.slug stock.pk %}?{% url_replace %}"
-                            hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
+                            hx-target="#quanta_content"
+                            hx-swap="innerHTML"
+                            hx-indicator="#custom-htmx-indicator"
                             class="button">
-                            <i class="fa-solid fa-eye"></i></button>
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
                     </td>
                     {% endif %}
 
                     {% if request.organization_user.is_admin or 'orders.delete_stock' in organization_user_perms %}
-                    <td style="text-align: center;"><button
+                    <td style="text-align:center;">
+                        <button
                             hx-get="{% url 'organization_features:orders:stock_delete' request.organization.slug stock.batch.pk %}?{% url_replace %}"
-                            hx-target="#quanta_content" hx-confirm="Are you sure you want to delete?" class="button">
-                            <i class="fa-solid fa-trash-can fa-1x has-text-danger"></i></button>
+                            hx-target="#quanta_content"
+                            hx-confirm="Are you sure you want to delete?"
+                            class="button">
+                            <i class="fa-solid fa-trash-can fa-1x has-text-danger"></i>
+                        </button>
                     </td>
                     {% endif %}
-
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="16" class="has-text-centered">
+                        <div class="notification is-warning is-light">
+                            No stocks found.
+                        </div>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
+
         </table>
+
         {% include "core/partials/pagination.html" %}
     </div>
 </div>
 
+</div>
 {% endpartialdef %}
+
+<style>
+[x-cloak] { display: none !important; }
+.has-background-info-light { 
+    background-color: #eff5fb !important; 
+    transition: background-color 0.3s ease;
+}
+</style>
 
 {% endblock quanta_content %}

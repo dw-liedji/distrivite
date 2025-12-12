@@ -17,6 +17,7 @@ from django.db.models.functions import Coalesce
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django_htmx import http as htmx_http
 
+from apps.core import decorators as core_decorators
 from apps.core import services
 from apps.orders import models as order_models
 
@@ -448,6 +449,118 @@ class OrgStockListExportView(
                 context,
                 f"stocks",
             )
+
+
+from django.contrib import messages
+from django.db import transaction
+from django.http import HttpResponseRedirect
+from django.urls import reverse, reverse_lazy
+
+
+class OrgStockListReturnToStoreView(order_views.OrgStockListView):
+    """
+    Bulk return stocks to store - decreases stock to 0, increases batch
+    Uses bulk_update for efficient batch operations
+    """
+
+    def get_queryset(self):
+        return order_models.Stock.objects.filter(
+            organization=self.request.organization
+        ).select_related(
+            "organization_user",
+            "batch__item__category",
+            "batch__supplier",
+            "organization",
+            "batch__last_maintainer__user",
+        )
+
+    def get(self, request, *args, **kwargs):
+        # Get selected IDs from GET parameters
+        selected_ids = request.GET.getlist("selected_ids")
+
+        if not selected_ids:
+            messages.error(request, "No items selected for return to store.")
+            return self.redirect_to_list()
+
+        # Get the filtered queryset
+        queryset = self.get_queryset()
+
+        # Apply filters from the form
+        filter_class = self.get_filterset_class()
+        if filter_class:
+            queryset = filter_class(request.GET, queryset=queryset, request=request).qs
+
+        # Filter by selected IDs and positive quantity
+        selected_stocks = queryset.filter(id__in=selected_ids, quantity__gt=0)
+
+        if not selected_stocks.exists():
+            messages.warning(request, "Selected stocks have no quantity to return.")
+            return HttpResponseRedirect(self.get_success_url())
+
+        try:
+            with transaction.atomic():
+                # Create dictionary to track batch updates
+                batch_updates = {}
+
+                # First, collect all stocks that will be updated
+                stocks_to_update = []
+
+                for stock in selected_stocks:
+                    # Add stock to update list (set quantity to 0)
+                    stock.quantity = 0
+                    stocks_to_update.append(stock)
+
+                    # Track batch quantity increases
+                    batch_id = stock.batch_id
+                    if batch_id not in batch_updates:
+                        batch_updates[batch_id] = {
+                            "batch": stock.batch,
+                            "total_quantity": 0,
+                        }
+                    batch_updates[batch_id]["total_quantity"] += stock.quantity
+
+                # Bulk update stocks to zero
+                if stocks_to_update:
+                    order_models.Stock.objects.bulk_update(
+                        stocks_to_update, ["quantity"]
+                    )
+
+                # Prepare batches for bulk_update
+                batches_to_update = []
+                for batch_data in batch_updates.values():
+                    batch = batch_data["batch"]
+                    batch.quantity += batch_data["total_quantity"]
+                    batches_to_update.append(batch)
+
+                print("batchllllllllllllllllllll", batches_to_update)
+
+                # Bulk update batches
+                if batches_to_update:
+                    order_models.Batch.objects.bulk_update(
+                        batches_to_update, ["quantity"]
+                    )
+
+                # Get counts for message
+                stock_count = len(stocks_to_update)
+                total_units = sum(b["total_quantity"] for b in batch_updates.values())
+
+                messages.success(
+                    request,
+                    f"Returned {stock_count} stocks to store. "
+                    f"Added {total_units} units to batches.",
+                )
+
+        except Exception as e:
+            messages.error(request, f"Error: {str(e)}")
+
+        return HttpResponseRedirect(self.get_success_url())
+
+    @core_decorators.preserve_query_params("selected_ids")
+    def get_success_url(self):
+        return reverse_lazy(
+            "organization_features:orders:stock_list",
+            kwargs={"organization": self.request.organization.slug},
+        )
 
 
 class OrgTransactionListExportView(

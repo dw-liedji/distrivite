@@ -25,4 +25,9 @@ urlpatterns = [
         docs_views.OrgStockListExportView.as_view(),
         name="stock_list_export",
     ),
+    path(
+        "stocks/return-to-store",
+        docs_views.OrgStockListReturnToStoreView.as_view(),
+        name="stock_return_to_store",
+    ),
 ]
