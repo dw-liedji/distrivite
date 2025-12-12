@@ -532,8 +532,6 @@ class OrgStockListReturnToStoreView(order_views.OrgStockListView):
                     batch.quantity += batch_data["total_quantity"]
                     batches_to_update.append(batch)
 
-                print("batchllllllllllllllllllll", batches_to_update)
-
                 # Bulk update batches
                 if batches_to_update:
                     order_models.Batch.objects.bulk_update(
