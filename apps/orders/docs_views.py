@@ -35,7 +35,6 @@ class OrgFacturationListExportView(
             )
             .select_related("organization_user")
             .prefetch_related("facturation_payments")
-            .prefetch_related("facturation_payments")
             .prefetch_related("facturation_stocks")
         )
 
