@@ -1,9 +1,9 @@
 import os
 
 import dj_database_url
+from decouple import config  # For environment variables
 
 from .common import *
-from decouple import config  # For environment variables
 
 # |Liedji6Wenkack7Dagobert8|Python2&3@code.py|
 # admin@opticio.com
@@ -11,7 +11,7 @@ from decouple import config  # For environment variables
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "distrivite-0121b123ce88.herokuapp.com",
+    "distrivite-b3825671fa5a.herokuapp.com",
 ]
 
 ROOT_URLCONF = "distrivite.urls"
