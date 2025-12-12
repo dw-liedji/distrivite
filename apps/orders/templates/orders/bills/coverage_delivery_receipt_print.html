@@ -147,15 +147,15 @@
             <td style="text-align: center; vertical-align: middle;">
                 <p class="has-text-weight-medium">Total:{{ coverage_facturation.total_price.normalize|intcomma }}</p>
 
-                {% for coverage_facturation_batch in coverage_facturation.coverage_facturation_batchs.all  %}
+                {% for coverage_facturation_stock in coverage_facturation.coverage_facturation_stocks.all  %}
                 <p><span>
-                        {% if coverage_facturation_batch.custom_batch_name %}
-                        {{coverage_facturation_batch.custom_batch_name}}
+                        {% if coverage_facturation_stock.custom_batch_name %}
+                        {{coverage_facturation_stock.custom_batch_name}}
                         {% else %}
-                        {{ coverage_facturation_batch.batch.item.name }}
+                        {{ coverage_facturation_stock.batch.item.name }}
                         {% endif %}
                     </span>: <span>
-                        {{ coverage_facturation_batch.total_price.normalize|intcomma }} </span></p>
+                        {{ coverage_facturation_stock.total_price.normalize|intcomma }} </span></p>
                 {% endfor %}
 
             </td>

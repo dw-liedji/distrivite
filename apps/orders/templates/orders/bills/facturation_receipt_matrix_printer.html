@@ -88,22 +88,22 @@
     </thead>
 
     <tbody>
-        {% for facturation_batch in facturation.facturation_batchs.all %}
+        {% for facturation_stock in facturation.facturation_stocks.all %}
         <tr class="has-text-weight-bold my-0 py-0">
             <td class="has-text-weight-bold my-0 py-0 has-text-centered is-vcentered">
-                {{ facturation_batch.batch.item.name }} </td>
+                {{ facturation_stock.batch.item.name }} </td>
 
             <td class="has-text-weight-bold my-0 py-0 has-text-centered is-vcentered">
-                {{ facturation_batch.description|safe }}
+                {{ facturation_stock.description|safe }}
             </td>
             <td class="has-text-weight-bold my-0 py-0" style="text-align: center; vertical-align: middle;">
-                {{ facturation_batch.quantity }}
+                {{ facturation_stock.quantity }}
             </td>
             <td class="has-text-weight-bold my-0 py-0" style="text-align: center; vertical-align: middle;">
-                {{ facturation_batch.unit_price.normalize }}
+                {{ facturation_stock.unit_price.normalize }}
             </td>
             <td class="has-text-weight-bold my-0 py-0" style="text-align: center; vertical-align: middle;">
-                {{ facturation_batch.total_price.normalize }}
+                {{ facturation_stock.total_price.normalize }}
             </td>
         </tr>
         {% endfor %}

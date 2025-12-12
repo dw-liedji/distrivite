@@ -4,7 +4,7 @@
 {% load core %}
 
 {% block title %}
-Update coverage_facturation_batch
+Update coverage_facturation_stock
 {% endblock title %}
 
 {% block quanta_content %}
@@ -16,7 +16,7 @@ Update coverage_facturation_batch
         <div class="columns">
             <div class="column is-half is-offset-one-quarter">
                 <div class="box">
-                    <h1 class="title is-4 has-text-centered">Update coverage_facturation_batch</h1>
+                    <h1 class="title is-4 has-text-centered">Update coverage_facturation_stock</h1>
                     <form action="" method="POST" class="mb-4">
                         {% csrf_token %}
                         {{ form|crispy }}
@@ -32,7 +32,7 @@ Update coverage_facturation_batch
                                 </button>
 
                                 <button type="submit"
-                                    hx-post="{% url 'organization_features:orders:coverage_facturation_batch_change' request.organization.slug coverage_facturation.pk object.pk %}"
+                                    hx-post="{% url 'organization_features:orders:coverage_facturation_stock_change' request.organization.slug coverage_facturation.pk object.pk %}"
                                     hx-target="#quanta_content" hx-indicator="#custom-htmx-indicator"
                                     hx-swap="innerHTML" class="button is-primary is-rounded is-medium mx-2">
                                     Save Now

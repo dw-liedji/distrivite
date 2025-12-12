@@ -92,7 +92,7 @@
                 {{ item.product.name }} </td>
 
             <td class="has-text-centered is-vcentered">
-                {% for detail in item.facturation_batch_details.all %}
+                {% for detail in item.facturation_stock_details.all %}
                 <p class="has-text-left"><span class="has-text-weight-bold mr-1">{{ detail.attribute.name }}</span><span
                         class="has-text-weight-light">{{ detail.value}}</span>
                 </p>

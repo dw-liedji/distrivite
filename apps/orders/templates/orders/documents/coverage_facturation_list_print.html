@@ -94,10 +94,10 @@ Organizations facturation report pdf
             <td style="text-align: center;">{{ coverage_facturation.created}}</td>
 
             <td style="text-align: center;">
-                {% for coverage_facturation_batch in coverage_facturation.coverage_facturation_batchs.all  %}
-                <p> <span>{{ coverage_facturation_batch.quantity }}</span>
-                    <span>{{ coverage_facturation_batch.batch.item.name }}</span>
-                    <span>({{ coverage_facturation_batch.total_price.normalize|intcomma }} F)</span></p>
+                {% for coverage_facturation_stock in coverage_facturation.coverage_facturation_stocks.all  %}
+                <p> <span>{{ coverage_facturation_stock.quantity }}</span>
+                    <span>{{ coverage_facturation_stock.batch.item.name }}</span>
+                    <span>({{ coverage_facturation_stock.total_price.normalize|intcomma }} F)</span></p>
                 <p></p>
                 {% endfor %}
             </td>

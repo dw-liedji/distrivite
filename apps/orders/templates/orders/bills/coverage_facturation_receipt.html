@@ -155,28 +155,28 @@
     </thead>
 
     <tbody>
-        {% for coverage_facturation_batch in coverage_facturation.coverage_facturation_batchs.all %}
+        {% for coverage_facturation_stock in coverage_facturation.coverage_facturation_stocks.all %}
         <tr>
             <td class="has-text-weight-medium has-text-centered is-vcentered">
-                {% if coverage_facturation_batch.custom_batch_name %}
-                {{coverage_facturation_batch.custom_batch_name}}
+                {% if coverage_facturation_stock.custom_batch_name %}
+                {{coverage_facturation_stock.custom_batch_name}}
                 {% else %}
-                {{ coverage_facturation_batch.batch.item.name }}
+                {{ coverage_facturation_stock.batch.item.name }}
                 {% endif %}
             </td>
             <td class="has-text-weight-medium has-text-centered is-vcentered"></td>
-            <td style="text-align: center; vertical-align: middle;">{{ coverage_facturation_batch.quantity }}</td>
+            <td style="text-align: center; vertical-align: middle;">{{ coverage_facturation_stock.quantity }}</td>
             <td style="text-align: center; vertical-align: middle;">
-                {{ coverage_facturation_batch.unit_price.normalize|intcomma }}
+                {{ coverage_facturation_stock.unit_price.normalize|intcomma }}
             </td>
             <td style="text-align: center; vertical-align: middle;">
-                {{ coverage_facturation_batch.total_price.normalize|intcomma }}
+                {{ coverage_facturation_stock.total_price.normalize|intcomma }}
             </td>
             <td style="text-align: center; vertical-align: middle;">
-                {{ coverage_facturation_batch.total_tax.normalize|floatformat:0|intcomma }}
+                {{ coverage_facturation_stock.total_tax.normalize|floatformat:0|intcomma }}
             </td>
             <td style="text-align: center; vertical-align: middle;">
-                {{ coverage_facturation_batch.total_price_with_tax.normalize|floatformat:0|intcomma }}
+                {{ coverage_facturation_stock.total_price_with_tax.normalize|floatformat:0|intcomma }}
             </td>
         </tr>
         {% endfor %}

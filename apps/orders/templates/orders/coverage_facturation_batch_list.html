@@ -3,7 +3,7 @@
 {% load core %}
 
 {% block title %}
-Organizations coverage_facturation_batch
+Organizations coverage_facturation_stock
 {% endblock title %}
 
 {% block quanta_content %}
@@ -18,7 +18,7 @@ Organizations coverage_facturation_batch
         <a class="button is-primary"
             hx-get="{% url 'organization_features:orders:coverage_facturation_stock_add' request.organization.slug coverage_facturation.pk %}"
             hx-target="#quanta_content" hx-indicator="#custom-htmx-indicator" hx-swap="innerHTML">Add
-            coverage_facturation_batch</a>
+            coverage_facturation_stock</a>
         {% endif %}
     </div>
 
@@ -40,24 +40,24 @@ Organizations coverage_facturation_batch
                 </tr>
             </thead>
             <tbody>
-                {% for coverage_facturation_batch in coverage_facturation_batchs %}
+                {% for coverage_facturation_stock in coverage_facturation_stocks %}
                 <tr>
                     <td style="text-align: center;">{{ forloop.counter0 }}</td>
 
-                    <td style="text-align: center;">{{ coverage_facturation_batch.stock_choice }}</td>
-                    <td style="text-align: center;">{{ coverage_facturation_batch.batch.item.name}}</td>
-                    <td style="text-align: center;">{{ coverage_facturation_batch.unit_price.normalize}}</td>
-                    <td style="text-align: center;">{{ coverage_facturation_batch.quantity}}</td>
-                    <td style="text-align: center;">{{ coverage_facturation_batch.total_price.normalize}}</td>
-                    <td style="text-align: center;">{{ coverage_facturation_batch.custom_batch_name}}</td>
-                    <td style="text-align: center;">{{ coverage_facturation_batch.organization_user}}</td>
-                    <td style="text-align: center;">{{ coverage_facturation_batch.created}}</td>
-                    <td style="text-align: center;">{{ coverage_facturation_batch.modified}}</td>
+                    <td style="text-align: center;">{{ coverage_facturation_stock.stock_choice }}</td>
+                    <td style="text-align: center;">{{ coverage_facturation_stock.batch.item.name}}</td>
+                    <td style="text-align: center;">{{ coverage_facturation_stock.unit_price.normalize}}</td>
+                    <td style="text-align: center;">{{ coverage_facturation_stock.quantity}}</td>
+                    <td style="text-align: center;">{{ coverage_facturation_stock.total_price.normalize}}</td>
+                    <td style="text-align: center;">{{ coverage_facturation_stock.custom_batch_name}}</td>
+                    <td style="text-align: center;">{{ coverage_facturation_stock.organization_user}}</td>
+                    <td style="text-align: center;">{{ coverage_facturation_stock.created}}</td>
+                    <td style="text-align: center;">{{ coverage_facturation_stock.modified}}</td>
 
 
                     {% if request.organization_user.is_admin or 'orders.change_coveragefacturationbatch' in organization_user_perms %}
                     <td style="text-align: center;"><button
-                            hx-get="{% url 'organization_features:orders:coverage_facturation_batch_change' request.organization.slug coverage_facturation.pk coverage_facturation_batch.pk %}?{% url_replace %}"
+                            hx-get="{% url 'organization_features:orders:coverage_facturation_stock_change' request.organization.slug coverage_facturation.pk coverage_facturation_stock.pk %}?{% url_replace %}"
                             hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
                             class="button">
                             <i class="fa-solid fa-pen-to-square"></i>
@@ -68,7 +68,7 @@ Organizations coverage_facturation_batch
                     {% if request.organization_user.is_admin or 'orders.view_coveragefacturationbatch' in organization_user_perms %}
                     <td style="text-align: center;">
                         <button
-                            hx-get="{% url 'organization_features:orders:coverage_facturation_batch_detail' request.organization.slug coverage_facturation.pk coverage_facturation_batch.pk %}?{% url_replace %}"
+                            hx-get="{% url 'organization_features:orders:coverage_facturation_stock_detail' request.organization.slug coverage_facturation.pk coverage_facturation_stock.pk %}?{% url_replace %}"
                             hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
                             class="button">
                             <i class="fa-solid fa-eye"></i></button>
@@ -77,7 +77,7 @@ Organizations coverage_facturation_batch
 
                     {% if request.organization_user.is_admin or 'orders.delete_coveragefacturationbatch' in organization_user_perms %}
                     <td style="text-align: center;"><button
-                            hx-get="{% url 'organization_features:orders:coverage_facturation_batch_delete' request.organization.slug coverage_facturation.pk coverage_facturation_batch.pk %}?{% url_replace %}"
+                            hx-get="{% url 'organization_features:orders:coverage_facturation_stock_delete' request.organization.slug coverage_facturation.pk coverage_facturation_stock.pk %}?{% url_replace %}"
                             hx-target="#quanta_content" hx-confirm="Are you sure you want to delete?" class="button">
                             <i class="fa-solid fa-trash-can fa-1x has-text-danger"></i></button>
                     </td>

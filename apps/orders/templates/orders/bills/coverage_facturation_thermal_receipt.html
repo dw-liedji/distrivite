@@ -97,13 +97,13 @@
             </thead>
             <tbody>
 
-                {% for coverage_facturation_batch in coverage_facturation.coverage_facturation_batchs.all %}
+                {% for coverage_facturation_stock in coverage_facturation.coverage_facturation_stocks.all %}
                 <tr>
-                    <td class="mx-0 px-0" style="text-align: center;">{{ coverage_facturation_batch.batch.item.name }}
+                    <td class="mx-0 px-0" style="text-align: center;">{{ coverage_facturation_stock.batch.item.name }}
                     </td>
-                    <td class="mx-0 px-0" style="text-align: center;">{{ coverage_facturation_batch.quantity }}</td>
+                    <td class="mx-0 px-0" style="text-align: center;">{{ coverage_facturation_stock.quantity }}</td>
                     <td class="mx-0 px-0" style="text-align: center;">
-                        {{ coverage_facturation_batch.total_price.normalize }}
+                        {{ coverage_facturation_stock.total_price.normalize }}
                     </td>
                 </tr>
                 {% endfor %}

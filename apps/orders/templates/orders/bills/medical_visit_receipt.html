@@ -142,7 +142,7 @@
                 {{ facturation.total_price.normalize }}
             </td>
         </tr>
-        {% for facturation_batch in facturation.facturation_batchs.all %}
+        {% for facturation_stock in facturation.facturation_stocks.all %}
         <tr>
             <td class="has-text-weight-medium has-text-centered is-vcentered">
             </td>
@@ -150,12 +150,12 @@
             </td>
 
             <td class="has-text-centered is-vcentered">
-                {{ facturation_batch.batch.item.name }}
+                {{ facturation_stock.batch.item.name }}
             </td>
-            <td style="text-align: center; vertical-align: middle;">{{ facturation_batch.quantity }}</td>
-            <td style="text-align: center; vertical-align: middle;">{{ facturation_batch.unit_price.normalize }}
+            <td style="text-align: center; vertical-align: middle;">{{ facturation_stock.quantity }}</td>
+            <td style="text-align: center; vertical-align: middle;">{{ facturation_stock.unit_price.normalize }}
             </td>
-            <td style="text-align: center; vertical-align: middle;">{{ facturation_batch.total_price.normalize }}
+            <td style="text-align: center; vertical-align: middle;">{{ facturation_stock.total_price.normalize }}
             </td>
         </tr>
         {% endfor %}
