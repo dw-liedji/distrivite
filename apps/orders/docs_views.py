@@ -367,6 +367,14 @@ class OrgBatchListExportView(
 class OrgStockListExportView(
     order_views.OrgStockListView,
 ):
+    def get_queryset(self):
+        return (
+            order_models.Stock.objects.filter(organization=self.request.organization)
+            .select_related("organization_user")
+            .select_related("batch__item__category")
+            .select_related("organization")
+        )
+
     def get(self, request, *args, **kwargs):
 
         if request.htmx:
@@ -380,10 +388,44 @@ class OrgStockListExportView(
         else:
             queryset = self.get_queryset()
 
-        filter = self.filterset_class(request.GET, queryset=queryset)
+        filter = self.filterset_class(
+            request.GET, queryset=queryset, request=self.request
+        )
 
         filtered_form = filter.form
         filtered_queryset = filter.qs
+
+        filter_form_data_list = []
+        if filtered_form.is_valid():
+            for (
+                field_name,
+                field_value,
+            ) in filtered_form.cleaned_data.items():
+                field_label = filtered_form.fields[field_name].label
+
+                formatted_value = str(field_value)
+                if isinstance(field_value, slice):
+                    # Check if field_value is a tuple with two datetime values, indicating a date range
+                    start = (
+                        field_value.start.strftime("%Y-%m-%d")
+                        if field_value.start is not None
+                        else "None"
+                    )
+                    stop = (
+                        field_value.stop.strftime("%Y-%m-%d")
+                        if field_value.stop is not None
+                        else "None"
+                    )
+
+                    formatted_value = f"From {start} \n to \n {stop}"
+
+                filter_form_data_list.append(
+                    {
+                        "name": field_name,
+                        "label": field_label,
+                        "value": formatted_value,
+                    }
+                )
 
         if export_format == "xlsx":
             resource = order_resources.ConsultationResource()
@@ -395,15 +437,16 @@ class OrgStockListExportView(
             )
         else:
             context = {
-                "batchs": filtered_queryset,
+                "stocks": filtered_queryset,
                 "filtered_form": filtered_form,
+                "filter_form_data_list": filter_form_data_list,
             }
 
             return services.render_pdf(
                 request,
                 "orders/documents/batch_list_print.html",
                 context,
-                f"batchs",
+                f"stocks",
             )
 
 

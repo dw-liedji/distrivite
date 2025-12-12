@@ -8,13 +8,11 @@
 {% load core %}
 {% load partials %}
 
-
 {% block title %}
 Organizations batch report pdf
 {% endblock title %}
 
 {% block content %}
-
 
 <div class="has-text-left">
     <div class="is-flex is-justify-content-center is-align-items-center">
@@ -37,72 +35,45 @@ Organizations batch report pdf
 </div>
 <hr class="mb-1" />
 
-<p class="title is-size-4 p-0 m-0 has-text-centered has-background-primary has-text-weight-bold has-text-light">
-    Fiche d'inventaire de la pharmacie </p>
+<p class="title is-size-4 has-text-weight-bold">Fiche de commande</p>
+<p class="subtitle is-size-6 has-text-centered">Imprimé le {% now "SHORT_DATETIME_FORMAT" %}</p>
 
-<section class="section mx-0 px-0 fade-in">
-    <div class="container">
-        <div class="is-flex is-flex-wrap-wrap is-align-items-center is-justify-content-start">
-            {% for field in filtered_form %}
-            <div class="field">
-                <label class="label">{{ field.label }}</label>
-                <div class="control">
-                    {% if  field.field.choices %}
-                    <div class="tags">
-                        {% for choice in field.field.choices %}
-                        {% if choice.0 == field.value %}
-                        <span class="tag is-primary"> {{field}} {{ choice.1 }}</span>
-                        {% endif %}
-                        {% endfor %}
-                    </div>
+<table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth is-size-7">
+    <thead>
+        <tr class="is-selected">
+            {% for field in filter_form_data_list %}<th style="text-align: center;">{{ field.label }}</th>{% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            {% for field in filter_form_data_list %}
+                <td style="text-align: center;">
+                    {% if field.value == "None" %}
                     {% else %}
-                    <div class="tags">
-                        <span class="tag is-primary">{{field}} {{ field.value }}</span>
-                    </div>
+                        {{ field.value }}
                     {% endif %}
-                </div>
-            </div>
+                </td>
             {% endfor %}
-        </div>
-    </div>
-</section>
-
+        </tr>
+    </tbody>
+</table>
 
 <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth is-size-7">
     <thead class="is-selected">
         <tr class="is-selected">
             <th>#</th>
-            <th style="text-align: center;">Supplier</th>
-            <th style="text-align: center;">Expiration date</th>
-            <th style="text-align: center;">Batch</th>
             <th style="text-align: center;">Category</th>
             <th style="text-align: center;">Name</th>
             <th style="text-align: center;">Qte</th>
-            <th style="text-align: center;">Qte Garde</th>
-            <th style="text-align: center;">Inv.</th>
-            <th style="text-align: center;">Inv. Garde</th>
         </tr>
     </thead>
     <tbody>
-        {% for batch in batchs %}
+        {% for stock in stocks %}
         <tr>
             <td class="my-0 py-0" style="text-align: center;">{{ forloop.counter0 }}</td>
-            <td class="my-0 py-0" style="text-align: center;">{{ batch.supplier }}</td>
-            <td class="my-0 py-0" style="text-align: center;">
-                {% if batch.is_expired %}
-                <span class="tag is-danger is-rounded my-0 py-0"
-                    style="margin: 0; padding: 0;">{{ batch.expiration_date }}</span>
-                {% else %}
-                <span class="tag is-success is-rounded my-0 py-0"
-                    style="margin: 0; padding: 0;">{{ batch.expiration_date }}</span>
-                {% endif %}
-            </td>
-            <td class="my-0 py-0" style="text-align: center;">{{ batch.batch_number }}</td>
-            <td class="my-0 py-0" style="text-align: center;">{{ batch.item.category.name }}</td>
-            <td class="my-0 py-0" style="text-align: center;">{{ batch.item.name }}</td>
-            <td class="my-0 py-0" style="text-align: center;">{{ batch.quantity }}</td>
-            <td class="my-0 py-0" style="text-align: center;"></td>
-            <td class="my-0 py-0" style="text-align: center;"></td>
+            <td class="my-0 py-0" style="text-align: center;">{{ stock.batch.item.category.name }}</td>
+            <td class="my-0 py-0" style="text-align: center;">{{ stock.batch.item.name }}</td>
+            <td class="my-0 py-0" style="text-align: center;">{{ stock.batch.quantity }}</td>
         </tr>
         {% endfor %}
     </tbody>
