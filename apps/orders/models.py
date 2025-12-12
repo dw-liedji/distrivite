@@ -230,6 +230,9 @@ class Stock(BaseModel):
     quantity = models.IntegerField()
     is_active = models.BooleanField(default=True)
 
+    def __str__(self):
+        return f"{str(self.batch)} - {str(self.organization_user)}"
+
     class Meta:
         unique_together = ("organization", "organization_user", "batch")
 
