@@ -523,7 +523,7 @@ class OrgStockListReturnToStoreView(order_views.OrgStockListView):
                 # Bulk update stocks to zero
                 if stocks_to_update:
                     order_models.Stock.objects.bulk_update(
-                        stocks_to_update, ["quantity"]
+                        stocks_to_update, ["quantity", "is_active"]
                     )
 
                 # Prepare batches for bulk_update
