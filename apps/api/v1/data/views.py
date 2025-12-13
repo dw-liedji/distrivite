@@ -56,6 +56,7 @@ class StockListAPIView(org_mixins.OrganizationAPIUserMixin, generics.ListAPIView
             order_models.Stock.objects.filter(
                 organization=self.request.organization,
                 organization_user=self.request.organization_user,
+                is_active=True,
             )
             .select_related(
                 "batch__organization",

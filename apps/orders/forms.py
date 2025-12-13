@@ -56,12 +56,7 @@ class StockForm(forms.ModelForm):
 
     class Meta:
         model = order_models.Stock
-        fields = [
-            "organization",
-            "organization_user",
-            "batch",
-            "quantity",
-        ]
+        fields = ["organization", "organization_user", "batch", "quantity", "is_active"]
         widgets = {
             "organization": forms.TextInput(
                 attrs={

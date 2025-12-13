@@ -228,6 +228,7 @@ class Stock(BaseModel):
     )
     batch = models.ForeignKey(Batch, on_delete=models.PROTECT, related_name="stocks")
     quantity = models.IntegerField()
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         unique_together = ("organization", "organization_user", "batch")
