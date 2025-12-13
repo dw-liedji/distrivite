@@ -508,6 +508,7 @@ class OrgStockListReturnToStoreView(order_views.OrgStockListView):
                 for stock in selected_stocks:
                     # Add stock to update list (set quantity to 0)
                     stock.quantity = 0
+                    stock.is_active = False
                     stocks_to_update.append(stock)
 
                     # Track batch quantity increases
