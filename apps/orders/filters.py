@@ -329,6 +329,7 @@ class StockFilter(BaseFilter):
             "organization_user",
             "expiration_status",
             "name",
+            "is_active",
             "batch__item__category",
         ]
 
