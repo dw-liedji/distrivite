@@ -1,7 +1,21 @@
+from decimal import Decimal
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
-from django.db.models import ProtectedError
+from django.db.models import (
+    Case,
+    DecimalField,
+    ExpressionWrapper,
+    F,
+    OuterRef,
+    ProtectedError,
+    Subquery,
+    Sum,
+    Value,
+    When,
+)
+from django.db.models.functions import Coalesce
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
@@ -43,11 +57,94 @@ class OrgCustomerListView(
         return ["orders/patient_list.html"]
 
     def get_queryset(self):
-        return models.Customer.objects.filter(
-            organization__in=self.request.organization.get_descendants(
-                include_self=True
+        organization = self.request.organization
+
+        # Subquery for total sales
+        total_sales_subquery = (
+            models.Facturation.objects.filter(
+                organization=organization, customer_id=OuterRef("pk"), is_proforma=False
             )
-        ).order_by("-created")
+            .values("customer_id")
+            .annotate(
+                total=Coalesce(
+                    Sum(
+                        F("facturation_stocks__unit_price")
+                        * F("facturation_stocks__quantity"),
+                        output_field=DecimalField(max_digits=19, decimal_places=4),
+                    ),
+                    Decimal("0"),
+                    output_field=DecimalField(max_digits=19, decimal_places=4),
+                )
+            )
+            .values("total")[:1]
+        )
+
+        # Subquery for total paid
+        total_paid_subquery = (
+            models.FacturationPayment.objects.filter(
+                organization=organization, facturation__customer_id=OuterRef("pk")
+            )
+            .values("facturation__customer_id")
+            .annotate(
+                total=Coalesce(
+                    Sum(
+                        "amount",
+                        output_field=DecimalField(max_digits=19, decimal_places=4),
+                    ),
+                    Decimal("0"),
+                    output_field=DecimalField(max_digits=19, decimal_places=4),
+                )
+            )
+            .values("total")[:1]
+        )
+
+        # Apply annotations
+        return (
+            models.Customer.objects.filter(organization=organization)
+            .annotate(
+                total_sales=Coalesce(
+                    Subquery(total_sales_subquery),
+                    Decimal("0"),
+                    output_field=DecimalField(max_digits=19, decimal_places=4),
+                ),
+                total_paid=Coalesce(
+                    Subquery(total_paid_subquery),
+                    Decimal("0"),
+                    output_field=DecimalField(max_digits=19, decimal_places=4),
+                ),
+            )
+            .annotate(
+                total_due=Coalesce(
+                    F("total_sales") - F("total_paid"),
+                    Decimal("0"),
+                    output_field=DecimalField(max_digits=19, decimal_places=4),
+                ),
+                # Payment progress percentage (how much of total sales is paid)
+                payment_progress=Case(
+                    When(
+                        total_sales__gt=0,
+                        then=ExpressionWrapper(
+                            (F("total_paid") * 100) / F("total_sales"),
+                            output_field=DecimalField(max_digits=5, decimal_places=1),
+                        ),
+                    ),
+                    default=Value(100),
+                    output_field=DecimalField(max_digits=5, decimal_places=1),
+                ),
+                # Credit utilization percentage (how much of credit limit is used)
+                credit_utilization=Case(
+                    When(
+                        credit_limit__gt=0,
+                        then=ExpressionWrapper(
+                            (F("total_due") * 100) / F("credit_limit"),
+                            output_field=DecimalField(max_digits=5, decimal_places=1),
+                        ),
+                    ),
+                    default=Value(0),
+                    output_field=DecimalField(max_digits=5, decimal_places=1),
+                ),
+            )
+        )
 
 
 class OrgCustomerAddView(

@@ -43,6 +43,12 @@ class Customer(BaseModel):
     phone_number = models.CharField(
         verbose_name="Téléphone", max_length=20, null=True, blank=True
     )
+    credit_limit = models.DecimalField(
+        max_digits=19,
+        decimal_places=4,
+        default=0.0,
+        validators=[MinValueValidator(Decimal("0.0"))],
+    )
 
     objects = OrgFeatureManager()
 
