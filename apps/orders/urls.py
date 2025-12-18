@@ -6,29 +6,29 @@ app_name = "orders"
 
 urlpatterns = [
     path(
-        "patients/",
+        "customers/",
         views.OrgCustomerListView.as_view(),
-        name="patient_list",
+        name="customer_list",
     ),
     path(
-        "patients/add/",
+        "customers/add/",
         views.OrgCustomerAddView.as_view(),
-        name="patient_add",
+        name="customer_add",
     ),
     path(
-        "patients/<uuid:pk>/change/",
+        "customers/<uuid:pk>/change/",
         views.OrgCustomerChangeView.as_view(),
-        name="patient_change",
+        name="customer_change",
     ),
     path(
-        "patients/<uuid:pk>/",
+        "customers/<uuid:pk>/",
         views.OrgCustomerDetailView.as_view(),
-        name="patient_detail",
+        name="customer_detail",
     ),
     path(
-        "patients/<uuid:pk>/delete/",
+        "customers/<uuid:pk>/delete/",
         views.OrgCustomerDeleteView.as_view(),
-        name="patient_delete",
+        name="customer_delete",
     ),
     path(
         "items/",
@@ -309,5 +309,30 @@ urlpatterns = [
         "transactions/<uuid:pk>/detail/",
         views.OrgTransactionDetailView.as_view(),
         name="transaction_detail",
+    ),
+    path(
+        "bulk-credit-payments/",
+        views.OrgBulkCreditPaymentListView.as_view(),
+        name="bulk_credit_payment_list",
+    ),
+    path(
+        "bulk-credit-payments/add/",
+        views.OrgBulkCreditPaymentCreateView.as_view(),
+        name="bulk_credit_payment_add",
+    ),
+    path(
+        "bulk-credit-payments/<uuid:pk>/change/",
+        views.OrgBulkCreditPaymentUpdateView.as_view(),
+        name="bulk_credit_payment_change",
+    ),
+    path(
+        "bulk-credit-payments/<uuid:pk>/detail/",
+        views.OrgBulkCreditPaymentDetailView.as_view(),
+        name="bulk_credit_payment_detail",
+    ),
+    path(
+        "bulk-credit-payments/<uuid:pk>/delete/",
+        views.OrgBulkCreditPaymentDeleteView.as_view(),
+        name="bulk_credit_payment_delete",
     ),
 ]

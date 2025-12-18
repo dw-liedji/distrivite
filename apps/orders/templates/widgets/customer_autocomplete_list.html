@@ -1,7 +1,7 @@
 <ul class="autocomplete-results">
     {% for Customer in results %}
-    <li hx-on="click: selectCustomer('{{ patient.username }}')" class="autocomplete-item">
-        {{ patient.username }}
+    <li hx-on="click: selectCustomer('{{ customer.username }}')" class="autocomplete-item">
+        {{ customer.username }}
     </li>
     {% empty %}
     <li class="autocomplete-item">No results found</li>

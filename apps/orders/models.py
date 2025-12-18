@@ -441,3 +441,22 @@ class FacturationRefund(BaseModel):
                 "bill_number",
             )
         ]
+
+
+class BulkCreditPayment(BaseModel):
+    customer = models.ForeignKey(
+        Customer, related_name="bulk_credit_payments", on_delete=models.CASCADE
+    )
+    organization = models.ForeignKey(
+        Organization, related_name="bulk_credit_payments", on_delete=models.CASCADE
+    )
+    organization_user = models.ForeignKey(
+        OrganizationUser, on_delete=models.PROTECT, related_name="bulk_credit_payments"
+    )
+    transaction_broker = models.CharField(
+        max_length=20,
+        choices=TransactionBroker.choices,
+        default=TransactionBroker.CASHIER,
+    )
+    amount = models.DecimalField(max_digits=19, decimal_places=3)
+    objects = OrgFeatureManager()

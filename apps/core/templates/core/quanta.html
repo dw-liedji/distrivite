@@ -37,12 +37,21 @@
                 {% endif %}
 
 
-                {% if request.organization_user.is_admin or request.organization_user.is_owner or 'orders.view_patient' in organization_user_perms %}
+                {% if request.organization_user.is_admin or request.organization_user.is_owner or 'orders.view_customer' in organization_user_perms %}
                 <li>
-                    <a hx-get="{% url 'organization_features:orders:patient_list' request.organization.slug %}"
+                    <a hx-get="{% url 'organization_features:orders:customer_list' request.organization.slug %}"
                         hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
-                        hx-replace-url="true" class="menu-item" data-item="patient">
+                        hx-replace-url="true" class="menu-item" data-item="customer">
                         Customers</a>
+                </li>
+                {% endif %}
+
+                {% if request.organization_user.is_admin or request.organization_user.is_owner or 'orders.view_bulkcreditpayment' in organization_user_perms %}
+                <li>
+                    <a hx-get="{% url 'organization_features:orders:bulk_credit_payment_list' request.organization.slug %}"
+                        hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
+                        hx-replace-url="true" class="menu-item" data-item="bulk_credit_payment">
+                        Bulk credit payment</a>
                 </li>
                 {% endif %}
 

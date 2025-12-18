@@ -455,3 +455,36 @@ class FacturationRefundFilter(BaseFilter):
             )
         )
         self.filters["organization_user"].label = "Reducer"
+
+
+class BulkCreditPaymentFilter(BaseFilter):
+
+    customer__name = filters.CharFilter(
+        field_name="customer__name",
+        label="Nom du patient",
+        lookup_expr="icontains",
+    )
+
+    payer_field = filters.CharFilter(
+        field_name="payer",
+        label="Payer",
+        method="filter_by_payer",
+    )
+
+    def filter_by_payer(self, queryset, name, value):
+        return queryset.filter(
+            Q(
+                Q(organization_user__user__username__icontains=value)
+                | Q(organization_user__user__email__icontains=value)
+            )
+        )
+
+    class Meta:
+        model = models.BulkCreditPayment
+        fields = [
+            "transaction_broker",
+            "payer_field",
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)

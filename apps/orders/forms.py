@@ -396,34 +396,23 @@ class FacturationPaymentForm(forms.ModelForm):
             "organization_user", None
         )  # Must be pop before the super method
 
-        facturation = kwargs.pop(
-            "facturation", None
+        organization_user = kwargs.pop(
+            "organization_user", None
         )  # Must be pop before the super method
-
-        user = kwargs.pop("user", None)  # Must be pop before the super method
-        print("this is a user from attributes", user)
 
         print(organization, "this is a child")
         super(FacturationPaymentForm, self).__init__(*args, **kwargs)
         self.fields["organization"].initial = organization
         self.fields["organization"].label = ""
-        self.fields["user"].initial = user
-        self.fields["user"].label = ""
-        self.fields["cash_register"].queryset = (
-            cashflow_models.CashRegister.objects.filter(organization=organization)
-        )
-        self.fields["facturation"].initial = facturation
-        self.fields["facturation"].label = ""
-
-        # self.helper = FormHelper(self)
-        # self.helper.form_tag = False
-        # self.helper.layout = Layout()
+        self.fields["organization_user"].initial = organization_user
+        self.fields["organization_user"].label = ""
 
     class Meta:
         model = order_models.FacturationPayment
         fields = [
             "organization",
             "facturation",
+            "transaction_broker",
             "organization_user",
             "amount",
         ]
@@ -439,7 +428,7 @@ class FacturationPaymentForm(forms.ModelForm):
                     "class": "is-hidden",
                 }
             ),
-            "user": forms.TextInput(
+            "organization_user": forms.TextInput(
                 attrs={
                     "class": "is-hidden",
                 }
@@ -572,5 +561,56 @@ class TransactionForm(forms.ModelForm):
                     "class": "input",
                     "placeholder": "Reason for transaction",
                 }
+            ),
+        }
+
+
+class BulkCreditPaymentForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        organization = kwargs.pop(
+            "organization", None
+        )  # Must be pop before the super method
+
+        organization_user = kwargs.pop(
+            "organization_user", None
+        )  # Must be pop before the super method
+        print("this is a organization_user from attributes", organization_user)
+
+        print(organization, "this is a child")
+        super(BulkCreditPaymentForm, self).__init__(*args, **kwargs)
+        self.fields["organization"].initial = organization
+        self.fields["organization"].label = ""
+        self.fields["organization_user"].initial = organization_user
+        self.fields["organization_user"].label = ""
+
+    class Meta:
+        model = order_models.BulkCreditPayment
+        fields = [
+            "organization",
+            "customer",
+            "transaction_broker",
+            "organization_user",
+            "amount",
+        ]
+
+        widgets = {
+            "organization": forms.TextInput(
+                attrs={
+                    "class": "is-hidden",
+                }
+            ),
+            "facturation": forms.TextInput(
+                attrs={
+                    "class": "is-hidden",
+                }
+            ),
+            "organization_user": forms.TextInput(
+                attrs={
+                    "class": "is-hidden",
+                }
+            ),
+            "customer": autocomplete.ModelSelect2(
+                url="core:customer-autocomplete",
+                forward=["organization"],
             ),
         }

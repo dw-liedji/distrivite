@@ -17,7 +17,7 @@ Organizations Customer
     <!-- Form section (unchanged) -->
     <section class="section mx-0 px-0 fade-in">
         <form id="my_form" method="GET"
-            hx-get="{% url 'organization_features:orders:patient_list' request.organization.slug %}"
+            hx-get="{% url 'organization_features:orders:customer_list' request.organization.slug %}"
             hx-target="#quanta_content" hx-swap="innerHTML" hx-push-url="true" hx-indicator="#custom-htmx-indicator"
             class="is-flex is-flex-wrap-wrap is-align-items-center is-justify-content-start" style="gap: 10px;">
 
@@ -42,9 +42,9 @@ Organizations Customer
     </section>
 
     <div class="has-text-right my-3">
-        {% if request.organization_user.is_admin or 'orders.add_patient' in organization_user_perms %}
+        {% if request.organization_user.is_admin or 'orders.add_customer' in organization_user_perms %}
         <a class="button is-primary"
-            hx-get="{% url 'organization_features:orders:patient_add' request.organization.slug %}?{% url_replace %}"
+            hx-get="{% url 'organization_features:orders:customer_add' request.organization.slug %}?{% url_replace %}"
             hx-target="#quanta_content" hx-indicator="#custom-htmx-indicator" hx-swap="innerHTML">Add Customer</a>
         {% endif %}
     </div>
@@ -65,54 +65,54 @@ Organizations Customer
                 </tr>
             </thead>
             <tbody>
-                {% for patient in patients %}
+                {% for customer in customers %}
                 <tr>
                     <!-- Basic Info -->
-                    <td style="text-align: center; vertical-align: middle;">{{ patient.name }}</td>
-                    <td style="text-align: center; vertical-align: middle;">{{ patient.phone_number }}</td>
+                    <td style="text-align: center; vertical-align: middle;">{{ customer.name }}</td>
+                    <td style="text-align: center; vertical-align: middle;">{{ customer.phone_number }}</td>
                     
                     <!-- Financial Numbers -->
-                    <td style="text-align: center; vertical-align: middle;">{{ patient.total_sales.normalize }}</td>
-                    <td style="text-align: center; vertical-align: middle;">{{ patient.total_paid.normalize }}</td>
+                    <td style="text-align: center; vertical-align: middle;">{{ customer.total_sales.normalize }}</td>
+                    <td style="text-align: center; vertical-align: middle;">{{ customer.total_paid.normalize }}</td>
                     
                     <!-- Payment Progress -->
                     <td style="text-align: center; vertical-align: middle; min-width: 120px;">
                         <div class="has-text-centered mb-1">
-                            <small class="has-text-weight-semibold">{{ patient.payment_progress.normalize|floatformat:2 }}%</small>
+                            <small class="has-text-weight-semibold">{{ customer.payment_progress.normalize|floatformat:2 }}%</small>
                         </div>
-                        <progress class="progress {% if patient.payment_progress >= 100 %}is-success{% elif patient.payment_progress >= 50 %}is-info{% else %}is-warning{% endif %}" 
-                                  value="{{ patient.payment_progress.normalize }}" 
+                        <progress class="progress {% if customer.payment_progress >= 100 %}is-success{% elif customer.payment_progress >= 50 %}is-info{% else %}is-warning{% endif %}" 
+                                  value="{{ customer.payment_progress.normalize }}" 
                                   max="100">
-                            {{ patient.payment_progress.normalize }}%
+                            {{ customer.payment_progress.normalize }}%
                         </progress>
                     </td>
                     
                     <!-- Credit Info -->
                     <td style="text-align: center; vertical-align: middle;">
-                        <span class="tag {% if patient.total_due > patient.credit_limit %}is-danger{% elif patient.total_due > 0 %}is-warning{% else %}is-success{% endif %}">
-                            {{ patient.total_due.normalize.normalize }}
+                        <span class="tag {% if customer.total_due > customer.credit_limit %}is-danger{% elif customer.total_due > 0 %}is-warning{% else %}is-success{% endif %}">
+                            {{ customer.total_due.normalize.normalize }}
                         </span>
                     </td>
-                    <td style="text-align: center; vertical-align: middle;">{{ patient.credit_limit.normalize }}</td>
+                    <td style="text-align: center; vertical-align: middle;">{{ customer.credit_limit.normalize }}</td>
                     
                     <!-- Credit Usage -->
                     <td style="text-align: center; vertical-align: middle; min-width: 120px;">
                         <div class="has-text-centered mb-1">
-                            <small class="has-text-weight-semibold {% if patient.credit_utilization >= 100 %}has-text-danger{% elif patient.credit_utilization >= 80 %}has-text-warning{% endif %}">
-                                {{ patient.credit_utilization.normalize|floatformat:2 }}%
+                            <small class="has-text-weight-semibold {% if customer.credit_utilization >= 100 %}has-text-danger{% elif customer.credit_utilization >= 80 %}has-text-warning{% endif %}">
+                                {{ customer.credit_utilization.normalize|floatformat:2 }}%
                             </small>
                         </div>
-                        <progress class="progress {% if patient.credit_utilization >= 100 %}is-danger{% elif patient.credit_utilization >= 80 %}is-warning{% else %}is-primary{% endif %}" 
-                                  value="{{ patient.credit_utilization }}" 
+                        <progress class="progress {% if customer.credit_utilization >= 100 %}is-danger{% elif customer.credit_utilization >= 80 %}is-warning{% else %}is-primary{% endif %}" 
+                                  value="{{ customer.credit_utilization }}" 
                                   max="100">
-                            {{ patient.credit_utilization }}%
+                            {{ customer.credit_utilization }}%
                         </progress>
                     </td>
                     
                     <!-- Action Buttons -->
-                    {% if request.organization_user.is_admin or 'orders.change_patient' in organization_user_perms %}
+                    {% if request.organization_user.is_admin or 'orders.change_customer' in organization_user_perms %}
                     <td style="text-align: center; vertical-align: middle;">
-                        <button hx-get="{% url 'organization_features:orders:patient_change' request.organization.slug patient.pk %}?{% url_replace %}"
+                        <button hx-get="{% url 'organization_features:orders:customer_change' request.organization.slug customer.pk %}?{% url_replace %}"
                                 hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
                                 class="button is-small">
                             <i class="fa-solid fa-pen-to-square"></i>
@@ -120,9 +120,9 @@ Organizations Customer
                     </td>
                     {% endif %}
                     
-                    {% if request.organization_user.is_admin or 'orders.view_patient' in organization_user_perms %}
+                    {% if request.organization_user.is_admin or 'orders.view_customer' in organization_user_perms %}
                     <td style="text-align: center; vertical-align: middle;">
-                        <button hx-get="{% url 'organization_features:orders:patient_detail' request.organization.slug patient.pk %}?{% url_replace %}"
+                        <button hx-get="{% url 'organization_features:orders:customer_detail' request.organization.slug customer.pk %}?{% url_replace %}"
                                 hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
                                 class="button is-small">
                             <i class="fa-solid fa-eye"></i>
@@ -130,9 +130,9 @@ Organizations Customer
                     </td>
                     {% endif %}
                     
-                    {% if request.organization_user.is_admin or 'orders.delete_patient' in organization_user_perms %}
+                    {% if request.organization_user.is_admin or 'orders.delete_customer' in organization_user_perms %}
                     <td style="text-align: center; vertical-align: middle;">
-                        <button hx-get="{% url 'organization_features:orders:patient_delete' request.organization.slug patient.pk %}?{% url_replace %}"
+                        <button hx-get="{% url 'organization_features:orders:customer_delete' request.organization.slug customer.pk %}?{% url_replace %}"
                                 hx-target="#quanta_content" hx-confirm="Are you sure you want to delete?" 
                                 class="button is-small">
                             <i class="fa-solid fa-trash-can fa-1x has-text-danger"></i>

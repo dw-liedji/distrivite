@@ -43,18 +43,18 @@ class OrgCustomerListView(
     FilterView,
 ):
     model = models.Customer
-    template_name = "orders/patient_list.html"
-    context_object_name = "patients"
+    template_name = "orders/customer_list.html"
+    context_object_name = "customers"
     paginate_by = 30
-    permission_required = ("orders.view_patient",)
+    permission_required = ("orders.view_customer",)
     filterset_class = orders_filters.CustomerFilter
 
     def get_template_names(self):
         if self.request.htmx:
             if self.request.headers.get("HX-Request-Source") == "sidebar":
-                return ["orders/patient_list.html#list"]
-            return ["orders/patient_list.html#list"]
-        return ["orders/patient_list.html"]
+                return ["orders/customer_list.html#list"]
+            return ["orders/customer_list.html#list"]
+        return ["orders/customer_list.html"]
 
     def get_queryset(self):
         organization = self.request.organization
@@ -156,13 +156,13 @@ class OrgCustomerAddView(
 ):
     model = models.Customer
     form_class = forms.CustomerForm
-    template_name = "orders/patient_add.html"
-    permission_required = ("orders.add_patient",)
+    template_name = "orders/customer_add.html"
+    permission_required = ("orders.add_customer",)
 
     def get_template_names(self):
         if self.request.htmx:
-            return ["orders/patient_add.html#add"]
-        return ["orders/patient_add.html"]
+            return ["orders/customer_add.html#add"]
+        return ["orders/customer_add.html"]
 
     def form_valid(self, form):
         consultation = form.save()
@@ -178,7 +178,7 @@ class OrgCustomerAddView(
     @core_decorators.preserve_query_params()
     def get_success_url(self):
         return reverse_lazy(
-            "organization_features:orders:patient_list",
+            "organization_features:orders:customer_list",
             kwargs={"organization": self.request.organization.slug},
         )
 
@@ -192,13 +192,13 @@ class OrgCustomerChangeView(
 ):
     model = models.Customer
     form_class = forms.CustomerForm
-    template_name = "orders/patient_change.html"
-    permission_required = ("orders.change_patient",)
+    template_name = "orders/customer_change.html"
+    permission_required = ("orders.change_customer",)
 
     def get_template_names(self):
         if self.request.htmx:
-            return ["orders/patient_change.html#change"]
-        return ["orders/patient_change.html"]
+            return ["orders/customer_change.html#change"]
+        return ["orders/customer_change.html"]
 
     def form_valid(self, form):
         consultation = form.save()
@@ -214,7 +214,7 @@ class OrgCustomerChangeView(
     @core_decorators.preserve_query_params()
     def get_success_url(self):
         return reverse_lazy(
-            "organization_features:orders:patient_list",
+            "organization_features:orders:customer_list",
             kwargs={"organization": self.request.organization.slug},
         )
 
@@ -226,8 +226,8 @@ class OrgCustomerDeleteView(
     DeleteView,
 ):
     model = models.Customer
-    template_name = "orders/patient_confirm_delete.html"
-    permission_required = ("orders.delete_patient",)
+    template_name = "orders/customer_confirm_delete.html"
+    permission_required = ("orders.delete_customer",)
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -264,7 +264,7 @@ class OrgCustomerDeleteView(
     @core_decorators.preserve_query_params()
     def get_success_url(self):
         return reverse_lazy(
-            "organization_features:orders:patient_list",
+            "organization_features:orders:customer_list",
             kwargs={"organization": self.request.organization.slug},
         )
 
@@ -276,14 +276,14 @@ class OrgCustomerDetailView(
     DetailView,
 ):
     model = models.Customer
-    context_object_name = "patient"
-    template_name = "orders/patient_detail.html"
-    permission_required = ("orders.view_patient",)
+    context_object_name = "customer"
+    template_name = "orders/customer_detail.html"
+    permission_required = ("orders.view_customer",)
 
     def get_template_names(self):
         if self.request.htmx:
-            return ["orders/patient_detail.html#detail"]
-        return ["orders/patient_detail.html"]
+            return ["orders/customer_detail.html#detail"]
+        return ["orders/customer_detail.html"]
 
 
 class OrgBatchListView(
@@ -2361,3 +2361,241 @@ class OrgTransactionDetailView(
         if self.request.htmx:
             return ["orders/transaction_detail.html#detail"]
         return ["orders/transaction_detail.html"]
+
+
+class OrgBulkCreditPaymentListView(
+    LoginRequiredMixin,
+    mixins.OrgPermissionRequiredMixin,
+    mixins.MembershipRequiredMixin,
+    # AdminRequiredMixin,
+    FilterView,
+):
+    model = models.BulkCreditPayment
+    template_name = "orders/bulk_credit_payment_list.html"
+    context_object_name = "bulk_credit_payments"
+
+    permission_required = ("orders.view_bulkcreditpayment",)
+    filterset_class = orders_filters.BulkCreditPaymentFilter
+
+    def get_template_names(self):
+        if self.request.htmx:
+            if self.request.headers.get("HX-Request-Source") == "sidebar":
+                return ["orders/bulk_credit_payment_list.html#list"]
+            return ["orders/bulk_credit_payment_list.html#list"]
+        return ["orders/bulk_credit_payment_list.html"]
+
+    def get_queryset(self):
+
+        return models.BulkCreditPayment.objects.filter(
+            organization=self.request.organization
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+
+class OrgBulkCreditPaymentCreateView(
+    LoginRequiredMixin,
+    mixins.OrgPermissionRequiredMixin,
+    mixins.MembershipRequiredMixin,
+    # AdminRequiredMixin,
+    mixins.OrgFormMixin,
+    CreateView,
+):
+    model = models.BulkCreditPayment
+    form_class = forms.BulkCreditPaymentForm
+    template_name = "orders/bulk_credit_payment_add.html"
+    success_message = "bulk_credit_payments %(name)s successfully created!"
+
+    permission_required = ("orders.add_bulkcreditpayment",)
+
+    def get_template_names(self):
+        if self.request.htmx:
+            return ["orders/bulk_credit_payment_add.html#add"]
+        return ["orders/bulk_credit_payment_add.html"]
+
+    @core_decorators.preserve_query_params()
+    def get_success_url(self):
+        if "save" in self.request.POST:
+            return reverse_lazy(
+                "organization_features:orders:bulk_credit_payment_list",
+                kwargs={
+                    "organization": self.request.organization.slug,
+                },
+            )
+        elif "save_continue" in self.request.POST:
+            return reverse_lazy(
+                "organization_features:orders:bulk_credit_payment_add",
+                kwargs={
+                    "organization": self.request.organization.slug,
+                },
+            )
+        else:
+            # p Invalid action or form submission
+            # ...
+            return reverse_lazy(
+                "organization_features:orders:bulk_credit_payment_add",
+                kwargs={
+                    "organization": self.request.organization.slug,
+                },
+            )
+
+    def get_form_kwargs(self):
+        kwargs = super(OrgBulkCreditPaymentCreateView, self).get_form_kwargs()
+
+        kwargs.update(
+            {
+                "organization": self.request.organization,
+                "organization_user": self.request.organization_user,
+            }
+        )
+        return kwargs
+
+    def form_valid(self, form):
+        with transaction.atomic():
+            bulk_credit_payment = form.save(commit=False)
+            bulk_credit_payment.organization_user = self.request.organization_user
+            bulk_credit_payment.save()
+
+            if bulk_credit_payment.amount > 0.0:
+                models.Transaction.objects.create(
+                    organization=self.request.organization,
+                    organization_user=self.request.organization_user,
+                    amount=bulk_credit_payment.amount,
+                    transaction_broker=bulk_credit_payment.transaction_broker,
+                    transaction_type=models.TransactionType.DEPOSIT,
+                    participant=str(bulk_credit_payment.customer),
+                    reason=f"Recouvrement de {str(bulk_credit_payment.customer)}",
+                )
+
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+
+class OrgBulkCreditPaymentUpdateView(
+    LoginRequiredMixin,
+    mixins.OrgPermissionRequiredMixin,
+    mixins.MembershipRequiredMixin,
+    # AdminRequiredMixin,
+    mixins.OrgFormMixin,
+    mixins.UserFormMixin,
+    UpdateView,
+):
+    model = models.BulkCreditPayment
+    form_class = forms.BulkCreditPaymentForm
+    template_name = "orders/bulk_credit_payment_edit.html"
+    permission_required = ("orders.change_bulkcreditpayment",)
+
+    def get_template_names(self):
+        if self.request.htmx:
+            return ["orders/bulk_credit_payment_change.html#change"]
+        return ["orders/bulk_credit_payment_change.html"]
+
+    @core_decorators.preserve_query_params()
+    def get_success_url(self):
+        return reverse_lazy(
+            "organization_features:orders:bulk_credit_payment_list",
+            kwargs={
+                "organization": self.request.organization.slug,
+            },
+        )
+
+    def get_form_kwargs(self):
+        kwargs = super(OrgBulkCreditPaymentUpdateView, self).get_form_kwargs()
+
+        kwargs.update(
+            {
+                "organization": self.request.organization,
+                # "organization_user": self.request.organization_user,
+            }
+        )
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+
+class OrgBulkCreditPaymentDeleteView(
+    LoginRequiredMixin,
+    mixins.OrgPermissionRequiredMixin,
+    mixins.MembershipRequiredMixin,
+    # AdminRequiredMixin,
+    DeleteView,
+):
+    model = models.BulkCreditPayment
+    template_name = "orders/bulk_credit_payment_confirm_delete.html"
+    permission_required = ("orders.delete_bulkcreditpayment",)
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if request.headers.get("HX-Request"):
+            try:
+                self.object.delete()
+                messages.success(self.request, f"{self.object} deleted successfully")
+                return HttpResponseRedirect(self.get_success_url())
+            except ProtectedError as e:
+                related_objects = e.protected_objects  # This is already a set
+                related_model_names = {
+                    rel._meta.verbose_name for rel in related_objects
+                }
+
+                if related_model_names:
+                    messages.error(
+                        request,
+                        f"This {self.object._meta.verbose_name} cannot be deleted because it is linked to: {', '.join(related_model_names)}.",
+                    )
+                else:
+                    messages.error(
+                        request,
+                        f"This {self.object._meta.verbose_name} cannot be deleted because it is linked to other records.",
+                    )
+                return HttpResponseRedirect(self.get_success_url())
+            except Exception:
+                messages.error(
+                    request, "An unexpected error occurred. Please try again later."
+                )
+                return HttpResponseRedirect(self.get_success_url())
+
+        return super().get(request, *args, **kwargs)
+
+    @core_decorators.preserve_query_params()
+    def get_success_url(self):
+        return reverse_lazy(
+            "organization_features:orders:bulk_credit_payment_list",
+            kwargs={
+                "organization": self.request.organization.slug,
+            },
+        )
+
+
+class OrgBulkCreditPaymentDetailView(
+    LoginRequiredMixin,
+    mixins.OrgPermissionRequiredMixin,
+    mixins.MembershipRequiredMixin,
+    # AdminRequiredMixin,
+    DetailView,
+):
+    model = models.BulkCreditPayment
+    context_object_name = "bulk_credit_payment"
+    template_name = "orders/bulk_credit_payment_detail.html"
+    permission_required = ("orders.view_bulkcreditpayment",)
+
+    def get_template_names(self):
+        if self.request.htmx:
+            return ["orders/bulk_credit_payment_detail.html#detail"]
+        return ["orders/bulk_credit_payment_detail.html"]
+
+    def get_object(self, queryset=None):
+        self.object = get_object_or_404(
+            models.FacturationPayment, pk=self.kwargs.get("pk")
+        )
+        return self.object
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
