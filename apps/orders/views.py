@@ -2452,22 +2452,154 @@ class OrgBulkCreditPaymentCreateView(
         )
         return kwargs
 
+    def _get_unpaid_facturations(self, customer):
+        """
+        Get unpaid facturations using subqueries to calculate:
+        - total_paid: Sum of all payments for the facturation
+        - total_sales: Sum of (unit_price * quantity) for all facturation_stocks
+        """
+
+        # Subquery to calculate total paid for each facturation
+        total_paid_subquery = (
+            models.FacturationPayment.objects.filter(facturation_id=OuterRef("pk"))
+            .values("facturation_id")
+            .annotate(
+                total=Sum(
+                    "amount", output_field=DecimalField(max_digits=19, decimal_places=4)
+                )
+            )
+            .values("total")[:1]
+        )
+
+        # Subquery to calculate total sales (unit_price * quantity) for each facturation
+        total_sales_subquery = (
+            models.FacturationStock.objects.filter(facturation_id=OuterRef("pk"))
+            .values("facturation_id")
+            .annotate(
+                total=Sum(
+                    F("unit_price") * F("quantity"),
+                    output_field=DecimalField(max_digits=19, decimal_places=4),
+                )
+            )
+            .values("total")[:1]
+        )
+
+        # Get facturations with annotations
+        unpaid_facturations = (
+            models.Facturation.objects.filter(
+                organization=self.request.organization,
+                customer=customer,
+                is_proforma=False,
+            )
+            .annotate(
+                # Annotate with total paid using Coalesce to handle None values
+                total_paid=Coalesce(
+                    Subquery(total_paid_subquery),
+                    Decimal("0"),
+                    output_field=DecimalField(max_digits=19, decimal_places=4),
+                ),
+                # Annotate with total sales using Coalesce to handle None values
+                total_sales=Coalesce(
+                    Subquery(total_sales_subquery),
+                    Decimal("0"),
+                    output_field=DecimalField(max_digits=19, decimal_places=4),
+                ),
+                # Calculate remaining balance
+                remaining_balance=ExpressionWrapper(
+                    F("total_sales") - F("total_paid"),
+                    output_field=DecimalField(max_digits=19, decimal_places=4),
+                ),
+            )
+            .filter(
+                remaining_balance__gt=0  # Only get facturations with positive balance
+            )
+            .order_by("placed_at")
+        )  # Oldest first (FIFO)
+
+        return unpaid_facturations
+
     def form_valid(self, form):
         with transaction.atomic():
             bulk_credit_payment = form.save(commit=False)
             bulk_credit_payment.organization_user = self.request.organization_user
             bulk_credit_payment.save()
 
-            if bulk_credit_payment.amount > 0.0:
-                models.Transaction.objects.create(
-                    organization=self.request.organization,
-                    organization_user=self.request.organization_user,
-                    amount=bulk_credit_payment.amount,
-                    transaction_broker=bulk_credit_payment.transaction_broker,
-                    transaction_type=models.TransactionType.DEPOSIT,
-                    participant=str(bulk_credit_payment.customer),
-                    reason=f"Recouvrement de {str(bulk_credit_payment.customer)}",
+            customer = bulk_credit_payment.customer
+
+            # Get unpaid facturations
+            unpaid_facturations = self._get_unpaid_facturations(customer)
+
+            if not unpaid_facturations:
+                messages.warning(
+                    self.request,
+                    f"Le client {customer.name} n'a aucune facture impayée.",
                 )
+                # You might want to redirect or handle this case
+                return self.form_invalid(form)
+
+            # Calculate total outstanding
+            total_outstanding = sum(
+                facturation.remaining_balance for facturation in unpaid_facturations
+            )
+
+            # Allocate payments
+            remaining_amount = bulk_credit_payment.amount
+            allocations = {}
+            payments_to_create = []
+
+            for facturation in unpaid_facturations:
+                if remaining_amount <= 0:
+                    break
+
+                allocate_amount = min(remaining_amount, facturation.remaining_balance)
+
+                if allocate_amount > 0:
+                    payments_to_create.append(
+                        models.FacturationPayment(
+                            facturation=facturation,
+                            organization=facturation.organization,
+                            bulk_credit_payment=bulk_credit_payment,
+                            organization_user=self.request.organization_user,
+                            transaction_broker=bulk_credit_payment.transaction_broker,
+                            amount=allocate_amount,
+                        )
+                    )
+                    allocations[facturation.id] = allocate_amount
+                    remaining_amount -= allocate_amount
+
+            # Bulk create payments
+            if payments_to_create:
+                models.FacturationPayment.objects.bulk_create(payments_to_create)
+
+            # Create transaction
+            models.Transaction.objects.create(
+                organization=self.request.organization,
+                organization_user=self.request.organization_user,
+                amount=bulk_credit_payment.amount,
+                transaction_broker=bulk_credit_payment.transaction_broker,
+                transaction_type=models.TransactionType.DEPOSIT,
+                participant=str(customer),
+                reason=f"Recouvrement de {str(customer)}",
+            )
+
+            # Handle results
+            total_allocated = sum(allocations.values())
+            leftover = bulk_credit_payment.amount - total_allocated
+
+            if total_allocated > 0:
+                messages.success(
+                    self.request,
+                    f"Paiement de {total_allocated} attribué à {len(allocations)} facture(s).",
+                )
+
+            if leftover > 0:
+                messages.info(
+                    self.request,
+                    f"Montant restant: {leftover}. Créé comme crédit client.",
+                )
+
+            # Store for success page
+            # self.request.session["last_bulk_payment_id"] = bulk_credit_payment.id
 
         return HttpResponseRedirect(self.get_success_url())
 

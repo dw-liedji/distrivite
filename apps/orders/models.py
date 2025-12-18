@@ -336,6 +336,16 @@ class Facturation(AbstractFacturation):
     def __str__(self) -> str:
         return f"{self.customer} | {self.bill_number}"
 
+    # @property
+    # def total_paid(self):
+    #     """Calculate total amount already paid for this facturation"""
+    #     return sum(payment.amount for payment in self.facturation_payments.all())
+
+    # @property
+    # def remaining_balance(self):
+    #     """Calculate remaining balance to be paid"""
+    #     return self.total_price - self.total_paid
+
 
 class FacturationStock(AbstractFacturationStock):
     """
@@ -395,12 +405,38 @@ class Transaction(BaseModel):
     reason = models.CharField(max_length=100)
 
 
+class BulkCreditPayment(BaseModel):
+    customer = models.ForeignKey(
+        Customer, related_name="bulk_credit_payments", on_delete=models.CASCADE
+    )
+    organization = models.ForeignKey(
+        Organization, related_name="bulk_credit_payments", on_delete=models.CASCADE
+    )
+    organization_user = models.ForeignKey(
+        OrganizationUser, on_delete=models.PROTECT, related_name="bulk_credit_payments"
+    )
+    transaction_broker = models.CharField(
+        max_length=20,
+        choices=TransactionBroker.choices,
+        default=TransactionBroker.CASHIER,
+    )
+    amount = models.DecimalField(max_digits=19, decimal_places=3)
+    objects = OrgFeatureManager()
+
+
 class FacturationPayment(BaseModel):
     facturation = models.ForeignKey(
         Facturation, related_name="facturation_payments", on_delete=models.CASCADE
     )
     organization = models.ForeignKey(
         Organization, related_name="facturation_payments", on_delete=models.CASCADE
+    )
+    bulk_credit_payment = models.ForeignKey(
+        BulkCreditPayment,
+        on_delete=models.CASCADE,
+        related_name="facturation_payments",
+        null=True,
+        blank=True,
     )
     organization_user = models.ForeignKey(
         OrganizationUser, on_delete=models.PROTECT, related_name="facturation_payments"
@@ -441,22 +477,3 @@ class FacturationRefund(BaseModel):
                 "bill_number",
             )
         ]
-
-
-class BulkCreditPayment(BaseModel):
-    customer = models.ForeignKey(
-        Customer, related_name="bulk_credit_payments", on_delete=models.CASCADE
-    )
-    organization = models.ForeignKey(
-        Organization, related_name="bulk_credit_payments", on_delete=models.CASCADE
-    )
-    organization_user = models.ForeignKey(
-        OrganizationUser, on_delete=models.PROTECT, related_name="bulk_credit_payments"
-    )
-    transaction_broker = models.CharField(
-        max_length=20,
-        choices=TransactionBroker.choices,
-        default=TransactionBroker.CASHIER,
-    )
-    amount = models.DecimalField(max_digits=19, decimal_places=3)
-    objects = OrgFeatureManager()
