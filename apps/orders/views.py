@@ -147,6 +147,41 @@ class OrgCustomerListView(
         )
 
 
+class OrgCustomerFacturationListView(
+    LoginRequiredMixin,
+    mixins.OrgPermissionRequiredMixin,
+    mixins.MembershipRequiredMixin,
+    FilterView,
+):
+    model = models.Facturation
+    template_name = "orders/facturation_list.html"
+    context_object_name = "facturations"
+    paginate_by = 30
+    permission_required = ("orders.view_facturation",)
+    filterset_class = orders_filters.FacturationFilter
+    customer = None
+
+    def get_template_names(self):
+        if self.request.htmx:
+            if self.request.headers.get("HX-Request-Source") == "sidebar":
+                return ["orders/facturation_list.html#list"]
+            return ["orders/facturation_list.html#list"]
+        return ["orders/facturation_list.html"]
+
+    def get_queryset(self):
+        self.customer = get_object_or_404(
+            models.Customer, pk=self.kwargs.get("customer")
+        )
+        return models.Facturation.objects.filter(
+            organization=self.request.organization, customer=self.customer
+        ).order_by("-created")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["customer"] = self.customer
+        return context
+
+
 class OrgCustomerAddView(
     LoginRequiredMixin,
     mixins.OrgPermissionRequiredMixin,

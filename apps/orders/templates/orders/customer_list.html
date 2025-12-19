@@ -61,7 +61,7 @@ Organizations Customer
                     <th style="text-align: center;">Total Due</th>
                     <th style="text-align: center;">Credit Limit</th>
                     <th style="text-align: center;">Credit Usage</th>
-                    <th style="text-align: center;" colspan="3">Actions</th>
+                    <th style="text-align: center;" colspan="4">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -108,6 +108,16 @@ Organizations Customer
                             {{ customer.credit_utilization }}%
                         </progress>
                     </td>
+
+                    {% if request.organization_user.is_admin or 'orders.view_facturation' in organization_user_perms %}
+                    <td style="text-align: center; vertical-align: middle;">
+                        <button hx-get="{% url 'organization_features:orders:customer_facturation_list' request.organization.slug customer.pk %}?{% url_replace %}"
+                                hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
+                                class="button is-primary is-small is-light">
+                            Factures
+                        </button>
+                    </td>
+                    {% endif %}
                     
                     <!-- Action Buttons -->
                     {% if request.organization_user.is_admin or 'orders.change_customer' in organization_user_perms %}

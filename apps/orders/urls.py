@@ -31,6 +31,11 @@ urlpatterns = [
         name="customer_delete",
     ),
     path(
+        "customers/<uuid:customer>/facturations/",
+        views.OrgCustomerFacturationListView.as_view(),
+        name="customer_facturation_list",
+    ),
+    path(
         "items/",
         views.OrgItemListView.as_view(),
         name="item_list",
