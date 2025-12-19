@@ -154,7 +154,7 @@ class OrgCustomerFacturationListView(
     FilterView,
 ):
     model = models.Facturation
-    template_name = "orders/facturation_list.html"
+    template_name = "orders/customer_facturation_list.html"
     context_object_name = "facturations"
     paginate_by = 30
     permission_required = ("orders.view_facturation",)
@@ -164,17 +164,86 @@ class OrgCustomerFacturationListView(
     def get_template_names(self):
         if self.request.htmx:
             if self.request.headers.get("HX-Request-Source") == "sidebar":
-                return ["orders/facturation_list.html#list"]
-            return ["orders/facturation_list.html#list"]
-        return ["orders/facturation_list.html"]
+                return ["orders/customer_facturation_list.html#list"]
+            return ["orders/customer_facturation_list.html#list"]
+        return ["orders/customer_facturation_list.html"]
 
     def get_queryset(self):
         self.customer = get_object_or_404(
             models.Customer, pk=self.kwargs.get("customer")
         )
-        return models.Facturation.objects.filter(
-            organization=self.request.organization, customer=self.customer
-        ).order_by("-created")
+
+        # Subquery to calculate total paid for each facturation
+        total_paid_subquery = (
+            models.FacturationPayment.objects.filter(facturation_id=OuterRef("pk"))
+            .values("facturation_id")
+            .annotate(
+                total=Sum(
+                    "amount", output_field=DecimalField(max_digits=19, decimal_places=4)
+                )
+            )
+            .values("total")[:1]
+        )
+
+        # Subquery to calculate total sales (unit_price * quantity) for each facturation
+        total_sales_subquery = (
+            models.FacturationStock.objects.filter(facturation_id=OuterRef("pk"))
+            .values("facturation_id")
+            .annotate(
+                total=Sum(
+                    F("unit_price") * F("quantity"),
+                    output_field=DecimalField(max_digits=19, decimal_places=4),
+                )
+            )
+            .values("total")[:1]
+        )
+
+        # Get facturations with annotations
+        facturations = (
+            models.Facturation.objects.filter(
+                organization=self.request.organization,
+                customer=self.customer,
+                is_proforma=False,
+            )
+            .select_related("organization_user", "customer")
+            .annotate(
+                # Annotate with total paid using Coalesce to handle None values
+                total_paid=Coalesce(
+                    Subquery(total_paid_subquery),
+                    Decimal("0"),
+                    output_field=DecimalField(max_digits=19, decimal_places=4),
+                ),
+                # Annotate with total sales using Coalesce to handle None values
+                total_sales=Coalesce(
+                    Subquery(total_sales_subquery),
+                    Decimal("0"),
+                    output_field=DecimalField(max_digits=19, decimal_places=4),
+                ),
+                # Calculate remaining balance
+                total_due=ExpressionWrapper(
+                    F("total_sales") - F("total_paid"),
+                    output_field=DecimalField(max_digits=19, decimal_places=4),
+                ),
+                # Payment progress percentage (how much of total sales is paid)
+                payment_progress=Case(
+                    When(
+                        total_sales__gt=0,
+                        then=ExpressionWrapper(
+                            (F("total_paid") * 100) / F("total_sales"),
+                            output_field=DecimalField(max_digits=5, decimal_places=1),
+                        ),
+                    ),
+                    default=Value(100),
+                    output_field=DecimalField(max_digits=5, decimal_places=1),
+                ),
+            )
+            # .filter(
+            #     remaining_balance__gt=0  # Only get facturations with positive balance
+            # )
+            .order_by("placed_at")
+        )
+
+        return facturations
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
