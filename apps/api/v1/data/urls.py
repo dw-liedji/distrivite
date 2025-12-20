@@ -92,6 +92,11 @@ urlpatterns = [
         views.StockChangesView.as_view(),
         name="stock-changes",
     ),
+    path(
+        "stocks/<uuid:id>/edit-quantity/",
+        views.UpdateStockQuantityAPIView.as_view(),
+        name="update-stock-quantity",
+    ),
     path("users/", views.OrganizationUserList.as_view()),
     path("make-payment/", views.make_payment, name="make-payment"),
 ]

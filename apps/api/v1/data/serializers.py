@@ -82,6 +82,10 @@ class StockSerializer(serializers.ModelSerializer):
         ]
 
 
+class StockQuantityDeltaSerializer(serializers.Serializer):
+    quantity = serializers.IntegerField()
+
+
 class CustomerSerializer(serializers.ModelSerializer):
     organization_slug = serializers.CharField(
         source="organization.slug", read_only=True

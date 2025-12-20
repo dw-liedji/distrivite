@@ -134,6 +134,46 @@ class StockChangesView(StockListAPIView):
             return super().get_queryset()
 
 
+from django.db import transaction
+from django.db.models import F
+from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+
+class UpdateStockQuantityAPIView(APIView):
+    # permission_classes = [IsAuthenticated]
+
+    def put(self, request, id):
+        serializer = serializers.StockQuantityDeltaSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        delta = serializer.validated_data["quantity"]
+
+        try:
+            with transaction.atomic():
+                stock = order_models.Stock.objects.get(
+                    id=id, organization=request.organization
+                )
+
+                # Event-based quantity update (safe for concurrency)
+                stock.quantity = F("quantity") + delta
+                stock.save(update_fields=["quantity"])
+
+                # Resolve F() expression
+                stock.refresh_from_db(fields=["quantity"])
+
+        except order_models.Stock.DoesNotExist:
+            return Response(
+                {"detail": "Stock not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        return Response(
+            serializers.StockSerializer(stock).data, status=status.HTTP_200_OK
+        )
+
+
 class CustomerListAPIView(org_mixins.OrganizationAPIUserMixin, generics.ListAPIView):
     """
     API endpoint that returns all batches for the current organization.

@@ -13,7 +13,7 @@ from .views import language_redirect
 
 urlpatterns = [
     # This is for fixing heroku home page language 404
-    path("", language_redirect),
+    # path("", language_redirect),
     path("__debug__/", include("debug_toolbar.urls")),
     path("qr_code/", include("qr_code.urls", namespace="qr_code")),
     path(
