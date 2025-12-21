@@ -243,6 +243,9 @@ class Stock(BaseModel):
 
     class Meta:
         unique_together = ("organization", "organization_user", "batch")
+        permissions = [
+            ("change_stockprice", "Can change stock price"),
+        ]
 
 
 class AbstractFacturation(BaseModel):
@@ -333,6 +336,7 @@ class Facturation(AbstractFacturation):
     class Meta:
         permissions = [
             ("deliver_facturation", "Can deliver facturation"),
+            ("print_facturation", "Can print facturation"),
         ]
 
     def __str__(self) -> str:
@@ -370,6 +374,9 @@ class FacturationStock(AbstractFacturationStock):
 
     class Meta:
         unique_together = ("organization", "facturation", "stock")
+        permissions = [
+            ("deliver_facturationstock", "Can deliver facturation stock"),
+        ]
 
     def __str__(self) -> str:
         return f"{self.quantity} {self.stock.batch.item.name}"
@@ -405,6 +412,11 @@ class Transaction(BaseModel):
     amount = models.DecimalField(max_digits=19, decimal_places=3)
     participant = models.CharField(max_length=100)
     reason = models.CharField(max_length=100)
+
+    class Meta:
+        permissions = [
+            ("print_transaction", "Can print transaction"),
+        ]
 
 
 class BulkCreditPayment(BaseModel):
