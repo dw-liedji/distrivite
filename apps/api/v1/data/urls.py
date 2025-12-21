@@ -30,6 +30,11 @@ urlpatterns = [
         name="sale-create",
     ),
     path(
+        "sales/create2/",
+        views.FacturationCreateView2.as_view(),
+        name="sale-create2",
+    ),
+    path(
         "sales/<uuid:pk>/",
         views.FacturationRetrieveView.as_view(),
         name="sale-detail",

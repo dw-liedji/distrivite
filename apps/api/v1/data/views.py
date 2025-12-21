@@ -524,6 +524,24 @@ class FacturationCreateView(generics.CreateAPIView):
         )
 
 
+class FacturationCreateView2(generics.CreateAPIView):
+    """
+    POST /en/<org_slug>/api/v1/data/billing/
+    Creates a billing (Facturation) with its items and payments.
+    """
+
+    serializer_class = serializers.FacturationSerializer2
+    # permission_classes = [permissions.IsAuthenticated]
+    pagination_class = None
+
+    def perform_create(self, serializer):
+
+        serializer.save(
+            organization=self.request.organization,
+            # organization_user=self.request.organization_user,
+        )
+
+
 class FacturationUpdateView(generics.UpdateAPIView):
     """
     PUT/PATCH /en/<org_slug>/api/v1/data/billing/<id>/edit/

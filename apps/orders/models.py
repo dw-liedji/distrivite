@@ -236,6 +236,8 @@ class Stock(BaseModel):
     quantity = models.IntegerField()
     is_active = models.BooleanField(default=True)
 
+    objects = managers.BatchManager()
+
     def __str__(self):
         return f"{str(self.batch)} - {str(self.organization_user)}"
 

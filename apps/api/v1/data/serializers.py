@@ -299,6 +299,103 @@ class FacturationSerializer(serializers.ModelSerializer):
         return instance
 
 
+class FacturationSerializer2(serializers.ModelSerializer):
+    facturation_stocks = FacturationStockSerializer(many=True, required=False)
+    facturation_payments = FacturationPaymentSerializer(many=True, required=False)
+
+    id = serializers.UUIDField()
+    organization_id = serializers.UUIDField()
+    organization_user_id = serializers.UUIDField()
+    customer_id = serializers.UUIDField()
+
+    organization_slug = serializers.CharField(
+        source="organization.slug", read_only=True
+    )
+    organization_user_name = serializers.CharField(
+        source="organization_user.user.username", read_only=True
+    )
+    customer_name = serializers.CharField(source="customer.name", read_only=True)
+    customer_phone_number = serializers.CharField(
+        source="customer.phone_number", read_only=True
+    )
+
+    class Meta:
+        model = order_models.Facturation
+        fields = [
+            "id",
+            "created",
+            "modified",
+            "organization_slug",
+            "organization_id",
+            "organization_user_id",
+            "organization_user_name",
+            "bill_number",
+            "customer_id",
+            "customer_name",
+            "customer_phone_number",
+            "placed_at",
+            "is_delivered",
+            "facturation_stocks",
+            "facturation_payments",
+        ]
+        # read_only_fields = ["created", "modified"]
+
+    def create(self, validated_data):
+        stock_data = validated_data.pop("facturation_stocks", [])
+        payment_data = validated_data.pop("facturation_payments", [])
+
+        with transaction.atomic():
+            billing = order_models.Facturation.objects.create(**validated_data)
+
+            for item_data in stock_data:
+                facturation_stock = order_models.FacturationStock.objects.create(
+                    facturation=billing, **item_data
+                )
+
+                # if facturation_stock.is_delivered:
+                #     stock = facturation_stock.stock
+                #     stock.quantity -= facturation_stock.quantity
+                #     stock.save()
+
+            for pay_data in payment_data:
+                order_models.FacturationPayment.objects.create(
+                    facturation=billing, **pay_data
+                )
+
+        return billing
+
+    def update(self, instance, validated_data):
+        stock_data = validated_data.pop("facturation_stocks", [])
+        payment_data = validated_data.pop("facturation_payments", [])
+
+        # Update main Facturation fields
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        # Simple approach: remove and recreate related data
+        with transaction.atomic():
+            if stock_data:
+                instance.facturation_stocks.all().delete()
+                order_models.FacturationStock.objects.bulk_create(
+                    [
+                        order_models.FacturationStock(facturation=instance, **item)
+                        for item in stock_data
+                    ]
+                )
+
+            if payment_data:
+                instance.facturation_payments.all().delete()
+                order_models.FacturationPayment.objects.bulk_create(
+                    [
+                        order_models.FacturationPayment(facturation=instance, **pay)
+                        for pay in payment_data
+                    ]
+                )
+
+        return instance
+
+
 class FacturationDeliverSerializer(FacturationSerializer):
     def update(self, instance, validated_data):
 
