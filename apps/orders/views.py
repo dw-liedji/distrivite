@@ -567,7 +567,7 @@ class OrgStockListView(
     template_name = "orders/stock_list.html"
     context_object_name = "stocks"
     filterset_class = orders_filters.StockFilter
-    paginate_by = 30
+    paginate_by = 60
     permission_required = ("orders.view_stock",)
 
     def get_template_names(self):
