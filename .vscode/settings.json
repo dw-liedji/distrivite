@@ -8,7 +8,7 @@
     "editor.formatOnSave": true,
     // "editor.defaultFormatter": "ms-python.black-formatter",
     "python.analysis.gotoDefinitionInStringLiteral":true,
-    "python.formatting.blackArgs": ["--line-length", "80"],
+    "python.languageServer": "None",
     "[python]": {
         "editor.formatOnSave": true,
         "editor.defaultFormatter": "charliermarsh.ruff",
