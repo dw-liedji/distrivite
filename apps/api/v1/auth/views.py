@@ -12,7 +12,12 @@ from apps.organization.models import (  # Replace 'your_app.models' with the act
 )
 from apps.users.models import User
 
-from .serializers import AuthOrgUserSerializer, GroupSerializer, UserSerializer
+from .serializers import (
+    AuthOrgUserSerializer,
+    AuthOrgUserSerializer2,
+    GroupSerializer,
+    UserSerializer,
+)
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -55,6 +60,28 @@ def verify_org(request):
         )
 
         organization_user_serializer = AuthOrgUserSerializer(organizationUser)
+        # print(organization_user_serializer.data)
+        return Response(organization_user_serializer.data, status=status.HTTP_200_OK)
+    except OrganizationUser.DoesNotExist:
+        return Response(
+            {"error": "Wrong credentials. Authentication failled found"},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+
+
+@api_view(["POST"])
+def verify_org2(request):
+    credential = request.data.get("credential")
+    user_id = request.data.get("user_id")
+
+    try:
+        # current_datetime = datetime.now()
+        # Serialize the updated user
+        organizationUser = OrganizationUser.objects.get(
+            user_id=user_id, organization__credential=credential
+        )
+
+        organization_user_serializer = AuthOrgUserSerializer2(organizationUser)
         # print(organization_user_serializer.data)
         return Response(organization_user_serializer.data, status=status.HTTP_200_OK)
     except OrganizationUser.DoesNotExist:
