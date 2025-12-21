@@ -189,7 +189,7 @@ class AuthOrgUserSerializer2(serializers.ModelSerializer):
         return organization_user.embeddings
 
     def get_permissions(self, organization_user: org_models.OrganizationUser):
-        return list(organization_user.permissions)
+        return list(organization_user.permissions.all())
 
     def get_user_id(self, organization_user: org_models.OrganizationUser):
         return organization_user.user.id
