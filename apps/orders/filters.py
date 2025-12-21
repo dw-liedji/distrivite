@@ -11,6 +11,7 @@ from django.db.models import (
 from django_filters import CharFilter, ChoiceFilter, filters
 
 from apps.core.filters import BaseFilter
+from apps.organization import models as org_models
 
 from . import models
 
@@ -23,9 +24,9 @@ class BaseOrganizationFilter(BaseFilter):
 
         super().__init__(*args, **kwargs)
         organizations = self.request.organization.get_descendants(include_self=True)
-        self.filters[
-            "organization"
-        ].queryset = models.org_models.Organization.objects.filter(id__in=organizations)
+        self.filters["organization"].queryset = org_models.Organization.objects.filter(
+            id__in=organizations
+        )
 
     class Meta:
         model = models.Facturation

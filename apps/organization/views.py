@@ -265,7 +265,7 @@ class OrgUserChangeView(View):
 
         if user_form.is_valid():
             with transaction.atomic():
-                user = user_form.save()
+                user_form.save()
 
                 # You might need to adjust the code below based on your actual models
                 org_user_form.save()
