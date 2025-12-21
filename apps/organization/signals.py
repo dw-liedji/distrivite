@@ -1,7 +1,3 @@
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from django.template.loader import render_to_string
-
 # from organization.models.inventory import Inventory, Location, Product
 
 # Create a notification every time a new Location or Product is created within

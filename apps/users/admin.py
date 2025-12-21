@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
-from django.utils.translation import gettext_lazy as _
+
 from .models import User
 
 

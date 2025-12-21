@@ -1,8 +1,6 @@
 from django.urls import include, path
 from rest_framework_nested import routers
 
-from apps.api.v1.data import views
-
 app_name = "api"
 
 router = routers.SimpleRouter()

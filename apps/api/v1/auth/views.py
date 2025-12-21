@@ -1,13 +1,11 @@
 from django.contrib.auth.models import Group
-from django.db.models import BooleanField, Case, Q, Value, When
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import generics, permissions, serializers, status, viewsets
+from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import api_view
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
 from apps.organization.models import (  # Replace 'your_app.models' with the actual import path
-    Organization,
     OrganizationUser,
 )
 from apps.users.models import User

@@ -1,21 +1,14 @@
-from datetime import date, datetime, timedelta
-from decimal import Decimal
+from datetime import datetime, timedelta
 
 import django_filters
 from django.db.models import (
     Case,
-    DecimalField,
-    ExpressionWrapper,
     F,
     Q,
     Sum,
-    Value,
     When,
 )
-from django.db.models.functions import Coalesce
-from django_filters import CharFilter, ChoiceFilter, FilterSet, filters
-from django_filters.widgets import RangeWidget
-from django_flatpickr import widgets as flatpickr_widgets
+from django_filters import CharFilter, ChoiceFilter, filters
 
 from apps.core.filters import BaseFilter
 
@@ -30,9 +23,9 @@ class BaseOrganizationFilter(BaseFilter):
 
         super().__init__(*args, **kwargs)
         organizations = self.request.organization.get_descendants(include_self=True)
-        self.filters["organization"].queryset = (
-            models.org_models.Organization.objects.filter(id__in=organizations)
-        )
+        self.filters[
+            "organization"
+        ].queryset = models.org_models.Organization.objects.filter(id__in=organizations)
 
     class Meta:
         model = models.Facturation
@@ -43,7 +36,6 @@ class BaseOrganizationFilter(BaseFilter):
 
 
 class CustomerFilter(BaseFilter):
-
     name = filters.CharFilter(
         field_name="name",
         label="Nom",
@@ -62,7 +54,6 @@ class CustomerFilter(BaseFilter):
 
 
 class ItemFilter(BaseFilter):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -128,7 +119,6 @@ class ItemFilter(BaseFilter):
 
 
 class CategoryFilter(BaseFilter):
-
     def filter_by_name(self, queryset, name, value):
         return queryset.filter(Q(name__icontains=value))
 
@@ -155,13 +145,12 @@ class CategoryFilter(BaseFilter):
 
 class TransactionFilter(BaseFilter):
     def __init__(self, *args, **kwargs):
-
         super().__init__(*args, **kwargs)
 
-        self.filters["organization_user"].queryset = (
-            models.OrganizationUser.objects.filter(
-                organization=self.request.organization
-            )
+        self.filters[
+            "organization_user"
+        ].queryset = models.OrganizationUser.objects.filter(
+            organization=self.request.organization
         )
         self.filters["organization_user"].label = "User"
 
@@ -201,9 +190,7 @@ class TransactionFilter(BaseFilter):
 
 
 class BatchFilter(BaseFilter):
-
     def __init__(self, *args, **kwargs):
-
         super().__init__(*args, **kwargs)
         self.filters["supplier"].label = "Supplier"
         self.filters["supplier"].queryset = models.Supplier.objects.filter(
@@ -265,15 +252,13 @@ class BatchFilter(BaseFilter):
 
 
 class StockFilter(BaseFilter):
-
     def __init__(self, *args, **kwargs):
-
         super().__init__(*args, **kwargs)
         self.filters["organization_user"].label = "Users"
-        self.filters["organization_user"].queryset = (
-            models.OrganizationUser.objects.filter(
-                organization=self.request.organization
-            )
+        self.filters[
+            "organization_user"
+        ].queryset = models.OrganizationUser.objects.filter(
+            organization=self.request.organization
         )
         # 237AI.com
         self.filters["batch__item__category"].label = "Category"
@@ -335,7 +320,6 @@ class StockFilter(BaseFilter):
 
 
 class SupplierFilter(BaseFilter):
-
     name = CharFilter(
         field_name="name",
         label="Nom",
@@ -359,7 +343,6 @@ class SupplierFilter(BaseFilter):
 
 
 class FacturationFilter(BaseFilter):
-
     item_category = filters.ModelChoiceFilter(
         field_name="facturation_stocks__stock__batch__item__category",
         queryset=models.Category.objects.none(),  # override later
@@ -385,10 +368,10 @@ class FacturationFilter(BaseFilter):
         super().__init__(*args, **kwargs)
 
         # Filter organization_user by current organization
-        self.filters["organization_user"].queryset = (
-            models.OrganizationUser.objects.filter(
-                organization=self.request.organization
-            )
+        self.filters[
+            "organization_user"
+        ].queryset = models.OrganizationUser.objects.filter(
+            organization=self.request.organization
         )
         self.filters["organization_user"].label = "User"
 
@@ -399,7 +382,6 @@ class FacturationFilter(BaseFilter):
 
 
 class FacturationPaymentFilter(BaseFilter):
-
     customer__name = filters.CharFilter(
         field_name="customer__name",
         label="Nom du patient",
@@ -432,7 +414,6 @@ class FacturationPaymentFilter(BaseFilter):
 
 
 class FacturationRefundFilter(BaseFilter):
-
     customer__name = filters.CharFilter(
         field_name="customer__name",
         label="Nom du client",
@@ -449,16 +430,15 @@ class FacturationRefundFilter(BaseFilter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.filters["organization_user"].queryset = (
-            models.OrganizationUser.objects.filter(
-                organization=self.request.organization
-            )
+        self.filters[
+            "organization_user"
+        ].queryset = models.OrganizationUser.objects.filter(
+            organization=self.request.organization
         )
         self.filters["organization_user"].label = "Reducer"
 
 
 class BulkCreditPaymentFilter(BaseFilter):
-
     customer__name = filters.CharFilter(
         field_name="customer__name",
         label="Nom du patient",

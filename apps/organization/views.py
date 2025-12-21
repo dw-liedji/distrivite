@@ -1,41 +1,28 @@
-import datetime
-from itertools import chain
-from django.db.models import ProtectedError
 from typing import Any
-from django.contrib import messages
-from django.contrib.auth import login
-from django.http import HttpResponse, HttpResponseRedirect
-from django.contrib.auth.hashers import make_password
-from django.shortcuts import redirect, render
-from django.urls import reverse_lazy
-from django.views import View
-from django.db import transaction
 
-from apps.users import forms as user_forms  # Import your forms option_module
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import F, Func, Q, Sum, Window
-from django.http import Http404
+from django.db import transaction
+from django.db.models import ProtectedError
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse_lazy
+from django.views import View
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 
-from apps.organization import models as org_models
-from apps.users.forms import InternalUserRegisterForm
-from apps.users.views import UserCreateView
-from apps.organization.forms import OrganizationUserAddForm, OrganizationUserChangeForm
 from apps.core import decorators as core_decorators
 
 # from apps.boxes.models import Box
 from apps.organization import forms, models
 from apps.organization.forms import (
     OrganizationForm,
-    OrganizationInvitationForm,
     OrganizationUpdateForm,
+    OrganizationUserAddForm,
+    OrganizationUserChangeForm,
 )
 from apps.organization.mixins import (
     AdminRequiredMixin,
@@ -45,10 +32,8 @@ from apps.organization.mixins import (
 from apps.organization.models import (
     Organization,
     OrganizationGroup,
-    OrganizationInvitation,
-    OrganizationUser,
 )
-from apps.users.models import User
+from apps.users import forms as user_forms  # Import your forms option_module
 
 
 @login_required
@@ -94,11 +79,6 @@ def organization_create(request):
 def organization_dashboard(request):
     context = {"organization": request.organization}
     return render(request, "organization/dashboard.html", context)
-
-
-from django.views.generic.edit import UpdateView
-
-from apps.organization.forms import OrganizationUserForm
 
 
 class OrganizationUpdateView(

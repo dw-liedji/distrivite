@@ -1,12 +1,8 @@
-from datetime import datetime
-
 from django.db import transaction
 from rest_framework import serializers
 
-from apps import organization
 from apps.orders import models as order_models
 from apps.organization import models as org_models
-from apps.users.models import User
 
 
 class OrganizationUserSerializer(serializers.Serializer):
@@ -172,7 +168,6 @@ class FacturationPaymentSerializer(serializers.ModelSerializer):
 
 
 class FacturationStockSerializer(serializers.ModelSerializer):
-
     id = serializers.UUIDField()
     organization_id = serializers.UUIDField()
     organization_user_id = serializers.UUIDField()
@@ -348,7 +343,7 @@ class FacturationSerializer2(serializers.ModelSerializer):
             billing = order_models.Facturation.objects.create(**validated_data)
 
             for item_data in stock_data:
-                facturation_stock = order_models.FacturationStock.objects.create(
+                order_models.FacturationStock.objects.create(
                     facturation=billing, **item_data
                 )
 
@@ -398,7 +393,6 @@ class FacturationSerializer2(serializers.ModelSerializer):
 
 class FacturationDeliverSerializer(FacturationSerializer):
     def update(self, instance, validated_data):
-
         with transaction.atomic():
             instance = super().update(instance, validated_data)
 
@@ -411,7 +405,6 @@ class FacturationDeliverSerializer(FacturationSerializer):
 
 
 class FacturationIdSerializer(serializers.ModelSerializer):
-
     id = serializers.UUIDField()
 
     class Meta:
@@ -422,7 +415,6 @@ class FacturationIdSerializer(serializers.ModelSerializer):
 
 
 class TransactionIdSerializer(serializers.ModelSerializer):
-
     id = serializers.UUIDField()
 
     class Meta:
@@ -433,7 +425,6 @@ class TransactionIdSerializer(serializers.ModelSerializer):
 
 
 class CustomerIdSerializer(serializers.ModelSerializer):
-
     id = serializers.UUIDField()
 
     class Meta:
@@ -444,7 +435,6 @@ class CustomerIdSerializer(serializers.ModelSerializer):
 
 
 class StockIdSerializer(serializers.ModelSerializer):
-
     id = serializers.UUIDField()
 
     class Meta:

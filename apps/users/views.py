@@ -1,12 +1,10 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import Http404
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect
-from django.urls import reverse
 from django.views.generic import TemplateView
+
 from . import forms
 from .models import User
 
@@ -18,7 +16,7 @@ def user_settings(request):
 
 
 from django.contrib.auth import authenticate, login
-from django.views.generic import CreateView, TemplateView
+from django.views.generic import CreateView
 
 
 class RegisterDone(TemplateView):
@@ -111,10 +109,7 @@ def user_invitations(request):
     )
 
 
-from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect, render
-from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views import View
 

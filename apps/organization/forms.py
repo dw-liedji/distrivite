@@ -1,13 +1,8 @@
 from django import forms
-from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
-from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ValidationError
-from django.db.models import Q
-from django.forms import Form, ModelChoiceField, ModelForm, ValidationError
-from django.urls import reverse, reverse_lazy
+from django.forms import ModelForm
 from django.utils.text import slugify
-from phonenumber_field.formfields import PhoneNumberField
 
 from apps.organization.models import (
     Organization,
@@ -16,6 +11,7 @@ from apps.organization.models import (
     OrganizationUser,
     OrganizationUserGroup,
 )
+from apps.organization.widgets import TabularPermissionsWidget
 
 FORBIDDEN_SLUGS = [
     "api",
@@ -96,9 +92,6 @@ class OrganizationUpdateForm(ModelForm):
             "timezone",
             "logo",
         ]
-
-
-from apps.organization.widgets import TabularPermissionsWidget
 
 
 class OrganizationUserForm(forms.ModelForm):
@@ -239,17 +232,14 @@ class OrganizationUserChangeForm(forms.ModelForm):
         }
 
 
-from apps.organization.models import OrganizationGroup
-
-
 class OrganizationGroupForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         organization = kwargs.pop("organization", None)
         organization_user = kwargs.pop("organization_user", None)
         super(OrganizationGroupForm, self).__init__(*args, **kwargs)
-        self.fields["organization"].initial = (
-            organization  # Used when submitting the form (clean method)
-        )
+        self.fields[
+            "organization"
+        ].initial = organization  # Used when submitting the form (clean method)
         self.fields["organization"].label = ""
         self.fields["permissions"].help_text = None
         self.fields["permissions"].label = "group permissions"
@@ -283,9 +273,9 @@ class OrganizationUserGroupForm(forms.ModelForm):
             organization=organization
         ).all()
 
-        self.fields["group"].initial = (
-            group  # Used when submitting the form (clean method)
-        )
+        self.fields[
+            "group"
+        ].initial = group  # Used when submitting the form (clean method)
         self.fields["group"].label = ""
 
     class Meta:
@@ -311,9 +301,9 @@ class OrganizationInvitationForm(forms.ModelForm):
         organization = kwargs.pop("organization", None)
         organization_user = kwargs.pop("organization_user", None)
         super(OrganizationInvitationForm, self).__init__(*args, **kwargs)
-        self.fields["organization"].initial = (
-            organization  # Used when submitting the form (clean method)
-        )
+        self.fields[
+            "organization"
+        ].initial = organization  # Used when submitting the form (clean method)
         self.fields["organization"].label = ""
         self.fields["invited_by"].initial = organization_user.user
         self.fields["invited_by"].label = ""

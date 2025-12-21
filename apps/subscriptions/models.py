@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -88,6 +86,4 @@ class Subscription(BaseModel):
         return self.start_time <= timezone.now() <= self.ends_time
 
     def __str__(self):
-        return (
-            f"{self.organization.name} has subscribed to {self.plan.name} plan"
-        )
+        return f"{self.organization.name} has subscribed to {self.plan.name} plan"

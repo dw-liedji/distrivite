@@ -1,13 +1,10 @@
+from allauth.account.forms import SignupForm
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
-from phonenumber_field.formfields import PhoneNumberField
-from phonenumber_field.widgets import PhoneNumberPrefixWidget
 
 User = get_user_model()
-
-from allauth.account.forms import SignupForm
 
 
 class UserRegistrationForm(SignupForm):

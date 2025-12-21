@@ -1,12 +1,8 @@
 from dal import autocomplete
 from django import forms
-from django_flatpickr import schemas as flatpickr_schemas
 from django_flatpickr import widgets as flatpickr_widgets
-from phonenumber_field.formfields import PhoneNumberField
 
 from apps.orders import models as order_models
-from apps.orders.widgets import HTMXAutoCompleteWidget
-from apps.organization import models as org_models
 
 
 class CustomerForm(forms.ModelForm):
@@ -46,8 +42,10 @@ class StockForm(forms.ModelForm):
         super(StockForm, self).__init__(*args, **kwargs)
         self.fields["organization"].initial = organization
         self.fields["organization"].label = ""
-        self.fields["organization_user"].queryset = (
-            order_models.OrganizationUser.objects.filter(organization=organization)
+        self.fields[
+            "organization_user"
+        ].queryset = order_models.OrganizationUser.objects.filter(
+            organization=organization
         )
 
     class Meta:
@@ -283,8 +281,10 @@ class FacturationForm(forms.ModelForm):
         self.fields["organization"].label = ""
         self.fields["organization_user"].initial = organization_user
         self.fields["organization_user"].label = ""
-        self.fields["customer"].queryset = (
-            order_models.Customer.objects.for_organization(organization=organization)
+        self.fields[
+            "customer"
+        ].queryset = order_models.Customer.objects.for_organization(
+            organization=organization
         )
 
     class Meta:
@@ -327,7 +327,6 @@ class FacturationForm(forms.ModelForm):
 
 class FacturationStockForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-
         organization = kwargs.pop(
             "organization", None
         )  # Must be pop before the super method

@@ -3,7 +3,6 @@ from django_pandas.managers import DataFrameManager
 from apps.organization.managers import (
     OrgFeatureManager,
     OrgUserManager,
-    OrgOwnerManager,
 )
 
 

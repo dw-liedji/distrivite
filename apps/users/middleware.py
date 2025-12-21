@@ -1,8 +1,3 @@
-from django.utils import timezone
-
-from apps.users.models import UserProfile
-
-
 class UserTimezoneMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response

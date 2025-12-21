@@ -2,6 +2,7 @@ from datetime import datetime
 
 from dal import autocomplete
 from django.db.models import Q
+from django.views.generic import ListView
 
 from apps.orders.models import Batch, Category, Customer, Item, Stock
 from apps.organization.models import Organization
@@ -76,13 +77,6 @@ class OrgCustomerAutocomplete(autocomplete.Select2QuerySetView):
             qs = qs.filter(username__icontains=self.q)
 
         return qs
-
-
-from django.http import HttpResponseForbidden
-from django.shortcuts import get_object_or_404, render
-from django.views.generic import ListView
-
-from apps.orders.models import Customer
 
 
 class AutocompleteBaseView(ListView):

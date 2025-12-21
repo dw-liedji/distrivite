@@ -1,20 +1,24 @@
 {
+    "notebook.formatOnSave.enabled": true,
+    "notebook.codeActionsOnSave": {
+        "notebook.source.fixAll": "explicit",
+        "notebook.source.organizeImports": "explicit"
+    },
+
     "editor.formatOnSave": true,
-    "python.formatting.name": "none",
+    // "editor.defaultFormatter": "ms-python.black-formatter",
     "python.analysis.gotoDefinitionInStringLiteral":true,
     "python.formatting.blackArgs": ["--line-length", "80"],
     "[python]": {
-        "gitlens.codeLens.symbolScopes": [
-            "!Module"
-        ],
-        "editor.wordBasedSuggestions": "matchingDocuments",
         "editor.formatOnSave": true,
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.wordBasedSuggestions": "matchingDocuments",
         "editor.codeActionsOnSave": {
-            "source.organizeImports": "explicit"
+            "source.fixAll": "explicit",
+            // "source.organizeImports": "explicit",
+            "source.organizeImports.ruff": "explicit"
         },
-        "editor.defaultFormatter": "ms-python.black-formatter",
     },
-    "isort.args":["--profile", "black"],
 
     // django extensions
     "files.associations": {

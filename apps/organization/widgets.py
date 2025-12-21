@@ -20,7 +20,6 @@ from .app_settings import (
     EXCLUDE_MODELS,
     TEMPLATE,
     TRANSLATION_FUNC,
-    USE_FOR_CONCRETE,
 )
 from .helpers import get_perm_name
 

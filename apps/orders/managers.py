@@ -1,4 +1,4 @@
-from apps.core.managers import DataViteManager, DataViteUserManager
+from apps.core.managers import DataViteManager
 
 
 class CommercialManager(DataViteManager):

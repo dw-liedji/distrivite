@@ -1,31 +1,16 @@
-from datetime import datetime, timezone
+from datetime import datetime
 from decimal import Decimal
 
-from cloudinary_storage.storage import RawMediaCloudinaryStorage
 from django.conf import settings
 from django.core.validators import (
-    MaxLengthValidator,
-    MaxValueValidator,
-    MinLengthValidator,
     MinValueValidator,
 )
 from django.db import models
-from django.db.models import Sum
-from django.utils.html import format_html
-from django.utils.timesince import timesince
-from django.utils.translation import gettext_lazy as _
-from phonenumber_field.modelfields import PhoneNumberField
 
-from apps.core import models as core_models
-from apps.core import utils as core_utils
-from apps.core.fields import ProfessionalBillNumberField, QuantaField, QuantaNumberField
+from apps.core.fields import ProfessionalBillNumberField, QuantaField
 from apps.core.models import BaseModel
 from apps.orders import managers
-from apps.orders import managers as orders_managers
-from apps.organization import models as org_models
 from apps.organization.models import Organization, OrganizationUser, OrgFeatureManager
-
-from .validators import validate_file_size
 
 User = settings.AUTH_USER_MODEL
 
@@ -199,7 +184,7 @@ class Batch(BaseModel):
 
     # alert_quantity = models.IntegerField(default=1)
     last_checked = models.DateTimeField(
-        null=True, blank=True, help_text=f"This field is Optional"
+        null=True, blank=True, help_text="This field is Optional"
     )
     last_maintainer = models.ForeignKey(OrganizationUser, on_delete=models.PROTECT)
 
@@ -294,7 +279,6 @@ class AbstractFacturation(BaseModel):
 
 
 class AbstractFacturationStock(BaseModel):
-
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
     unit_price = models.DecimalField(max_digits=19, decimal_places=4)
     quantity = models.PositiveIntegerField()

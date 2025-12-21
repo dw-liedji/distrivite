@@ -1,14 +1,10 @@
-import weasyprint
-from dal import autocomplete
-from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import HttpResponse, redirect, render
-from django.template.loader import render_to_string
-from taggit.models import Tag
-from django.views.generic import TemplateView
 from django.http import HttpResponseRedirect
+from django.shortcuts import render
+from django.urls import reverse
+from django.views.generic import TemplateView
+
 from apps.core import services
-from apps.organization.models import Organization
 
 
 @login_required
@@ -47,11 +43,6 @@ def handle_404(request, *args, **kwargs):
 
 def handle_500(request, *args, **kwargs):
     return render(request, "core/pages/error/500.html", {})
-
-
-from django.http import HttpResponseRedirect
-from django.urls import reverse
-from django.views.generic import TemplateView
 
 
 class HomePage(TemplateView):

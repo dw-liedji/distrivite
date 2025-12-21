@@ -28,7 +28,6 @@ class CommonMeta(MPTTModelBase, OrgMeta, BaseModel.Meta):
 
 
 class Organization(MPTTModel, AbstractOrganization, BaseModel, metaclass=CommonMeta):
-
     class TypeChoices(models.TextChoices):
         NORMAL = "NOR", "NORMAL"
         AFFILIATED = "AFF", "AFFILIATED"
@@ -81,7 +80,7 @@ class Organization(MPTTModel, AbstractOrganization, BaseModel, metaclass=CommonM
         max_length=20,
         null=True,
         blank=True,
-        help_text=f"This field is Optional",
+        help_text="This field is Optional",
     )
     logo = models.ImageField(upload_to="distrivite/images", blank=True)
     credential = models.CharField(max_length=20, unique=True)

@@ -1,8 +1,9 @@
 from collections import defaultdict
 from decimal import Decimal
 
+from django.contrib import messages
+from django.db import transaction
 from django.db.models import (
-    Count,
     DecimalField,
     ExpressionWrapper,
     F,
@@ -14,7 +15,8 @@ from django.db.models import (
     Value,
 )
 from django.db.models.functions import Coalesce
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.urls import reverse_lazy
 from django_htmx import http as htmx_http
 
 from apps.core import decorators as core_decorators
@@ -28,7 +30,6 @@ from . import views as order_views
 class OrgFacturationListExportView(
     order_views.OrgFacturationListView,
 ):
-
     def get_queryset(self):
         return (
             order_models.Facturation.objects.filter(
@@ -126,7 +127,6 @@ class OrgFacturationListExportView(
         return report
 
     def get(self, request, *args, **kwargs):
-
         if request.htmx:
             return htmx_http.HttpResponseClientRedirect(request.get_full_path())
 
@@ -318,7 +318,7 @@ class OrgFacturationListExportView(
                     request,
                     "orders/documents/facturation_list_print.html",
                     context,
-                    f"facturations",
+                    "facturations",
                 )
 
 
@@ -326,7 +326,6 @@ class OrgBatchListExportView(
     order_views.OrgBatchListView,
 ):
     def get(self, request, *args, **kwargs):
-
         if request.htmx:
             return htmx_http.HttpResponseClientRedirect(request.get_full_path())
 
@@ -349,7 +348,7 @@ class OrgBatchListExportView(
                 request,
                 resource,
                 filtered_queryset,
-                f"batchs",
+                "batchs",
             )
         else:
             context = {
@@ -361,7 +360,7 @@ class OrgBatchListExportView(
                 request,
                 "orders/documents/batch_list_print.html",
                 context,
-                f"batchs",
+                "batchs",
             )
 
 
@@ -377,7 +376,6 @@ class OrgStockListExportView(
         )
 
     def get(self, request, *args, **kwargs):
-
         if request.htmx:
             return htmx_http.HttpResponseClientRedirect(request.get_full_path())
 
@@ -434,7 +432,7 @@ class OrgStockListExportView(
                 request,
                 resource,
                 filtered_queryset,
-                f"batchs",
+                "batchs",
             )
         else:
             context = {
@@ -447,14 +445,8 @@ class OrgStockListExportView(
                 request,
                 "orders/documents/batch_list_print.html",
                 context,
-                f"stocks",
+                "stocks",
             )
-
-
-from django.contrib import messages
-from django.db import transaction
-from django.http import HttpResponseRedirect
-from django.urls import reverse, reverse_lazy
 
 
 class OrgStockListReturnToStoreView(order_views.OrgStockListView):
@@ -571,7 +563,6 @@ class OrgTransactionListExportView(
         ).select_related("organization_user")
 
     def get(self, request, *args, **kwargs):
-
         if request.htmx:
             return htmx_http.HttpResponseClientRedirect(request.get_full_path())
 

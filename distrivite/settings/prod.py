@@ -52,7 +52,7 @@ STORAGES = {
 
 # Static/Media URL settings (adjust based on your S3 setup)
 # STATIC_URL = f'https://{STORAGES["staticfiles"]["OPTIONS"]["custom_domain"]}/static/'
-MEDIA_URL = f'https://{STORAGES["default"]["OPTIONS"]["custom_domain"]}/media/'
+MEDIA_URL = f"https://{STORAGES['default']['OPTIONS']['custom_domain']}/media/"
 
 
 # STATIC_URL = "/static/"

@@ -1,19 +1,7 @@
-from django.forms.widgets import TextInput
-from django.urls import reverse
-
-
-from django import forms
-from django.urls import reverse_lazy
 import json
 
 from django import forms
 from django.urls import reverse_lazy
-import json
-
-
-from django import forms
-from django.urls import reverse_lazy
-import json
 
 
 class HTMXSelectWidget(forms.Select):

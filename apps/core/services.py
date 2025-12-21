@@ -25,6 +25,6 @@ def render_pdf(request, html_path, context, output_filename):
 
 def render_xlsx(request, resource, queryset, filename):
     dataset = resource.export(queryset=queryset)
-    response = HttpResponse(dataset.xlsx, content_type=f"text/xlsx")
+    response = HttpResponse(dataset.xlsx, content_type="text/xlsx")
     response["Content-Disposition"] = f'attachment; filename="{filename}.xlsx"'
     return response

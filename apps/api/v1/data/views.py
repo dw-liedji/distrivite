@@ -1,22 +1,24 @@
-from datetime import date, datetime, timedelta
+import logging
+from datetime import datetime
+from decimal import Decimal
 
-from django.conf import settings
-from django.contrib.auth.models import Group
 from django.db import transaction
-from django.db.models import Prefetch  # Add this import
-from django.db.models import BooleanField, Case, Q, Value, When
-from django.shortcuts import get_object_or_404
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import generics, permissions, status, viewsets
-from rest_framework.pagination import PageNumberPagination
+from django.db.models import (
+    F,
+    Prefetch,  # Add this import
+)
+from django.utils import timezone
+from rest_framework import generics, permissions, status
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from twilio.rest import Client
+from rest_framework.views import APIView
 
 from apps.api.v1.data import serializers
 from apps.orders import models as order_models
 from apps.organization import mixins as org_mixins
 from apps.organization import models as org_models
-from apps.users.models import User
+
+logger = logging.getLogger(__name__)
 
 
 class OrganizationUserList(org_mixins.OrganizationAPIUserMixin, generics.ListAPIView):
@@ -132,14 +134,6 @@ class StockChangesView(StockListAPIView):
             logger.error(f"Invalid timestamp '{since_timestamp}': {e}")
             # Fallback to returning all facturations
             return super().get_queryset()
-
-
-from django.db import transaction
-from django.db.models import F
-from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework.views import APIView
 
 
 class UpdateStockQuantityAPIView(APIView):
@@ -447,14 +441,6 @@ class FacturationIdListsView(org_mixins.OrganizationAPIUserMixin, generics.ListA
         return Response(list(qs))
 
 
-import logging
-from datetime import datetime
-
-from django.utils import timezone
-
-logger = logging.getLogger(__name__)
-
-
 class FacturationChangesView(FacturationListView):
     """
     API endpoint to get facturations changed since a specific timestamp
@@ -517,7 +503,6 @@ class FacturationCreateView(generics.CreateAPIView):
     pagination_class = None
 
     def perform_create(self, serializer):
-
         serializer.save(
             organization=self.request.organization,
             # organization_user=self.request.organization_user,
@@ -535,7 +520,6 @@ class FacturationCreateView2(generics.CreateAPIView):
     pagination_class = None
 
     def perform_create(self, serializer):
-
         serializer.save(
             organization=self.request.organization,
             # organization_user=self.request.organization_user,
@@ -625,14 +609,6 @@ class FacturationDeleteView(generics.DestroyAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-from decimal import Decimal
-
-from django.db import transaction
-from rest_framework import status
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-
-
 @api_view(["POST"])
 @transaction.atomic
 def make_payment(request):
@@ -643,7 +619,6 @@ def make_payment(request):
     organization = request.organization
 
     try:
-
         # Get or create prepaid account
         account, created = order_models.PrepaidAccount.objects.get_or_create(
             customer_id=customer_id, organization=organization, defaults={"amount": 0}

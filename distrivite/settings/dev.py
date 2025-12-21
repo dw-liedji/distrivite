@@ -1,11 +1,8 @@
 import os
 
-import dj_database_url
 from decouple import config  # For environment variables
-from dotenv import load_dotenv
 
 # Load environment variables from .env
-load_dotenv()
 from .common import *
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -75,7 +72,7 @@ STORAGES = {
 
 # Static/Media URL settings (adjust based on your S3 setup)
 # STATIC_URL = f'https://{STORAGES["staticfiles"]["OPTIONS"]["custom_domain"]}/static/'
-MEDIA_URL = f'https://{STORAGES["default"]["OPTIONS"]["custom_domain"]}/media/'
+MEDIA_URL = f"https://{STORAGES['default']['OPTIONS']['custom_domain']}/media/"
 
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "static/")

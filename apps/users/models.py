@@ -1,8 +1,6 @@
 import sys
 from io import BytesIO
-from typing import List
 
-from django.conf import settings
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db import models
@@ -11,13 +9,10 @@ from phonenumber_field.modelfields import PhoneNumberField
 from PIL import Image
 
 # from apps.notifications.models import Notification
-from timezone_field import TimeZoneField
-
 from apps.core.models import BaseModel
 
 # from apps.notifications.models import Notification
 # from apps.payments.PaymentMixins import PaymentMixins
-from apps.users.fields import QuantaNumberField
 
 
 class UserManager(BaseUserManager):

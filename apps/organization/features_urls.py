@@ -1,9 +1,6 @@
 from django.conf import settings
 from django.conf.urls.static import static
-from django.contrib import admin
 from django.urls import include, path
-
-from . import views as organization_views
 
 app_name = "organization_features"
 

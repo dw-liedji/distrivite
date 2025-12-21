@@ -1,5 +1,4 @@
-from django.urls import include, path
-from organizations.backends import invitation_backend
+from django.urls import path
 
 from apps.organization import views
 

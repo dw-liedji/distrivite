@@ -1,6 +1,7 @@
 # Created by https://www.gitignore.io
 node_modules/
 .venv/
+.ruff_cache/
 media/
 static/
 !apps/core/static/

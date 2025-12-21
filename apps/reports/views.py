@@ -1,40 +1,24 @@
 from collections import defaultdict
 from decimal import Decimal
 
-from bokeh.models import ColumnDataSource
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import (
-    Avg,
-    Case,
-    Count,
-    DecimalField,
-    DurationField,
-    ExpressionWrapper,
     F,
-    Func,
-    Q,
     Sum,
     Value,
-    When,
-    Window,
 )
-from django.db.models.functions import Coalesce, Concat
-from django.shortcuts import HttpResponse, redirect, render
-from django.utils import timezone
-from django.views.generic import ListView, TemplateView
+from django.db.models.functions import Coalesce
+from django.shortcuts import render
+from django.views.generic import TemplateView
 
 from apps.core import services
 from apps.core.filters import BaseFilter
 from apps.orders import models as order_models
-from apps.orders import models as orders_models
 from apps.orders.filters import BaseOrganizationFilter
 from apps.organization.mixins import (
-    AdminRequiredMixin,
     MembershipRequiredMixin,
-    OrgFormMixin,
 )
-from apps.organization.models import Organization, OrganizationUser
+from apps.organization.models import Organization
 from apps.reports import plots as report_plots
 
 
@@ -129,8 +113,6 @@ class OrgReportView(
             )
             .annotate(total_facturation=Coalesce(Sum("quantity"), Value(0)))
         )
-
-        from collections import defaultdict
 
         # Merge inventories
         merged_inventory = defaultdict(

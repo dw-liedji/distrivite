@@ -1,4 +1,4 @@
-from django.urls import include, path
+from django.urls import path
 from rest_framework_nested import routers
 
 from apps.api.v1.data import views

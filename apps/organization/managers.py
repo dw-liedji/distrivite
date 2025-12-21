@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.db import models
 from django.db.models.query import QuerySet
 from django.shortcuts import get_object_or_404
@@ -18,7 +17,7 @@ class OrgOwnerMixin(object):
     def for_user(self, user):
         # If we are receiving a string, it's most likely a slug,
         # so we do a lookup to get the organization by slug
-        if type(user) == str:
+        if type(user) is str:
             user = get_object_or_404(User, pk=user.pk)
         return self.get_queryset().filter(organization_user__user=user)
 
@@ -54,14 +53,14 @@ class OrgManager(models.Manager):
     def for_user(self, user):
         # If we are receiving a string, it's most likely a slug,
         # so we do a lookup to get the organization by slug
-        if type(user) == str:
+        if type(user) is str:
             user = get_object_or_404(User, pk=user.pk)
         return super(OrgManager, self).get_queryset().filter(users=user)
 
     def active_for_user(self, user):
         # If we are receiving a string, it's most likely a slug,
         # so we do a lookup to get the organization by slug
-        if type(user) == str:
+        if type(user) is str:
             user = get_object_or_404(User, pk=user.pk)
         return (
             super(OrgManager, self)
@@ -75,7 +74,7 @@ class OrgManager(models.Manager):
     def active_for_student_user(self, user):
         # If we are receiving a string, it's most likely a slug,
         # so we do a lookup to get the organization by slug
-        if type(user) == str:
+        if type(user) is str:
             user = get_object_or_404(User, pk=user.pk)
         return (
             super(OrgManager, self)

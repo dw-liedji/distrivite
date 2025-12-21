@@ -16,24 +16,20 @@ from django.db.models import (
     When,
 )
 from django.db.models.functions import Coalesce
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404, redirect, render
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
-from django.utils.decorators import method_decorator
-from django.views.generic import View
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 from django_filters.views import FilterView
-from django_htmx.http import push_url, replace_url
+from django_htmx.http import replace_url
 
 from apps.core import decorators as core_decorators
 from apps.core import services
 from apps.orders import filters as orders_filters
 from apps.orders import forms, models
 from apps.organization import mixins
-
-from . import resources
 
 
 class OrgCustomerListView(
@@ -275,7 +271,7 @@ class OrgCustomerAddView(
 
     def form_invalid(self, form):
         messages.success(
-            self.request, f"Customer failed to be saved. Somthing went wrong."
+            self.request, "Customer failed to be saved. Somthing went wrong."
         )
         return super().form_invalid(form)
 
@@ -441,9 +437,7 @@ class OrgBatchAddView(
         return super().form_valid(form)
 
     def form_invalid(self, form):
-        messages.success(
-            self.request, f"Batch failed to be saved. Somthing went wrong."
-        )
+        messages.success(self.request, "Batch failed to be saved. Somthing went wrong.")
         return super().form_invalid(form)
 
     @core_decorators.preserve_query_params()
@@ -606,9 +600,7 @@ class OrgStockAddView(
         return super().form_valid(form)
 
     def form_invalid(self, form):
-        messages.success(
-            self.request, f"Stock failed to be saved. Somthing went wrong."
-        )
+        messages.success(self.request, "Stock failed to be saved. Somthing went wrong.")
         return super().form_invalid(form)
 
     @core_decorators.preserve_query_params()
@@ -773,7 +765,7 @@ class OrgItemAddView(
         return super().form_valid(form)
 
     def form_invalid(self, form):
-        messages.success(self.request, f"Item failed to be saved. Somthing went wrong.")
+        messages.success(self.request, "Item failed to be saved. Somthing went wrong.")
         return super().form_invalid(form)
 
     @core_decorators.preserve_query_params()
@@ -939,7 +931,7 @@ class OrgSupplierAddView(
 
     def form_invalid(self, form):
         messages.success(
-            self.request, f"Supplier failed to be saved. Somthing went wrong."
+            self.request, "Supplier failed to be saved. Somthing went wrong."
         )
         return super().form_invalid(form)
 
@@ -1114,7 +1106,7 @@ class OrgCategoryAddView(
 
     def form_invalid(self, form):
         messages.success(
-            self.request, f"Category failed to be saved. Somthing went wrong."
+            self.request, "Category failed to be saved. Somthing went wrong."
         )
         return super().form_invalid(form)
 
@@ -1280,7 +1272,7 @@ class OrgFacturationAddView(
 
     def form_invalid(self, form):
         messages.success(
-            self.request, f"Facturation failed to be saved. Somthing went wrong."
+            self.request, "Facturation failed to be saved. Somthing went wrong."
         )
         return super().form_invalid(form)
 
@@ -1411,7 +1403,6 @@ class OrgFacturationDeliverView(
         self.object = self.get_object()
         batchs = self.object.facturation_stocks.all()
         with transaction.atomic():
-
             # Update delivery state of the facturation
             self.object.is_delivered = True
             self.object.save()
@@ -1882,16 +1873,16 @@ class OrgFacturationPaymentCreateView(
             facturation_payment.payer = self.request.user
             facturation_payment.save()
 
-            if facturation_payment.amount > 0.0:
-                cashflow_models.Deposit.objects.create(
-                    organization=self.request.organization,
-                    organization_user=self.request.organization_user,
-                    amount=facturation_payment.amount,
-                    operation_date=facturation_payment.operation_date,
-                    accounting_date=facturation_payment.accounting_date,
-                    cash_register=facturation_payment.cash_register,
-                    reason=f"Paiement de {facturation_payment.facturation } par {facturation_payment.payer}",
-                )
+            # if facturation_payment.amount > 0.0:
+            #     cashflow_models.Deposit.objects.create(
+            #         organization=self.request.organization,
+            #         organization_user=self.request.organization_user,
+            #         amount=facturation_payment.amount,
+            #         operation_date=facturation_payment.operation_date,
+            #         accounting_date=facturation_payment.accounting_date,
+            #         cash_register=facturation_payment.cash_register,
+            #         reason=f"Paiement de {facturation_payment.facturation} par {facturation_payment.payer}",
+            #     )
 
         return HttpResponseRedirect(self.get_success_url())
 
@@ -2347,7 +2338,7 @@ class OrgTransactionAddView(
 
     def form_invalid(self, form):
         messages.error(
-            self.request, f"Transaction failed to be saved. Please check the form."
+            self.request, "Transaction failed to be saved. Please check the form."
         )
         return super().form_invalid(form)
 
@@ -2489,7 +2480,6 @@ class OrgBulkCreditPaymentListView(
         return ["orders/bulk_credit_payment_list.html"]
 
     def get_queryset(self):
-
         return models.BulkCreditPayment.objects.filter(
             organization=self.request.organization
         )
@@ -2642,9 +2632,9 @@ class OrgBulkCreditPaymentCreateView(
                 return self.form_invalid(form)
 
             # Calculate total outstanding
-            total_outstanding = sum(
-                facturation.remaining_balance for facturation in unpaid_facturations
-            )
+            # total_outstanding = sum(
+            #     facturation.remaining_balance for facturation in unpaid_facturations
+            # )
 
             # Allocate payments
             remaining_amount = bulk_credit_payment.amount

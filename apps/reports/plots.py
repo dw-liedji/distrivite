@@ -1,9 +1,8 @@
-from bokeh.embed import components, file_html
+from bokeh.embed import components
 from bokeh.layouts import column
 from bokeh.models import ColumnDataSource, CustomJS, Select
 from bokeh.palettes import Spectral6
 from bokeh.plotting import figure
-from bokeh.resources import CDN
 from bokeh.transform import factor_cmap
 
 

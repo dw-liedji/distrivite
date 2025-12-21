@@ -1,6 +1,6 @@
 from datetime import date, timedelta
 
-from django_filters import CharFilter, ChoiceFilter, FilterSet, filters
+from django_filters import ChoiceFilter, FilterSet, filters
 from django_filters.widgets import DateRangeWidget
 from django_flatpickr import widgets as flatpickr_widgets
 
@@ -73,7 +73,6 @@ class BaseFilter(FilterSet):
 
 
 class BaseTransactionFilter(FilterSet):
-
     accounting_date = ChoiceFilter(
         label="Transaction Period",
         choices=(

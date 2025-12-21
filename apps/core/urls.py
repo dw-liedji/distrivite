@@ -3,7 +3,6 @@ from django.urls import path
 from . import views
 
 app_name = "core"
-from django.views.generic import TemplateView
 
 urlpatterns = [
     # Index: redirect to user organization page

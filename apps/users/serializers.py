@@ -1,4 +1,5 @@
 from djoser.serializers import UserSerializer as BaseUserSerializer
+
 from apps.users.models import User
 
 
@@ -15,4 +16,3 @@ class UserSerializer(BaseUserSerializer):
             "password",
         ]
         read_only_fields = ("username",)
-
