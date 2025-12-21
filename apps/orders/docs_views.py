@@ -491,7 +491,7 @@ class OrgStockListReturnToStoreView(order_views.OrgStockListView):
             queryset = filter_class(request.GET, queryset=queryset, request=request).qs
 
         # Filter by selected IDs and positive quantity
-        selected_stocks = queryset.filter(id__in=selected_ids, quantity__gt=0)
+        selected_stocks = queryset.filter(id__in=selected_ids)
 
         if not selected_stocks.exists():
             messages.warning(request, "Selected stocks have no quantity to return.")
