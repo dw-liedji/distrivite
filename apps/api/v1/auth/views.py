@@ -82,7 +82,7 @@ def verify_org2(request):
         )
 
         organization_user_serializer = AuthOrgUserSerializer2(organizationUser)
-        # print(organization_user_serializer.data)
+        print(organization_user_serializer.data)
         return Response(organization_user_serializer.data, status=status.HTTP_200_OK)
     except OrganizationUser.DoesNotExist:
         return Response(
