@@ -580,7 +580,7 @@ class OrgStockListView(
     def get_queryset(self):
         return models.Stock.objects.filter(
             organization=self.request.organization
-        ).order_by("batch__item__name")
+        ).order_by("-quantity")
 
 
 class OrgStockAddView(
