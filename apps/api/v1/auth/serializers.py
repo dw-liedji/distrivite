@@ -164,6 +164,7 @@ class AuthOrgUserSerializer2(serializers.ModelSerializer):
             "is_device",
             "is_gps_active",
             "is_liveness_active",
+            "permissions",
             "embeddings",
             "radius",
             "check_in_latitude",
