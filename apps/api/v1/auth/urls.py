@@ -8,4 +8,5 @@ urlpatterns = [
     path("", include("djoser.urls")),
     path("", include("djoser.urls.jwt")),
     path("org/verify/", views.verify_org, name="verify_org"),
+    path("org/verify2/", views.verify_org2, name="verify_org"),
 ]
