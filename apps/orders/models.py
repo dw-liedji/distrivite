@@ -396,6 +396,7 @@ class Transaction(BaseModel):
     amount = models.DecimalField(max_digits=19, decimal_places=3)
     participant = models.CharField(max_length=100)
     reason = models.CharField(max_length=100)
+    objects = managers.DataViteManager()
 
     class Meta:
         permissions = [

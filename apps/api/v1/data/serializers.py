@@ -340,7 +340,12 @@ class FacturationSerializer2(serializers.ModelSerializer):
         payment_data = validated_data.pop("facturation_payments", [])
 
         with transaction.atomic():
-            billing = order_models.Facturation.objects.create(**validated_data)
+            billing, created = order_models.Facturation.objects.get_or_create(
+                id=validated_data.get("id"), defaults={**validated_data}
+            )
+
+            if not created:
+                return billing
 
             for item_data in stock_data:
                 order_models.FacturationStock.objects.create(

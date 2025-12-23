@@ -361,16 +361,40 @@ class TransactionCreateView(generics.CreateAPIView):
     """
     POST /en/<org_slug>/api/v1/data/billing/
     Creates a billing (Facturation) with its items and payments.
+    Avoids creating duplicate transactions by checking if one exists with the same ID.
     """
 
     serializer_class = serializers.TransactionSerializer
-    # permission_classes = [permissions.IsAuthenticated]
     pagination_class = None
+    # permission_classes = [permissions.IsAuthenticated]
 
+    @transaction.atomic
     def perform_create(self, serializer):
-        serializer.save(
-            organization=self.request.organization,
+        # Use client-provided ID to check for duplicates
+        transaction_id = serializer.validated_data.get("id")
+
+        obj, created = order_models.Transaction.objects.get_or_create(
+            id=transaction_id,
+            defaults={
+                **serializer.validated_data,
+                "organization": self.request.organization,
+            },
         )
+
+        if not created:
+            # Optionally update existing record with latest data from client
+            for attr, value in serializer.validated_data.items():
+                setattr(obj, attr, value)
+            obj.save()
+
+        return obj
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        instance = self.perform_create(serializer)
+        output_serializer = self.get_serializer(instance)
+        return Response(output_serializer.data, status=status.HTTP_201_CREATED)
 
 
 class FacturationListView(org_mixins.OrganizationAPIUserMixin, generics.ListAPIView):
@@ -524,6 +548,7 @@ class FacturationCreateView2(generics.CreateAPIView):
             organization=self.request.organization,
             # organization_user=self.request.organization_user,
         )
+        return Response
 
 
 class FacturationUpdateView(generics.UpdateAPIView):
