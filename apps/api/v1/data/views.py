@@ -382,10 +382,7 @@ class TransactionCreateView(generics.CreateAPIView):
         )
 
         if not created:
-            # Optionally update existing record with latest data from client
-            for attr, value in serializer.validated_data.items():
-                setattr(obj, attr, value)
-            obj.save()
+            return obj
 
         return obj
 
