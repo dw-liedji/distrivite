@@ -104,8 +104,8 @@
             <tr class="has-text-weight-bold my-0 py-0">
                 <th class="has-text-weight-bold my-0 py-0 has-text-left">TOTAL HT</th>
                 <th class="has-text-weight-bold my-0 py-0 has-text-left" colspan="3">TOTAL HT EN LETTRE</th>
-                <th class="has-text-weight-bold my-0 py-0 has-text-left">DERNIER PAIEMENT</th>
-                <th class="has-text-weight-bold my-0 py-0 has-text-left">DETTE</th>
+                <th class="has-text-weight-bold my-0 py-0 has-text-left">AVANCE</th>
+                <th class="has-text-weight-bold my-0 py-0 has-text-left">RESTE</th>
             </tr>
         </thead>
         <tbody>
@@ -119,10 +119,10 @@
                     CFA
                 </td>
                 <td class="has-text-weight-bold my-0 py-0 has-text-centered">
-                    {{ facturation.medical_visit.last_payment.normalize|intcomma }} FCFA
+                    {{ facturation.total_amount_paid.normalize|intcomma }} FCFA
                 </td>
                 <td class="has-text-weight-bold my-0 py-0 has-text-centered">
-                    {{ facturation.medical_visit.patient.remaining.normalize|intcomma }} FCFA
+                    {{ facturation.total_remaining_balance.normalize|intcomma }} FCFA
                 </td>
             </tr>
         </tbody>

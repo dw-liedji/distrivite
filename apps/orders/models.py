@@ -326,15 +326,15 @@ class Facturation(AbstractFacturation):
     def __str__(self) -> str:
         return f"{self.customer} | {self.bill_number}"
 
-    # @property
-    # def total_paid(self):
-    #     """Calculate total amount already paid for this facturation"""
-    #     return sum(payment.amount for payment in self.facturation_payments.all())
+    @property
+    def total_amount_paid(self):
+        """Calculate total amount already paid for this facturation"""
+        return sum(payment.amount for payment in self.facturation_payments.all())
 
-    # @property
-    # def remaining_balance(self):
-    #     """Calculate remaining balance to be paid"""
-    #     return self.total_price - self.total_paid
+    @property
+    def total_remaining_balance(self):
+        """Calculate remaining balance to be paid"""
+        return self.total_price - self.total_amount_paid
 
 
 class FacturationStock(AbstractFacturationStock):
