@@ -89,6 +89,9 @@ class CustomerSerializer(serializers.ModelSerializer):
     organization_id = serializers.UUIDField()
     id = serializers.UUIDField()
 
+    created = serializers.DateTimeField(required=True)
+    modified = serializers.DateTimeField(required=True)
+
     class Meta:
         model = order_models.Customer
         fields = [
@@ -119,6 +122,9 @@ class TransactionSerializer(serializers.ModelSerializer):
     #     source="organization_user.user", read_only=True
     # )
 
+    created = serializers.DateTimeField(required=True)
+    modified = serializers.DateTimeField(required=True)
+
     class Meta:
         model = order_models.Transaction
         fields = [
@@ -146,6 +152,8 @@ class FacturationPaymentSerializer(serializers.ModelSerializer):
     organization_slug = serializers.CharField(
         source="organization.slug", read_only=True
     )
+    created = serializers.DateTimeField(required=True)
+    modified = serializers.DateTimeField(required=True)
 
     id = serializers.UUIDField()
     organization_id = serializers.UUIDField()
@@ -174,6 +182,9 @@ class FacturationStockSerializer(serializers.ModelSerializer):
     facturation_id = serializers.UUIDField()
     stock_id = serializers.UUIDField()
 
+    created = serializers.DateTimeField(required=True)
+    modified = serializers.DateTimeField(required=True)
+
     stock_name = serializers.CharField(source="stock.batch.item.name", read_only=True)
     organization_slug = serializers.CharField(
         source="organization.slug", read_only=True
@@ -200,6 +211,9 @@ class FacturationStockSerializer(serializers.ModelSerializer):
 class FacturationSerializer(serializers.ModelSerializer):
     facturation_stocks = FacturationStockSerializer(many=True, required=False)
     facturation_payments = FacturationPaymentSerializer(many=True, required=False)
+
+    created = serializers.DateTimeField(required=True)
+    modified = serializers.DateTimeField(required=True)
 
     id = serializers.UUIDField()
     organization_id = serializers.UUIDField()
@@ -298,6 +312,10 @@ class FacturationSerializer2(serializers.ModelSerializer):
     facturation_stocks = FacturationStockSerializer(many=True, required=False)
     facturation_payments = FacturationPaymentSerializer(many=True, required=False)
 
+    # Make created and modified fields writable
+    created = serializers.DateTimeField(required=True)
+    modified = serializers.DateTimeField(required=True)
+
     id = serializers.UUIDField()
     organization_id = serializers.UUIDField()
     organization_user_id = serializers.UUIDField()
@@ -338,6 +356,7 @@ class FacturationSerializer2(serializers.ModelSerializer):
     def create(self, validated_data):
         stock_data = validated_data.pop("facturation_stocks", [])
         payment_data = validated_data.pop("facturation_payments", [])
+        print(validated_data, "\n")
 
         with transaction.atomic():
             billing, created = order_models.Facturation.objects.get_or_create(
@@ -351,6 +370,8 @@ class FacturationSerializer2(serializers.ModelSerializer):
                 order_models.FacturationStock.objects.create(
                     facturation=billing, **item_data
                 )
+
+                print(item_data, "\n")
 
                 # if facturation_stock.is_delivered:
                 #     stock = facturation_stock.stock
@@ -367,6 +388,8 @@ class FacturationSerializer2(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         stock_data = validated_data.pop("facturation_stocks", [])
         payment_data = validated_data.pop("facturation_payments", [])
+
+        print(stock_data, "\n")
 
         # Update main Facturation fields
         for attr, value in validated_data.items():
