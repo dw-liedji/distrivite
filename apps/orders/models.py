@@ -329,7 +329,7 @@ class Facturation(AbstractFacturation):
     @property
     def total_amount_paid(self):
         """Calculate total amount already paid for this facturation"""
-        return sum(payment.amount for payment in self.facturation_payments.all())
+        return sum([payment.amount for payment in self.facturation_payments.all()])
 
     @property
     def total_remaining_balance(self):
