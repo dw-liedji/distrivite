@@ -1,89 +1,93 @@
 {% load static %}
 {% load qr_code %}
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport"
+              content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description"
+              content="Dot matrix printable template for Epson LX-350, optimized for Django-generated PDFs.">
+        <meta name="keywords" content="dot matrix, Epson LX-350, Django, PDF">
+        <meta name="author" content="Datavite Team">
+        <!-- Remove external CSS for dot matrix printing -->
+        <style type="text/css" media="all">
+            @media print {
 
-<head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+                /* Defining the custom paper size for the Epson LX-350 */
+                @page {
+                    size: 210mm 297mm;
+                    /* A4 dimensions in mm */
+                    margin: 5mm;
+                    /* Small margin for dot matrix */
+                }
 
-    <!-- External CSS -->
-    <link rel="stylesheet" href="{% static 'core/css/quanta.min.css' %}" />
+                html,
+                body {
+                    width: 100%;
+                    font-family: 'Courier New', monospace;
+                    /* Essential for dot matrix */
+                    font-size: 12pt;
+                    /* Standard dot matrix size */
+                    line-height: 1;
+                    /* Tighter line spacing */
+                    margin: 0;
+                    padding: 0;
+                    color: #000 !important;
+                    background: none !important;
+                }
 
-    <style type="text/css" media="all">
-        @media print {
+                /* Reset all elements for dot matrix printing */
+                * {
+                    float: none !important;
+                    position: static !important;
+                    box-shadow: none !important;
+                    text-shadow: none !important;
+                    background: transparent !important;
+                }
 
-            /* Defining the custom paper size for the Epson LX-350 */
-            @page {
-                size: A4 portrait;
-                margin: 0;
-                /* Remove default margins for better fitting */
+                .logo {
+                    width: 30%;
+                    height: auto;
+                }
+
+                /* Remove complex styling */
+                hr {
+                    border-top: 1px solid #000;
+                    margin: 5px 0;
+                }
+
+                .watermarked {
+                    display: none;
+                    /* Watermarks often don't print well on dot matrix */
+                }
+
+                /* Force page breaks where needed */
+                .page-break {
+                    page-break-after: always;
+                }
+
+                /* Optimize for continuous paper */
+                body {
+                    padding-bottom: 0;
+                }
+
+                /* Remove unnecessary elements */
+                .no-print {
+                    display: none !important;
+                }
             }
-
-            html,
-            body {
-                display: block;
-                font-family: 'Courier New', Courier, monospace;
-                /* Monospace font for dot-matrix printers */
-                margin: 0;
-            }
-
-            .logo {
-                width: 30%;
-                /* Adjusting image/logo size */
-            }
-
-            /* General text and layout adjustments for printing */
-            * {
-                font-size: 12px;
-                /* Increased font size for readability */
-                /* line-height: 1.4;*/
-                /* Improved line spacing for clearer printing */
-                color: black;
-                /* Ensure black text */
-                background: none;
-                /* Avoid background for print clarity */
-            }
-
-            hr {
-                height: 1px;
-                border: 0;
-                border-top: 1px solid black;
-                margin: 1em 0;
-                padding: 0;
-            }
-
-            .watermarked {
-                color: #02020223;
-                font-size: 96px;
-                position: absolute;
-                top: 450px;
-                left: 150px;
-                transform: rotate(-75deg);
-                z-index: 0;
-                opacity: 0.15;
-            }
-
-            table,
-            th,
-            tr,
-            td {
-                border: 2px dotted black;
-                border-collapse: collapse;
-            }
-
-        }
-    </style>
-
-    <title>{% block title %}{% endblock title %}</title>
-</head>
-
-<body class="block m-0 p-0">
-    <div class="box m-0 p-0">
-        {% block content %}
-        {% endblock content %}
-    </div>
-</body>
-
+        </style>
+        <title>
+            {% block title %}
+            {% endblock title %}
+        </title>
+    </head>
+    <body style="margin: 0; padding: 0;">
+        <div style="margin: 0; padding: 0; width: 100%;">
+            {% block content %}
+            {% endblock content %}
+        </div>
+    </body>
 </html>

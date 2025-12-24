@@ -1,42 +1,34 @@
-{% extends 'core/pdf_base_matrix_lx350_printer.html' %}
+{% extends "core/pdf_base_matrix_lx350_printer.html" %}
 {% load static %}
 {% load qr_code %}
 {% load core %}
+{% load humanize %}
+{% load l10n %}
 {% block content %}
-    <div class="has-text-weight-bold block py-0 my-0 is-flex is-align-items-center is-justify-content-space-around pt-1"
+    <div class="has-text-weight-bold block py-0 my-0 is-flex is-align-items-center is-justify-content-space-between pt-1"
          style="gap: 10px">
-        <div class="has-text-weight-bold block is-flex is-flex-direction-column is-justify-content-center is-align-items-center">
-            <p class="has-text-weight-bold title is-size-6 has-text-centered my-0 p-0">Réçu</p>
-            <p class="has-text-weight-bold subtitle is-size-6 has-text-centered m-0 p-0">
-                No:
-                {{ facturation.bill_number|default_if_none:"N/A" }}
-            </p>
-        </div>
         <figure class="has-text-weight-bold image p-0 my-0">
             {% if request.organization.logo %}
                 <img class="has-text-weight-bold image p-0 m-0"
-                     src="{{ request.organization.logo.url }}"
-                     style="width: 150px;
-                            height: 60px">
+                     alt="{{ request.organization.name }} Logo"
+                     height="60px"
+                     width="150px"
+                     src="{{ request.organization.logo.url }}">
             {% else %}
                 <img class="has-text-weight-bold image p-0 m-0"
-                     src="{% static 'core/img/quanta_logo.jpg' %}"
-                     style="width: 150px;
-                            height: 60px">
+                     height="60px"
+                     width="150px"
+                     alt="Quanta Logo"
+                     src="{% static 'core/img/quanta_logo.jpg' %}">
             {% endif %}
         </figure>
         <div class="has-text-weight-bold has-text-centered p-0 m-0">
             <p class="has-text-weight-bold title is-size-6 mb-0 pb-0">{{ request.organization.name|upper }}</p>
-            <p class="has-text-weight-bold title is-size-6 mb-0 pb-0">{{ request.organization.sub_name|upper }}</p>
-            <p class="has-text-weight-bold subtitle is-size-6 has-text-centered m-0 p-0">
+            <p class="has-text-weight-bold subtitle is-size-7 has-text-centered m-0 p-0">
                 {{ request.organization.street_address }}
             </p>
-            <p class="has-text-weight-bold subtitle is-size-6 has-text-centered m-0 p-0">
-                BP 8735-YANSOKI-DOUALA,
-                tel:{{ request.organization.contact_number }}
-            </p>
-            <p class="has-text-weight-bold subtitle is-size-6 has-text-centered m-0 p-0">
-                Email:{{ request.organization.contact_email }}
+            <p class="has-text-weight-bold subtitle is-size-7 has-text-centered m-0 p-0">
+                Tel:{{ request.organization.contact_number }}
             </p>
         </div>
         <figure>
@@ -44,90 +36,80 @@
       src="../../static/accounts/img/profile.jpg"
       alt=""> -->
             <img class="has-text-weight-bold p-0 m-0 image is-64x64"
+                 width="64px"
+                 height="64px"
                  src="{% qr_url_from_text facturation.pk size=8 version=10 image_format='png' %}"
                  alt="Hello World!">
         </figure>
     </div>
-    <hr class="has-text-weight-bold my-0 py-0" />
-    <table class="has-text-weight-bold table is-bordered is-narrow is-fullwidth is-size-6 py-0 my-0">
+    <hr class="has-text-weight-bold my-1 py-1" />
+    <table class="has-text-weight-bold table is-borderless  is-narrow is-fullwidth is-size-7 py-0 my-0">
         <thead>
             <tr>
-                <th class="has-text-weight-bold"
-                    style="text-align: center;
-                           vertical-align: middle">Noms et prenoms</th>
-                <th class="has-text-weight-bold"
-                    style="text-align: center;
-                           vertical-align: middle">Profession</th>
-                <th class="has-text-weight-bold"
-                    style="text-align: center;
-                           vertical-align: middle">Age</th>
-                <th class="has-text-weight-bold"
-                    style="text-align: center;
-                           vertical-align: middle">Téléphone</th>
+                <th class="has-text-weight-bold is-size-6 my-0 py-0"
+                    style="text-align: left;
+                           border: 0;
+                           vertical-align: middle">RÉÇU DE CAISSE</th>
+                <th colspan="2" style="border: 0;"></th>
             </tr>
         </thead>
         <tbody>
             <tr>
                 <td class="has-text-weight-bold my-0 py-0"
-                    style="text-align: center;
-                           vertical-align: middle">{{ facturation.medical_visit.patient.username }}</td>
+                    style="text-align: left;
+                           vertical-align: middle;
+                           border: 0">No: {{ facturation.bill_number|default_if_none:"N/A" }}</td>
                 <td class="has-text-weight-bold my-0 py-0"
-                    style="text-align: center;
-                           vertical-align: middle">{{ facturation.medical_visit.patient.profession }}</td>
-                <td class="has-text-weight-bold my-0 py-0"
-                    style="text-align: center;
-                           vertical-align: middle">{{ facturation.medical_visit.patient.formated_age }}</td>
-                <td class="has-text-weight-bold my-0 py-0"
-                    style="text-align: center;
-                           vertical-align: middle">{{ facturation.medical_visit.patient.phone_number }}</td>
+                    colspan="2"
+                    style="text-align: left;
+                           vertical-align: middle;
+                           border: 0">
+                    {{ "Nom(s) :" }} <b>{{ facturation.medical_visit.patient.username|capfirst }}</b>
+                </td>
             </tr>
         </tbody>
     </table>
-    <hr class="has-text-weight-bold my-0 mb-1 py-0" />
-    <table class="has-text-weight-bold table is-bordered is-narrow is-fullwidth is-size-6 py-0 my-0">
+    {% comment %} <hr class="has-text-weight-bold my-0 mb-1 py-0" /> {% endcomment %}
+    <table class="has-text-weight-bold table is-bordered is-narrow is-fullwidth is-size-7 py-0 my-0 mt-3">
         <thead>
             <tr class="has-text-weight-bold my-0 py-0">
-                <th class="has-text-weight-bold my-0 py-0 has-text-centered">Product</th>
-                <th class="has-text-weight-bold my-0 py-0 has-text-left">Description</th>
-                <th class="has-text-weight-bold my-0 py-0 has-text-centered">Qté</th>
-                <th class="has-text-weight-bold my-0 py-0 has-text-centered">Prix unitaire</th>
-                <th class="has-text-weight-bold my-0 py-0 has-text-centered">Total</th>
+                <th class="has-text-weight-bold my-0 py-0 has-text-left">DESIGNATIONS</th>
+                <th class="has-text-weight-bold my-0 py-0 has-text-left">QTE</th>
+                <th class="has-text-weight-bold my-0 py-0 has-text-left">PRIX UNITAIRE</th>
+                <th class="has-text-weight-bold my-0 py-0 has-text-left">SOUS TOTAL</th>
             </tr>
         </thead>
         <tbody>
-            {% for facturation_stock in facturation.facturation_stocks.all %}
+            {% for facturation_batch in facturation.facturation_batchs.all %}
                 <tr class="has-text-weight-bold my-0 py-0">
-                    <td class="has-text-weight-bold my-0 py-0 has-text-centered is-vcentered">
-                        {{ facturation_stock.stock.batch.item.name }}
-                    </td>
-                    <td class="has-text-weight-bold my-0 py-0 has-text-centered is-vcentered">{{ facturation_stock.description|safe }}</td>
+                    <td class="has-text-weight-bold my-0 py-0 has-text-left is-vcentered">{{ facturation_batch.batch.item.name }}</td>
                     <td class="has-text-weight-bold my-0 py-0"
-                        style="text-align: center;
-                               vertical-align: middle">{{ facturation_stock.quantity }}</td>
+                        style="text-align: left;
+                               vertical-align: middle">{{ facturation_batch.quantity }}</td>
                     <td class="has-text-weight-bold my-0 py-0"
-                        style="text-align: center;
-                               vertical-align: middle">{{ facturation_stock.unit_price.normalize }}</td>
+                        style="text-align: left;
+                               vertical-align: middle">{{ facturation_batch.unit_price.normalize|intcomma }}</td>
                     <td class="has-text-weight-bold my-0 py-0"
-                        style="text-align: center;
-                               vertical-align: middle">{{ facturation_stock.total_price.normalize }}</td>
+                        style="text-align: left;
+                               vertical-align: middle">{{ facturation_batch.total_price.normalize|intcomma }}</td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
-    <hr class="has-text-weight-bold my-0 mb-1 py-0" />
-    <table class="has-text-weight-bold table is-bordered is-narrow is-fullwidth is-size-6 py-0 my-0">
+    {% comment %} <hr class="has-text-weight-bold my-1 mt-1 py-1" /> {% endcomment %}
+    <table class="has-text-weight-bold table is-bordered is-narrow is-fullwidth is-size-7 py-0 my-0 mt-3">
         <thead>
             <tr class="has-text-weight-bold my-0 py-0">
-                <th class="has-text-weight-bold my-0 py-0 has-text-centered">TOTAL HT</th>
-                <th class="has-text-weight-bold my-0 py-0 has-text-centered" colspan="3">TOTAL HT EN LETTRE</th>
-                <th class="has-text-weight-bold my-0 py-0 has-text-centered">Dernier payment</th>
-                <th class="has-text-weight-bold my-0 py-0 has-text-left">Dette</th>
+                <th class="has-text-weight-bold my-0 py-0 has-text-left">TOTAL HT</th>
+                <th class="has-text-weight-bold my-0 py-0 has-text-left" colspan="3">TOTAL HT EN LETTRE</th>
+                <th class="has-text-weight-bold my-0 py-0 has-text-left">DERNIER PAIEMENT</th>
+                <th class="has-text-weight-bold my-0 py-0 has-text-left">DETTE</th>
             </tr>
         </thead>
         <tbody>
             <tr class="has-text-weight-bold my-0 py-0">
                 <td class="has-text-weight-bold my-0 py-0 has-text-centered">
-                    {{ facturation.total_price.normalize }}
+                    {{ facturation.total_price.normalize|intcomma }}
                     FCFA
                 </td>
                 <td colspan="3" class="has-text-weight-bold my-0 py-0 has-text-centered">
@@ -135,38 +117,34 @@
                     CFA
                 </td>
                 <td class="has-text-weight-bold my-0 py-0 has-text-centered">
-                    {{ facturation.medical_visit.last_payment.normalize }} FCFA
+                    {{ facturation.medical_visit.last_payment.normalize|intcomma }} FCFA
                 </td>
                 <td class="has-text-weight-bold my-0 py-0 has-text-centered">
-                    {{ facturation.medical_visit.remaining.normalize }} FCFA
+                    {{ facturation.medical_visit.patient.remaining.normalize|intcomma }} FCFA
                 </td>
             </tr>
         </tbody>
     </table>
-    <hr class="has-text-weight-bold my-0 py-0" />
-    <div class="has-text-weight-bold watermarked">SAINT JOHN</div>
-    <p class="has-text-weight-bold my-1 has-text-right is-size-6">
-        Fait à {{ request.organization.city }} le
-        {{ facturation.created }}
-    </p>
+    <div class="has-text-weight-bold watermarked">{{ request.organization.short_name }}</div>
+    <p class="has-text-weight-bold mt-2 has-text-right is-size-7">Le {{ facturation.created }}</p>
     <div class="has-text-weight-bold block is-flex is-justify-content-space-between is-align-items-center my-0 py-0">
         <div class="has-text-weight-bold block is-flex is-flex-direction-column is-align-items-start my-0 py-0 mb-1">
-            {% comment %} <p class="has-text-weight-bold title is-size-6">Signature du patient</p> {% endcomment %}
-            {% comment %} <p class="has-text-weight-bold subtitle is-size-6 has-text-centered">
-            {{ facturation.medical_visit.patient.username }}
-            </p> {% endcomment %}
+            <p class="has-text-weight-bold title is-size-7">La caisse</p>
+            {% comment %} <p class="has-text-weight-bold subtitle is-size-7 mb-1"></p> {% endcomment %}
+            <p class="has-text-weight-bold subtitle is-size-7 has-text-centered">
+                {{ facturation.organization_user.user.username|capfirst }}
+            </p>
         </div>
         <div class="has-text-weight-bold block is-flex is-flex-direction-column is-align-items-start my-0 py-0 mb-1">
-            <p class="has-text-weight-bold title is-size-6">La caisse</p>
-            {% comment %} <p class="has-text-weight-bold subtitle is-size-6 mb-1"></p> {% endcomment %}
-            <p class="has-text-weight-bold subtitle is-size-6 has-text-centered">
+            {% comment %} <p class="has-text-weight-bold title is-size-7">La caisse</p>
+            <p class="has-text-weight-bold subtitle is-size-7 mb-1"></p>
+            <p class="has-text-weight-bold subtitle is-size-7 has-text-centered">
                 {{ facturation.organization_user.user.username }}
-            </p>
+            </p> {% endcomment %}
         </div>
     </div>
     <hr class="has-text-weight-bold py-0 my-0" />
-    <p class="has-text-weight-bold subtitle is-size-6 has-text-centered">
-        Imprimé le {% now "SHORT_DATETIME_FORMAT" %} par
-        {{ request.organization_user.user.username }}
+    <p class="has-text-weight-bold subtitle is-size-7 has-text-centered">
+        Imprimée par {{ request.organization_user.user.username|capfirst }} le {% now "SHORT_DATETIME_FORMAT" %}
     </p>
 {% endblock content %}
