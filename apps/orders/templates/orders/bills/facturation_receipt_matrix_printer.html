@@ -2,172 +2,171 @@
 {% load static %}
 {% load qr_code %}
 {% load core %}
-
 {% block content %}
-<div class="has-text-weight-bold block py-0 my-0 is-flex is-align-items-center is-justify-content-space-around pt-1"
-    style="gap: 10px;">
-    <div
-        class="has-text-weight-bold block is-flex is-flex-direction-column is-justify-content-center is-align-items-center">
-        <p class="has-text-weight-bold title is-size-6 has-text-centered my-0 p-0">Réçu</p>
-        <p class="has-text-weight-bold subtitle is-size-6 has-text-centered m-0 p-0">No:
-            {{ facturation.bill_number|default_if_none:"N/A" }}
-        </p>
+    <div class="has-text-weight-bold block py-0 my-0 is-flex is-align-items-center is-justify-content-space-around pt-1"
+         style="gap: 10px">
+        <div class="has-text-weight-bold block is-flex is-flex-direction-column is-justify-content-center is-align-items-center">
+            <p class="has-text-weight-bold title is-size-6 has-text-centered my-0 p-0">Réçu</p>
+            <p class="has-text-weight-bold subtitle is-size-6 has-text-centered m-0 p-0">
+                No:
+                {{ facturation.bill_number|default_if_none:"N/A" }}
+            </p>
+        </div>
+        <figure class="has-text-weight-bold image p-0 my-0">
+            {% if request.organization.logo %}
+                <img class="has-text-weight-bold image p-0 m-0"
+                     src="{{ request.organization.logo.url }}"
+                     style="width: 150px;
+                            height: 60px">
+            {% else %}
+                <img class="has-text-weight-bold image p-0 m-0"
+                     src="{% static 'core/img/quanta_logo.jpg' %}"
+                     style="width: 150px;
+                            height: 60px">
+            {% endif %}
+        </figure>
+        <div class="has-text-weight-bold has-text-centered p-0 m-0">
+            <p class="has-text-weight-bold title is-size-6 mb-0 pb-0">{{ request.organization.name|upper }}</p>
+            <p class="has-text-weight-bold title is-size-6 mb-0 pb-0">{{ request.organization.sub_name|upper }}</p>
+            <p class="has-text-weight-bold subtitle is-size-6 has-text-centered m-0 p-0">
+                {{ request.organization.street_address }}
+            </p>
+            <p class="has-text-weight-bold subtitle is-size-6 has-text-centered m-0 p-0">
+                BP 8735-YANSOKI-DOUALA,
+                tel:{{ request.organization.contact_number }}
+            </p>
+            <p class="has-text-weight-bold subtitle is-size-6 has-text-centered m-0 p-0">
+                Email:{{ request.organization.contact_email }}
+            </p>
+        </div>
+        <figure>
+            <!-- <img class="has-text-weight-bold is-student-profile-code"
+      src="../../static/accounts/img/profile.jpg"
+      alt=""> -->
+            <img class="has-text-weight-bold p-0 m-0 image is-64x64"
+                 src="{% qr_url_from_text facturation.pk size=8 version=10 image_format='png' %}"
+                 alt="Hello World!">
+        </figure>
     </div>
-
-
-    <figure class="has-text-weight-bold image p-0 my-0">
-        {% if request.organization.logo %}
-        <img class="has-text-weight-bold image p-0 m-0" src="{{ request.organization.logo.url }}"
-            style="width: 150px; height: 60px;">
-        {% else %}
-        <img class="has-text-weight-bold image p-0 m-0" src="{% static 'core/img/quanta_logo.jpg' %}"
-            style="width: 150px; height: 60px;">
-        {% endif %}
-    </figure>
-
-    <div class="has-text-weight-bold has-text-centered p-0 m-0">
-        <p class="has-text-weight-bold title is-size-6 mb-0 pb-0">{{ request.organization.name|upper }}</p>
-        <p class="has-text-weight-bold title is-size-6 mb-0 pb-0">{{ request.organization.sub_name|upper }}</p>
-        <p class="has-text-weight-bold subtitle is-size-6 has-text-centered m-0 p-0">
-            {{ request.organization.street_address }}</p>
-        <p class="has-text-weight-bold subtitle is-size-6 has-text-centered m-0 p-0">BP 8735-YANSOKI-DOUALA,
-            tel:{{ request.organization.contact_number }}</p>
-        <p class="has-text-weight-bold subtitle is-size-6 has-text-centered m-0 p-0">
-            Email:{{ request.organization.contact_email }}</p>
-    </div>
-
-    <figure>
-        <!-- <img class="has-text-weight-bold is-student-profile-code" src="../../static/accounts/img/profile.jpg" alt=""> -->
-        <img class="has-text-weight-bold p-0 m-0 image is-64x64"
-            src="{% qr_url_from_text facturation.pk size=8 version=10 image_format='png' %}" alt="Hello World!">
-    </figure>
-
-</div>
-
-<hr class="has-text-weight-bold my-0 py-0" />
-
-<table class="has-text-weight-bold table is-bordered is-narrow is-fullwidth is-size-6 py-0 my-0">
-    <thead>
-        <tr>
-            <th class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
-                Noms et prenoms </th>
-            <th class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
-                Profession </th>
-            <th class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
-                Age </th>
-            <th class="has-text-weight-bold" style="text-align: center; vertical-align: middle;">
-                Téléphone </th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td class="has-text-weight-bold my-0 py-0" style="text-align: center; vertical-align: middle;">
-                {{ facturation.medical_visit.patient.username }} </td>
-            <td class="has-text-weight-bold my-0 py-0" style="text-align: center; vertical-align: middle;">
-                {{ facturation.medical_visit.patient.profession}} </td>
-            <td class="has-text-weight-bold my-0 py-0" style="text-align: center; vertical-align: middle;">
-                {{ facturation.medical_visit.patient.formated_age }} </td>
-            <td class="has-text-weight-bold my-0 py-0" style="text-align: center; vertical-align: middle;">
-                {{ facturation.medical_visit.patient.phone_number}} </td>
-        </tr>
-    </tbody>
-</table>
-
-<hr class="has-text-weight-bold my-0 mb-1 py-0" />
-
-<table class="has-text-weight-bold table is-bordered is-narrow is-fullwidth is-size-6 py-0 my-0">
-
-    <thead>
-        <tr class="has-text-weight-bold my-0 py-0">
-            <th class="has-text-weight-bold my-0 py-0 has-text-centered">Product</th>
-            <th class="has-text-weight-bold my-0 py-0 has-text-left">Description</th>
-            <th class="has-text-weight-bold my-0 py-0 has-text-centered">Qté</th>
-            <th class="has-text-weight-bold my-0 py-0 has-text-centered">Prix unitaire</th>
-            <th class="has-text-weight-bold my-0 py-0 has-text-centered">Total</th>
-        </tr>
-    </thead>
-
-    <tbody>
-        {% for facturation_stock in facturation.facturation_stocks.all %}
-        <tr class="has-text-weight-bold my-0 py-0">
-            <td class="has-text-weight-bold my-0 py-0 has-text-centered is-vcentered">
-                {{ facturation_stock.stock.batch.item.name }} </td>
-
-            <td class="has-text-weight-bold my-0 py-0 has-text-centered is-vcentered">
-                {{ facturation_stock.description|safe }}
-            </td>
-            <td class="has-text-weight-bold my-0 py-0" style="text-align: center; vertical-align: middle;">
-                {{ facturation_stock.quantity }}
-            </td>
-            <td class="has-text-weight-bold my-0 py-0" style="text-align: center; vertical-align: middle;">
-                {{ facturation_stock.unit_price.normalize }}
-            </td>
-            <td class="has-text-weight-bold my-0 py-0" style="text-align: center; vertical-align: middle;">
-                {{ facturation_stock.total_price.normalize }}
-            </td>
-        </tr>
-        {% endfor %}
-
-    </tbody>
-</table>
-
-<hr class="has-text-weight-bold my-0 mb-1 py-0" />
-
-<table class="has-text-weight-bold table is-bordered is-narrow is-fullwidth is-size-6 py-0 my-0">
-
-    <thead>
-        <tr class="has-text-weight-bold my-0 py-0">
-            <th class="has-text-weight-bold my-0 py-0 has-text-centered">TOTAL HT</th>
-            <th class="has-text-weight-bold my-0 py-0 has-text-centered" colspan="3">TOTAL HT EN LETTRE</th>
-            <th class="has-text-weight-bold my-0 py-0 has-text-centered">Dernier payment</th>
-            <th class="has-text-weight-bold my-0 py-0 has-text-left">Dette</th>
-        </tr>
-    </thead>
-
-    <tbody>
-        <tr class="has-text-weight-bold my-0 py-0">
-            <td class="has-text-weight-bold my-0 py-0 has-text-centered">
-                {{ facturation.total_price.normalize }}
-                FCFA
-            </td>
-
-            <td colspan="3" class="has-text-weight-bold my-0 py-0 has-text-centered">
-                {{ facturation.total_price.normalize|to_words|capfirst }}
-                CFA
-            </td>
-            <td class="has-text-weight-bold my-0 py-0 has-text-centered">
-                {{ facturation.medical_visit.last_payment.normalize }} FCFA
-            </td>
-            <td class="has-text-weight-bold my-0 py-0 has-text-centered">
-                {{ facturation.medical_visit.remaining.normalize }} FCFA</td>
-        </tr>
-    </tbody>
-
-</table>
-
-
-<hr class="has-text-weight-bold my-0 py-0" />
-
-<div class="has-text-weight-bold watermarked">SAINT JOHN</div>
-
-<p class="has-text-weight-bold my-1 has-text-right is-size-6">Fait à {{ request.organization.city }} le
-    {{ facturation.created }} </p>
-<div class="has-text-weight-bold block is-flex is-justify-content-space-between is-align-items-center my-0 py-0">
-    <div class="has-text-weight-bold block is-flex is-flex-direction-column is-align-items-start my-0 py-0 mb-1">
-        {% comment %} <p class="has-text-weight-bold title is-size-6">Signature du patient</p> {% endcomment %}
-        {% comment %} <p class="has-text-weight-bold subtitle is-size-6 has-text-centered">
+    <hr class="has-text-weight-bold my-0 py-0" />
+    <table class="has-text-weight-bold table is-bordered is-narrow is-fullwidth is-size-6 py-0 my-0">
+        <thead>
+            <tr>
+                <th class="has-text-weight-bold"
+                    style="text-align: center;
+                           vertical-align: middle">Noms et prenoms</th>
+                <th class="has-text-weight-bold"
+                    style="text-align: center;
+                           vertical-align: middle">Profession</th>
+                <th class="has-text-weight-bold"
+                    style="text-align: center;
+                           vertical-align: middle">Age</th>
+                <th class="has-text-weight-bold"
+                    style="text-align: center;
+                           vertical-align: middle">Téléphone</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="has-text-weight-bold my-0 py-0"
+                    style="text-align: center;
+                           vertical-align: middle">{{ facturation.medical_visit.patient.username }}</td>
+                <td class="has-text-weight-bold my-0 py-0"
+                    style="text-align: center;
+                           vertical-align: middle">{{ facturation.medical_visit.patient.profession }}</td>
+                <td class="has-text-weight-bold my-0 py-0"
+                    style="text-align: center;
+                           vertical-align: middle">{{ facturation.medical_visit.patient.formated_age }}</td>
+                <td class="has-text-weight-bold my-0 py-0"
+                    style="text-align: center;
+                           vertical-align: middle">{{ facturation.medical_visit.patient.phone_number }}</td>
+            </tr>
+        </tbody>
+    </table>
+    <hr class="has-text-weight-bold my-0 mb-1 py-0" />
+    <table class="has-text-weight-bold table is-bordered is-narrow is-fullwidth is-size-6 py-0 my-0">
+        <thead>
+            <tr class="has-text-weight-bold my-0 py-0">
+                <th class="has-text-weight-bold my-0 py-0 has-text-centered">Product</th>
+                <th class="has-text-weight-bold my-0 py-0 has-text-left">Description</th>
+                <th class="has-text-weight-bold my-0 py-0 has-text-centered">Qté</th>
+                <th class="has-text-weight-bold my-0 py-0 has-text-centered">Prix unitaire</th>
+                <th class="has-text-weight-bold my-0 py-0 has-text-centered">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for facturation_stock in facturation.facturation_stocks.all %}
+                <tr class="has-text-weight-bold my-0 py-0">
+                    <td class="has-text-weight-bold my-0 py-0 has-text-centered is-vcentered">
+                        {{ facturation_stock.stock.batch.item.name }}
+                    </td>
+                    <td class="has-text-weight-bold my-0 py-0 has-text-centered is-vcentered">{{ facturation_stock.description|safe }}</td>
+                    <td class="has-text-weight-bold my-0 py-0"
+                        style="text-align: center;
+                               vertical-align: middle">{{ facturation_stock.quantity }}</td>
+                    <td class="has-text-weight-bold my-0 py-0"
+                        style="text-align: center;
+                               vertical-align: middle">{{ facturation_stock.unit_price.normalize }}</td>
+                    <td class="has-text-weight-bold my-0 py-0"
+                        style="text-align: center;
+                               vertical-align: middle">{{ facturation_stock.total_price.normalize }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <hr class="has-text-weight-bold my-0 mb-1 py-0" />
+    <table class="has-text-weight-bold table is-bordered is-narrow is-fullwidth is-size-6 py-0 my-0">
+        <thead>
+            <tr class="has-text-weight-bold my-0 py-0">
+                <th class="has-text-weight-bold my-0 py-0 has-text-centered">TOTAL HT</th>
+                <th class="has-text-weight-bold my-0 py-0 has-text-centered" colspan="3">TOTAL HT EN LETTRE</th>
+                <th class="has-text-weight-bold my-0 py-0 has-text-centered">Dernier payment</th>
+                <th class="has-text-weight-bold my-0 py-0 has-text-left">Dette</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="has-text-weight-bold my-0 py-0">
+                <td class="has-text-weight-bold my-0 py-0 has-text-centered">
+                    {{ facturation.total_price.normalize }}
+                    FCFA
+                </td>
+                <td colspan="3" class="has-text-weight-bold my-0 py-0 has-text-centered">
+                    {{ facturation.total_price.normalize|to_words|capfirst }}
+                    CFA
+                </td>
+                <td class="has-text-weight-bold my-0 py-0 has-text-centered">
+                    {{ facturation.medical_visit.last_payment.normalize }} FCFA
+                </td>
+                <td class="has-text-weight-bold my-0 py-0 has-text-centered">
+                    {{ facturation.medical_visit.remaining.normalize }} FCFA
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <hr class="has-text-weight-bold my-0 py-0" />
+    <div class="has-text-weight-bold watermarked">SAINT JOHN</div>
+    <p class="has-text-weight-bold my-1 has-text-right is-size-6">
+        Fait à {{ request.organization.city }} le
+        {{ facturation.created }}
+    </p>
+    <div class="has-text-weight-bold block is-flex is-justify-content-space-between is-align-items-center my-0 py-0">
+        <div class="has-text-weight-bold block is-flex is-flex-direction-column is-align-items-start my-0 py-0 mb-1">
+            {% comment %} <p class="has-text-weight-bold title is-size-6">Signature du patient</p> {% endcomment %}
+            {% comment %} <p class="has-text-weight-bold subtitle is-size-6 has-text-centered">
             {{ facturation.medical_visit.patient.username }}
-        </p> {% endcomment %}
+            </p> {% endcomment %}
+        </div>
+        <div class="has-text-weight-bold block is-flex is-flex-direction-column is-align-items-start my-0 py-0 mb-1">
+            <p class="has-text-weight-bold title is-size-6">La caisse</p>
+            {% comment %} <p class="has-text-weight-bold subtitle is-size-6 mb-1"></p> {% endcomment %}
+            <p class="has-text-weight-bold subtitle is-size-6 has-text-centered">
+                {{ facturation.organization_user.user.username }}
+            </p>
+        </div>
     </div>
-
-    <div class="has-text-weight-bold block is-flex is-flex-direction-column is-align-items-start my-0 py-0 mb-1">
-        <p class="has-text-weight-bold title is-size-6">La caisse</p>
-        {% comment %} <p class="has-text-weight-bold subtitle is-size-6 mb-1"></p> {% endcomment %}
-        <p class="has-text-weight-bold subtitle is-size-6 has-text-centered">
-            {{ facturation.organization_user.user.username }}</p>
-    </div>
-</div>
-<hr class="has-text-weight-bold py-0 my-0" />
-<p class="has-text-weight-bold subtitle is-size-6 has-text-centered">Imprimé le {% now "SHORT_DATETIME_FORMAT" %} par
-    {{ request.organization_user.user.username }}</p>
+    <hr class="has-text-weight-bold py-0 my-0" />
+    <p class="has-text-weight-bold subtitle is-size-6 has-text-centered">
+        Imprimé le {% now "SHORT_DATETIME_FORMAT" %} par
+        {{ request.organization_user.user.username }}
+    </p>
 {% endblock content %}

@@ -1,35 +1,70 @@
 {
+    // -----------------------------
+    // Global editor behavior
+    // -----------------------------
+    "editor.formatOnSave": true,
+
+    // -----------------------------
+    // Python (Ruff as formatter)
+    // -----------------------------
+    "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.fixAll": "explicit",
+            "source.organizeImports.ruff": "explicit"
+        }
+    },
+
+    "python.languageServer": "None",
+    "python.analysis.gotoDefinitionInStringLiteral": true,
+
+    // -----------------------------
+    // Django / HTML → djLint
+    // -----------------------------
+    "[html]": {
+        "editor.defaultFormatter": "monosans.djlint",
+        "editor.formatOnSave": true
+    },
+    "[django-html]": {
+        "editor.defaultFormatter": "monosans.djlint",
+        "editor.formatOnSave": true
+    },
+
+    // -----------------------------
+    // File associations
+    // -----------------------------
+    "files.associations": {
+        "**/*.html": "html",
+        "**/templates/**/*.html": "django-html",
+        "**/templates/**/*": "django-txt",
+        "**/requirements{/**,*}.{txt,in}": "pip-requirements"
+    },
+
+    // -----------------------------
+    // Emmet support for Django
+    // -----------------------------
+    "emmet.includeLanguages": {
+        "django-html": "html"
+    },
+
+    // -----------------------------
+    // Disable Beautify (conflicts)
+    // -----------------------------
+    "beautify.language": {},
+
+    // -----------------------------
+    // Notebook formatting
+    // -----------------------------
     "notebook.formatOnSave.enabled": true,
     "notebook.codeActionsOnSave": {
         "notebook.source.fixAll": "explicit",
         "notebook.source.organizeImports": "explicit"
     },
 
-    "editor.formatOnSave": true,
-    // "editor.defaultFormatter": "ms-python.black-formatter",
-    "python.analysis.gotoDefinitionInStringLiteral":true,
-    "python.languageServer": "None",
-    "[python]": {
-        "editor.formatOnSave": true,
-        "editor.defaultFormatter": "charliermarsh.ruff",
-        "editor.wordBasedSuggestions": "matchingDocuments",
-        "editor.codeActionsOnSave": {
-            "source.fixAll": "explicit",
-            // "source.organizeImports": "explicit",
-            "source.organizeImports.ruff": "explicit"
-        },
-    },
-
-    // django extensions
-    "files.associations": {
-        "**/*.html": "html",
-        "**/templates/**/*.html": "django-html",
-        "**/templates/**/*": "django-txt",
-        "**/requirements{/**,*}.{txt,in}": "pip-requirements",
-      },
-    "emmet.includeLanguages": {
-        "django-html": "html"
-    },
+    // -----------------------------
+    // Spell checker
+    // -----------------------------
     "cSpell.words": [
         "distrivite",
         "cameis",
@@ -41,14 +76,4 @@
         "paystubs",
         "weighteds"
     ]
-    ,
-    "beautify.language": {
-        "html": [
-            "htm",
-            "html",
-            "django-html"
-        ]
-     },
-
 }
-
