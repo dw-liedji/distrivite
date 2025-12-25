@@ -4,12 +4,17 @@ from decimal import Decimal
 
 from django.db import transaction
 from django.db.models import (
+    DecimalField,
+    ExpressionWrapper,
     F,
+    OuterRef,
     Prefetch,  # Add this import
+    Subquery,
+    Sum,
 )
+from django.db.models.functions import Coalesce
 from django.utils import timezone
 from rest_framework import generics, permissions, status
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -631,38 +636,327 @@ class FacturationDeleteView(generics.DestroyAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-@api_view(["POST"])
-@transaction.atomic
-def make_payment(request):
-    org_slug = request.data.get("org_slug")
-    customer_id = request.data.get("customer_id")
-    amount = request.data.get("amount")
+class BulkCreditPaymentListAPIView(
+    org_mixins.OrganizationAPIUserMixin, generics.ListAPIView
+):
+    """
+    API endpoint that returns all bulk credit payments for the current organization.
+    GET /en/<org_slug>/api/v1/data/bulk-credit-payments/
+    """
 
-    organization = request.organization
+    serializer_class = serializers.BulkCreditPaymentSerializer
+    pagination_class = None
+    permission_classes = [permissions.IsAuthenticated]
 
-    try:
-        # Get or create prepaid account
-        account, created = order_models.PrepaidAccount.objects.get_or_create(
-            customer_id=customer_id, organization=organization, defaults={"amount": 0}
+    def get_queryset(self):
+        return (
+            order_models.BulkCreditPayment.objects.filter(
+                organization=self.request.organization,
+            )
+            .select_related(
+                "customer",
+                "organization",
+                "organization_user",
+            )
+            .order_by("-created")
         )
 
-        # Check if sufficient balance
-        if account.amount < Decimal(amount):
-            return Response(
-                {"org_slug": org_slug, "customer_id": customer_id, "is_paid": False},
-                status=status.HTTP_400_BAD_REQUEST,
+
+class BulkCreditPaymentIdListView(
+    org_mixins.OrganizationAPIUserMixin, generics.ListAPIView
+):
+    """
+    GET /en/<org_slug>/api/v1/data/bulk-credit-payment-ids/
+    Returns only IDs of bulk credit payments for sync.
+    """
+
+    serializer_class = serializers.BulkCreditPaymentIdSerializer
+    pagination_class = None
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return order_models.BulkCreditPayment.objects.filter(
+            organization=self.request.organization,
+        )
+
+    def list(self, request, *args, **kwargs):
+        qs = self.get_queryset().values_list("id", flat=True)
+        return Response(list(qs))
+
+
+class BulkCreditPaymentChangesView(BulkCreditPaymentListAPIView):
+    """
+    API endpoint to get bulk credit payments changed since a specific timestamp
+    GET /en/<org_slug>/api/v1/data/bulk-credit-payment-changes/
+    """
+
+    def get_queryset(self):
+        since_timestamp = self.request.GET.get("since")
+
+        if not since_timestamp:
+            logger.warning(
+                "No 'since' parameter provided, returning all bulk credit payments"
+            )
+            return super().get_queryset()
+
+        try:
+            # Convert milliseconds timestamp to datetime
+            since_timestamp = int(since_timestamp)
+
+            # Handle milliseconds (Android sends milliseconds)
+            if since_timestamp > 1000000000:  # It's in milliseconds
+                since_timestamp_seconds = since_timestamp / 1000.0
+            else:  # It's in seconds
+                since_timestamp_seconds = since_timestamp
+
+            # Create timezone-aware datetime
+            since_date = datetime.fromtimestamp(
+                since_timestamp_seconds, tz=timezone.utc
             )
 
-        # Deduct amount from prepaid account
-        account.amount -= Decimal(amount)
-        account.save()
+            logger.info(
+                f"Fetching bulk credit payments changed since {since_date} (timestamp: {since_timestamp})"
+            )
 
-        return Response(
-            {"org_slug": org_slug, "customer_id": customer_id, "is_paid": True}
+            # Get the base queryset from parent
+            queryset = super().get_queryset()
+
+            # Filter payments updated after the given timestamp
+            queryset = queryset.filter(modified__gt=since_date)
+
+            changes_count = queryset.count()
+            logger.info(
+                f"Found {changes_count} bulk credit payments changed since {since_date}"
+            )
+
+            return queryset
+
+        except (ValueError, TypeError) as e:
+            logger.error(f"Invalid timestamp '{since_timestamp}': {e}")
+            # Fallback to returning all payments
+            return super().get_queryset()
+
+
+class BulkCreditPaymentCreateView(generics.CreateAPIView):
+    """
+    POST /en/<org_slug>/api/v1/data/bulk-credit-payments/create/
+    Creates a bulk credit payment.
+    Avoids creating duplicate payments by checking if one exists with the same ID.
+    """
+
+    serializer_class = serializers.BulkCreditPaymentSerializer
+    pagination_class = None
+    permission_classes = [permissions.IsAuthenticated]
+
+    @transaction.atomic
+    def perform_create(self, serializer):
+        # Use client-provided ID to check for duplicates
+        payment_id = serializer.validated_data.get("id")
+
+        # Check if already exists first
+        if (
+            payment_id
+            and order_models.BulkCreditPayment.objects.filter(id=payment_id).exists()
+        ):
+            # Return existing object with 200 OK (idempotent)
+            existing = order_models.BulkCreditPayment.objects.get(id=payment_id)
+            return existing
+
+        # Create new payment
+        obj = order_models.BulkCreditPayment.objects.create(
+            **serializer.validated_data,
+            organization=self.request.organization,
         )
 
-    except order_models.Customer.DoesNotExist:
-        return Response(
-            {"org_slug": org_slug, "customer_id": customer_id, "is_paid": False},
-            status=status.HTTP_404_NOT_FOUND,
+        customer = obj.customer
+
+        # Get unpaid facturations
+        unpaid_facturations = self._get_unpaid_facturations(customer)
+
+        # if not unpaid_facturations:
+        #     messages.warning(
+        #         self.request,
+        #         f"Le client {customer.name} n'a aucune facture impayée.",
+        #     )
+        #     # You might want to redirect or handle this case
+        #     return self.form_invalid(form)
+
+        # Calculate total outstanding
+        # total_outstanding = sum(
+        #     facturation.remaining_balance for facturation in unpaid_facturations
+        # )
+
+        # Allocate payments
+        remaining_amount = obj.amount
+        allocations = {}
+        payments_to_create = []
+
+        for facturation in unpaid_facturations:
+            if remaining_amount <= 0:
+                break
+
+            allocate_amount = min(remaining_amount, facturation.remaining_balance)
+
+            if allocate_amount > 0:
+                payments_to_create.append(
+                    order_models.FacturationPayment(
+                        facturation=facturation,
+                        organization=facturation.organization,
+                        bulk_credit_payment=obj,
+                        organization_user=obj.organization_user,
+                        transaction_broker=obj.transaction_broker,
+                        amount=allocate_amount,
+                    )
+                )
+                allocations[facturation.id] = allocate_amount
+                remaining_amount -= allocate_amount
+
+        # Bulk create payments
+        if payments_to_create:
+            order_models.FacturationPayment.objects.bulk_create(payments_to_create)
+
+        # Create transaction
+        order_models.Transaction.objects.create(
+            organization=self.request.organization,
+            organization_user=obj.organization_user,
+            amount=obj.amount,
+            transaction_broker=obj.transaction_broker,
+            transaction_type=order_models.TransactionType.DEPOSIT,
+            participant=str(customer),
+            reason=f"Recouvrement de {str(customer)}",
         )
+
+        # Handle results
+        total_allocated = sum(allocations.values())
+        leftover = obj.amount - total_allocated
+
+        if leftover > 0:
+            print(f"Montant restant: {leftover}. Créé comme crédit client.")
+
+        # Store for success page
+        # self.request.session["last_bulk_payment_id"] = bulk_credit_payment.id
+
+        return obj
+
+    def _get_unpaid_facturations(self, customer):
+        """
+        Get unpaid facturations using subqueries to calculate:
+        - total_paid: Sum of all payments for the facturation
+        - total_sales: Sum of (unit_price * quantity) for all facturation_stocks
+        """
+
+        # Subquery to calculate total paid for each facturation
+        total_paid_subquery = (
+            order_models.FacturationPayment.objects.filter(
+                facturation_id=OuterRef("pk")
+            )
+            .values("facturation_id")
+            .annotate(
+                total=Sum(
+                    "amount", output_field=DecimalField(max_digits=19, decimal_places=4)
+                )
+            )
+            .values("total")[:1]
+        )
+
+        # Subquery to calculate total sales (unit_price * quantity) for each facturation
+        total_sales_subquery = (
+            order_models.FacturationStock.objects.filter(facturation_id=OuterRef("pk"))
+            .values("facturation_id")
+            .annotate(
+                total=Sum(
+                    F("unit_price") * F("quantity"),
+                    output_field=DecimalField(max_digits=19, decimal_places=4),
+                )
+            )
+            .values("total")[:1]
+        )
+
+        # Get facturations with annotations
+        unpaid_facturations = (
+            order_models.Facturation.objects.filter(
+                organization=self.request.organization,
+                customer=customer,
+                is_proforma=False,
+            )
+            .annotate(
+                # Annotate with total paid using Coalesce to handle None values
+                total_paid=Coalesce(
+                    Subquery(total_paid_subquery),
+                    Decimal("0"),
+                    output_field=DecimalField(max_digits=19, decimal_places=4),
+                ),
+                # Annotate with total sales using Coalesce to handle None values
+                total_sales=Coalesce(
+                    Subquery(total_sales_subquery),
+                    Decimal("0"),
+                    output_field=DecimalField(max_digits=19, decimal_places=4),
+                ),
+                # Calculate remaining balance
+                remaining_balance=ExpressionWrapper(
+                    F("total_sales") - F("total_paid"),
+                    output_field=DecimalField(max_digits=19, decimal_places=4),
+                ),
+            )
+            .filter(
+                remaining_balance__gt=0  # Only get facturations with positive balance
+            )
+            .order_by("placed_at")
+        )  # Oldest first (FIFO)
+
+        return unpaid_facturations
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        instance = self.perform_create(serializer)
+
+        output_serializer = self.get_serializer(instance)
+        return Response(output_serializer.data, status=status.HTTP_201_CREATED)
+
+
+class BulkCreditPaymentUpdateView(generics.UpdateAPIView):
+    """
+    PUT /en/<org_slug>/api/v1/data/bulk-credit-payments/{id}/edit/
+    Updates a bulk credit payment.
+    """
+
+    serializer_class = serializers.BulkCreditPaymentSerializer
+    pagination_class = None
+    permission_classes = [permissions.IsAuthenticated]
+    lookup_field = "id"
+
+    def get_queryset(self):
+        return order_models.BulkCreditPayment.objects.filter(
+            organization=self.request.organization,
+        )
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop("partial", False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)
+
+
+class BulkCreditPaymentDeleteView(generics.DestroyAPIView):
+    """
+    DELETE /en/<org_slug>/api/v1/data/bulk-credit-payments/{id}/delete/
+    Deletes a bulk credit payment.
+    """
+
+    serializer_class = serializers.BulkCreditPaymentSerializer
+    pagination_class = None
+    permission_classes = [permissions.IsAuthenticated]
+    lookup_field = "id"
+
+    def get_queryset(self):
+        return order_models.BulkCreditPayment.objects.filter(
+            organization=self.request.organization,
+        )
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)

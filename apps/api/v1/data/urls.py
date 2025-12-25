@@ -103,7 +103,37 @@ urlpatterns = [
         name="update-stock-quantity",
     ),
     path("users/", views.OrganizationUserList.as_view()),
-    path("make-payment/", views.make_payment, name="make-payment"),
+    # Bulk Credit Payment URLs (matching your transaction pattern)
+    path(
+        "bulk-credit-payments/",
+        views.BulkCreditPaymentListAPIView.as_view(),
+        name="bulk-credit-payment-list",
+    ),
+    path(
+        "bulk-credit-payment-ids/",
+        views.BulkCreditPaymentIdListView.as_view(),
+        name="bulk-credit-payment-ids",
+    ),
+    path(
+        "bulk-credit-payment-changes/",
+        views.BulkCreditPaymentChangesView.as_view(),
+        name="bulk-credit-payment-changes",
+    ),
+    path(
+        "bulk-credit-payments/create/",
+        views.BulkCreditPaymentCreateView.as_view(),
+        name="bulk-credit-payment-create",
+    ),
+    path(
+        "bulk-credit-payments/<uuid:id>/edit/",
+        views.BulkCreditPaymentUpdateView.as_view(),
+        name="bulk-credit-payment-update",
+    ),
+    path(
+        "bulk-credit-payments/<uuid:id>/delete/",
+        views.BulkCreditPaymentDeleteView.as_view(),
+        name="bulk-credit-payment-delete",
+    ),
 ]
 
 urlpatterns += router.urls

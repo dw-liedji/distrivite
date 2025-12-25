@@ -470,3 +470,49 @@ class StockIdSerializer(serializers.ModelSerializer):
         fields = [
             "id",
         ]
+
+
+class BulkCreditPaymentIdSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField()
+
+    class Meta:
+        model = order_models.BulkCreditPayment
+        fields = [
+            "id",
+        ]
+
+
+class BulkCreditPaymentSerializer(serializers.ModelSerializer):
+    organization_id = serializers.UUIDField()
+    organization_user_id = serializers.UUIDField()
+    customer_id = serializers.UUIDField()
+    organization_slug = serializers.CharField(
+        source="organization.slug", read_only=True
+    )
+    organization_user_name = serializers.CharField(
+        source="organization_user.user.username", read_only=True
+    )
+    id = serializers.UUIDField()
+
+    created = serializers.DateTimeField(required=True)
+    modified = serializers.DateTimeField(required=True)
+
+    class Meta:
+        model = order_models.BulkCreditPayment
+        fields = [
+            "id",
+            "created",
+            "modified",
+            "customer_id",
+            "organization_id",
+            "organization_slug",
+            "organization_user_id",
+            "organization_user_name",
+            "transaction_broker",
+            "amount",
+        ]
+
+        read_only_fields = [
+            "organization_slug",
+            "organization_user_name",
+        ]
