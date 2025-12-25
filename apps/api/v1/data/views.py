@@ -632,10 +632,14 @@ class FacturationDeleteView(generics.DestroyAPIView):
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
+        # Serialize BEFORE deletion
+        serializer = self.get_serializer(instance)
+        serialized_data = serializer.data
+
+        # Perform deletion
         self.perform_destroy(instance)
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        return Response(serializer.data)
+
+        return Response(serialized_data, status=status.HTTP_200_OK)
 
 
 class BulkCreditPaymentListAPIView(
@@ -960,7 +964,11 @@ class BulkCreditPaymentDeleteView(generics.DestroyAPIView):
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
+        # Serialize BEFORE deletion
+        serializer = self.get_serializer(instance)
+        serialized_data = serializer.data
+
+        # Perform deletion
         self.perform_destroy(instance)
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        return Response(serializer.data)
+
+        return Response(serialized_data, status=status.HTTP_200_OK)
