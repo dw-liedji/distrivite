@@ -492,6 +492,7 @@ class BulkCreditPaymentSerializer(serializers.ModelSerializer):
     organization_user_name = serializers.CharField(
         source="organization_user.user.username", read_only=True
     )
+    customer_name = serializers.CharField(source="customer.name", read_only=True)
     id = serializers.UUIDField()
 
     created = serializers.DateTimeField(required=True)
@@ -504,10 +505,12 @@ class BulkCreditPaymentSerializer(serializers.ModelSerializer):
             "created",
             "modified",
             "customer_id",
+            "bill_number",
             "organization_id",
             "organization_slug",
             "organization_user_id",
             "organization_user_name",
+            "customer_name",
             "transaction_broker",
             "amount",
         ]
@@ -515,4 +518,5 @@ class BulkCreditPaymentSerializer(serializers.ModelSerializer):
         read_only_fields = [
             "organization_slug",
             "organization_user_name",
+            "customer_name",
         ]

@@ -405,6 +405,8 @@ class Transaction(BaseModel):
 
 
 class BulkCreditPayment(BaseModel):
+    bill_number = ProfessionalBillNumberField(unique=False)
+
     customer = models.ForeignKey(
         Customer, related_name="bulk_credit_payments", on_delete=models.CASCADE
     )
