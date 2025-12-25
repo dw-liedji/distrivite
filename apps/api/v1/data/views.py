@@ -658,6 +658,7 @@ class BulkCreditPaymentListAPIView(
         return (
             order_models.BulkCreditPayment.objects.filter(
                 organization=self.request.organization,
+                organization_user=self.request.organization_user,
             )
             .select_related(
                 "customer",
