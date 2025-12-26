@@ -20,7 +20,13 @@ class CustomerForm(forms.ModelForm):
 
     class Meta:
         model = order_models.Customer
-        fields = ["organization", "name", "phone_number", "credit_limit"]
+        fields = [
+            "organization",
+            "name",
+            "phone_number",
+            "credit_limit",
+            "prepaid_amount",
+        ]
         widgets = {
             "organization": forms.TextInput(
                 attrs={

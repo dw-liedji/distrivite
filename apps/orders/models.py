@@ -34,6 +34,12 @@ class Customer(BaseModel):
         default=0.0,
         validators=[MinValueValidator(Decimal("0.0"))],
     )
+    prepaid_amount = models.DecimalField(
+        max_digits=19,
+        decimal_places=4,
+        default=0.0,
+        validators=[MinValueValidator(Decimal("0.0"))],
+    )
 
     objects = OrgFeatureManager()
 
