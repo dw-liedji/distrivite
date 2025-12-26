@@ -2,162 +2,159 @@
 {% load partials %}
 {% load core %}
 {% load crispy_forms_tags %}
-
 {% block title %}
-Organizations Customer
+    Organizations Customer
 {% endblock title %}
-
 {% block quanta_content %}
-
-{% partialdef list inline=True %}
-{% include "core/partials/messages.html" %}
-
-<div class="block px-2 mx-2 px-5-desktop mx-5-desktop fade-in">
-
-    <!-- Form section (unchanged) -->
-    <section class="section mx-0 px-0 fade-in">
-        <form id="my_form" method="GET"
-            hx-get="{% url 'organization_features:orders:customer_list' request.organization.slug %}"
-            hx-target="#quanta_content" hx-swap="innerHTML" hx-push-url="true" hx-indicator="#custom-htmx-indicator"
-            class="is-flex is-flex-wrap-wrap is-align-items-center is-justify-content-start" style="gap: 10px;">
-
-            {% csrf_token %}
-            <div class="is-flex is-flex-wrap-wrap is-justify-content-start" style="gap: 10px;">
-                {% for field in filter.form %}
-                <div class="field" style="width: 150px; min-width: 120px;">
-                    {{ field|as_crispy_field }}
+    {% partialdef list inline=True %}
+    {% include "core/partials/messages.html" %}
+    <div class="block px-2 mx-2 px-5-desktop mx-5-desktop fade-in">
+        <!-- Form section (unchanged) -->
+        <section class="section mx-0 px-0 fade-in">
+            <form id="my_form"
+                  method="GET"
+                  hx-get="{% url 'organization_features:orders:customer_list' request.organization.slug %}"
+                  hx-target="#quanta_content"
+                  hx-swap="innerHTML"
+                  hx-push-url="true"
+                  hx-indicator="#custom-htmx-indicator"
+                  class="is-flex is-flex-wrap-wrap is-align-items-center is-justify-content-start"
+                  style="gap: 10px">
+                {% csrf_token %}
+                <div class="is-flex is-flex-wrap-wrap is-justify-content-start"
+                     style="gap: 10px">
+                    {% for field in filter.form %}
+                        <div class="field" style="width: 150px; min-width: 120px;">{{ field|as_crispy_field }}</div>
+                    {% endfor %}
+                    {{ filter.form.media }}
                 </div>
-                {% endfor %}
-                {{ filter.form.media }}
-            </div>
-            <div class="is-flex">
-                <button type="submit" class="button is-primary is-rounded is-fullwidth-mobile">
-                    <span class="icon">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                    </span>
-                    <span>Filter Items</span>
-                </button>
-            </div>
-        </form>
-    </section>
-
-    <div class="has-text-right my-3">
-        {% if request.organization_user.is_admin or 'orders.add_customer' in organization_user_perms %}
-        <a class="button is-primary"
-            hx-get="{% url 'organization_features:orders:customer_add' request.organization.slug %}?{% url_replace %}"
-            hx-target="#quanta_content" hx-indicator="#custom-htmx-indicator" hx-swap="innerHTML">Add Customer</a>
-        {% endif %}
-    </div>
-
-    <div class="table-container">
-        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
-            <thead class="is-selected">
-                <tr class="is-selected">
-                    <th style="text-align: center;">Name</th>
-                    <th style="text-align: center;">Phone</th>
-                    <th style="text-align: center;">Total Sales</th>
-                    <th style="text-align: center;">Total Paid</th>
-                    <th style="text-align: center;">Payment Progress</th>
-                    <th style="text-align: center;">Total Due</th>
-                    <th style="text-align: center;">Credit Limit</th>
-                    <th style="text-align: center;">Credit Usage</th>
-                    <th style="text-align: center;" colspan="4">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for customer in customers %}
-                <tr>
-                    <!-- Basic Info -->
-                    <td style="text-align: center; vertical-align: middle;">{{ customer.name }}</td>
-                    <td style="text-align: center; vertical-align: middle;">{{ customer.phone_number }}</td>
-                    
-                    <!-- Financial Numbers -->
-                    <td style="text-align: center; vertical-align: middle;">{{ customer.total_sales.normalize }}</td>
-                    <td style="text-align: center; vertical-align: middle;">{{ customer.total_paid.normalize }}</td>
-                    
-                    <!-- Payment Progress -->
-                    <td style="text-align: center; vertical-align: middle; min-width: 120px;">
-                        <div class="has-text-centered mb-1">
-                            <small class="has-text-weight-semibold">{{ customer.payment_progress.normalize|floatformat:2 }}%</small>
-                        </div>
-                        <progress class="progress {% if customer.payment_progress >= 100 %}is-success{% elif customer.payment_progress >= 50 %}is-info{% else %}is-warning{% endif %}" 
-                                  value="{{ customer.payment_progress.normalize }}" 
-                                  max="100">
-                            {{ customer.payment_progress.normalize }}%
-                        </progress>
-                    </td>
-                    
-                    <!-- Credit Info -->
-                    <td style="text-align: center; vertical-align: middle;">
-                        <span class="tag {% if customer.total_due > customer.credit_limit %}is-danger{% elif customer.total_due > 0 %}is-warning{% else %}is-success{% endif %}">
-                            {{ customer.total_due.normalize.normalize }}
+                <div class="is-flex">
+                    <button type="submit"
+                            class="button is-primary is-rounded is-fullwidth-mobile">
+                        <span class="icon">
+                            <i class="fa-solid fa-magnifying-glass"></i>
                         </span>
-                    </td>
-                    <td style="text-align: center; vertical-align: middle;">{{ customer.credit_limit.normalize }}</td>
-                    
-                    <!-- Credit Usage -->
-                    <td style="text-align: center; vertical-align: middle; min-width: 120px;">
-                        <div class="has-text-centered mb-1">
-                            <small class="has-text-weight-semibold {% if customer.credit_utilization >= 100 %}has-text-danger{% elif customer.credit_utilization >= 80 %}has-text-warning{% endif %}">
-                                {{ customer.credit_utilization.normalize|floatformat:2 }}%
-                            </small>
-                        </div>
-                        <progress class="progress {% if customer.credit_utilization >= 100 %}is-danger{% elif customer.credit_utilization >= 80 %}is-warning{% else %}is-primary{% endif %}" 
-                                  value="{{ customer.credit_utilization }}" 
-                                  max="100">
-                            {{ customer.credit_utilization }}%
-                        </progress>
-                    </td>
-
-                    {% if request.organization_user.is_admin or 'orders.view_facturation' in organization_user_perms %}
-                    <td style="text-align: center; vertical-align: middle;">
-                        <button hx-get="{% url 'organization_features:orders:customer_facturation_list' request.organization.slug customer.pk %}?{% url_replace %}"
-                                hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
-                                class="button is-primary is-small is-light">
-                            Factures
-                        </button>
-                    </td>
-                    {% endif %}
-                    
-                    <!-- Action Buttons -->
-                    {% if request.organization_user.is_admin or 'orders.change_customer' in organization_user_perms %}
-                    <td style="text-align: center; vertical-align: middle;">
-                        <button hx-get="{% url 'organization_features:orders:customer_change' request.organization.slug customer.pk %}?{% url_replace %}"
-                                hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
-                                class="button is-small">
-                            <i class="fa-solid fa-pen-to-square"></i>
-                        </button>
-                    </td>
-                    {% endif %}
-                    
-                    {% if request.organization_user.is_admin or 'orders.view_customer' in organization_user_perms %}
-                    <td style="text-align: center; vertical-align: middle;">
-                        <button hx-get="{% url 'organization_features:orders:customer_detail' request.organization.slug customer.pk %}?{% url_replace %}"
-                                hx-target="#quanta_content" hx-swap="innerHTML" hx-indicator="#custom-htmx-indicator"
-                                class="button is-small">
-                            <i class="fa-solid fa-eye"></i>
-                        </button>
-                    </td>
-                    {% endif %}
-                    
-                    {% if request.organization_user.is_admin or 'orders.delete_customer' in organization_user_perms %}
-                    <td style="text-align: center; vertical-align: middle;">
-                        <button hx-get="{% url 'organization_features:orders:customer_delete' request.organization.slug customer.pk %}?{% url_replace %}"
-                                hx-target="#quanta_content" hx-confirm="Are you sure you want to delete?" 
-                                class="button is-small">
-                            <i class="fa-solid fa-trash-can fa-1x has-text-danger"></i>
-                        </button>
-                    </td>
-                    {% endif %}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% include "core/partials/pagination.html" %}
+                        <span>Filter Items</span>
+                    </button>
+                </div>
+            </form>
+        </section>
+        <div class="has-text-right my-3">
+            {% if request.organization_user.is_admin or 'orders.add_customer' in organization_user_perms %}
+                <a class="button is-primary"
+                   hx-get="{% url 'organization_features:orders:customer_add' request.organization.slug %}?{% url_replace %}"
+                   hx-target="#quanta_content"
+                   hx-indicator="#custom-htmx-indicator"
+                   hx-swap="innerHTML">Add Customer</a>
+            {% endif %}
+        </div>
+        <div class="table-container">
+            <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+                <thead class="is-selected">
+                    <tr class="is-selected">
+                        <th style="text-align: center;">Name</th>
+                        <th style="text-align: center;">Phone</th>
+                        <th style="text-align: center;">Total Sales</th>
+                        <th style="text-align: center;">Total Paid</th>
+                        <th style="text-align: center;">Payment Progress</th>
+                        <th style="text-align: center;">Total Due</th>
+                        <th style="text-align: center;">Credit Limit</th>
+                        <th style="text-align: center;">Credit Usage</th>
+                        <th style="text-align: center;">Prepaid amount</th>
+                        <th style="text-align: center;" colspan="4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for customer in customers %}
+                        <tr>
+                            <!-- Basic Info -->
+                            <td style="text-align: center; vertical-align: middle;">{{ customer.name }}</td>
+                            <td style="text-align: center; vertical-align: middle;">{{ customer.phone_number }}</td>
+                            <!-- Financial Numbers -->
+                            <td style="text-align: center; vertical-align: middle;">{{ customer.total_sales.normalize }}</td>
+                            <td style="text-align: center; vertical-align: middle;">{{ customer.total_paid.normalize }}</td>
+                            <!-- Payment Progress -->
+                            <td style="text-align: center; vertical-align: middle; min-width: 120px;">
+                                <div class="has-text-centered mb-1">
+                                    <small class="has-text-weight-semibold">{{ customer.payment_progress.normalize|floatformat:2 }}%</small>
+                                </div>
+                                <progress class="progress {% if customer.payment_progress >= 100 %}is-success{% elif customer.payment_progress >= 50 %}is-info{% else %}is-warning{% endif %}"
+                                          value="{{ customer.payment_progress.normalize }}"
+                                          max="100">
+                                    {{ customer.payment_progress.normalize }}%
+                                </progress>
+                            </td>
+                            <!-- Credit Info -->
+                            <td style="text-align: center; vertical-align: middle;">
+                                <span class="tag {% if customer.total_due > customer.credit_limit %}is-danger{% elif customer.total_due > 0 %}is-warning{% else %}is-success{% endif %}">
+                                    {{ customer.total_due.normalize.normalize }}
+                                </span>
+                            </td>
+                            <td style="text-align: center; vertical-align: middle;">{{ customer.credit_limit.normalize }}</td>
+                            <!-- Credit Usage -->
+                            <td style="text-align: center; vertical-align: middle; min-width: 120px;">
+                                <div class="has-text-centered mb-1">
+                                    <small class="has-text-weight-semibold {% if customer.credit_utilization >= 100 %}has-text-danger{% elif customer.credit_utilization >= 80 %}has-text-warning{% endif %}">
+                                        {{ customer.credit_utilization.normalize|floatformat:2 }}%
+                                    </small>
+                                </div>
+                                <progress class="progress {% if customer.credit_utilization >= 100 %}is-danger{% elif customer.credit_utilization >= 80 %}is-warning{% else %}is-primary{% endif %}"
+                                          value="{{ customer.credit_utilization }}"
+                                          max="100">
+                                    {{ customer.credit_utilization }}%
+                                </progress>
+                            </td>
+                            <td style="text-align: center; vertical-align: middle;">{{ customer.prepaid_amount.normalize }}</td>
+                            {% if request.organization_user.is_admin or 'orders.view_facturation' in organization_user_perms %}
+                                <td style="text-align: center; vertical-align: middle;">
+                                    <button hx-get="{% url 'organization_features:orders:customer_facturation_list' request.organization.slug customer.pk %}?{% url_replace %}"
+                                            hx-target="#quanta_content"
+                                            hx-swap="innerHTML"
+                                            hx-indicator="#custom-htmx-indicator"
+                                            class="button is-primary is-small is-light">Factures</button>
+                                </td>
+                            {% endif %}
+                            <!-- Action Buttons -->
+                            {% if request.organization_user.is_admin or 'orders.change_customer' in organization_user_perms %}
+                                <td style="text-align: center; vertical-align: middle;">
+                                    <button hx-get="{% url 'organization_features:orders:customer_change' request.organization.slug customer.pk %}?{% url_replace %}"
+                                            hx-target="#quanta_content"
+                                            hx-swap="innerHTML"
+                                            hx-indicator="#custom-htmx-indicator"
+                                            class="button is-small">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </button>
+                                </td>
+                            {% endif %}
+                            {% if request.organization_user.is_admin or 'orders.view_customer' in organization_user_perms %}
+                                <td style="text-align: center; vertical-align: middle;">
+                                    <button hx-get="{% url 'organization_features:orders:customer_detail' request.organization.slug customer.pk %}?{% url_replace %}"
+                                            hx-target="#quanta_content"
+                                            hx-swap="innerHTML"
+                                            hx-indicator="#custom-htmx-indicator"
+                                            class="button is-small">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                </td>
+                            {% endif %}
+                            {% if request.organization_user.is_admin or 'orders.delete_customer' in organization_user_perms %}
+                                <td style="text-align: center; vertical-align: middle;">
+                                    <button hx-get="{% url 'organization_features:orders:customer_delete' request.organization.slug customer.pk %}?{% url_replace %}"
+                                            hx-target="#quanta_content"
+                                            hx-confirm="Are you sure you want to delete?"
+                                            class="button is-small">
+                                        <i class="fa-solid fa-trash-can fa-1x has-text-danger"></i>
+                                    </button>
+                                </td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% include "core/partials/pagination.html" %}
+        </div>
     </div>
-</div>
-
-<style>
+    <style>
 .progress {
     height: 0.75rem;
     margin-bottom: 0.25rem;
@@ -178,8 +175,6 @@ Organizations Customer
     background-color: #ff3860;
     color: white;
 }
-</style>
-
+    </style>
 {% endpartialdef %}
-
 {% endblock quanta_content %}
