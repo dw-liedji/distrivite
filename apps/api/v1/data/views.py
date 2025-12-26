@@ -838,7 +838,9 @@ class BulkCreditPaymentCreateView(generics.CreateAPIView):
         leftover = obj.amount - total_allocated
 
         if leftover > 0:
-            print(f"Montant restant: {leftover}. Créé comme crédit client.")
+            customer.prepaid_amount = customer.prepaid_amount + leftover
+            customer.save()
+            # print(f"Montant restant: {leftover}. Créé comme crédit client.")
 
         # Store for success page
         # self.request.session["last_bulk_payment_id"] = bulk_credit_payment.id

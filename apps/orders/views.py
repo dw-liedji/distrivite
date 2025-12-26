@@ -2744,6 +2744,8 @@ class OrgBulkCreditPaymentCreateView(
                 )
 
             if leftover > 0:
+                customer.prepaid_amount = customer.prepaid_amount + leftover
+                customer.save()
                 messages.info(
                     self.request,
                     f"Montant restant: {leftover}. Créé comme crédit client.",
